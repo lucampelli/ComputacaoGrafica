@@ -11,6 +11,8 @@ private:
     float viewportmax[2] = {600, 600};
     float windowmin[2] = {0, 0};
     float windowmax[2] = {600, 600};
+    float nmin[2] = {0,0};
+    float nmax[2] = {600,600};
     float m11 = (viewportmax[0] - viewportmin[0]) / (windowmax[0] - windowmin[0]);
     float m22 = (viewportmax[1] - viewportmin[1]) / (windowmax[1] - windowmin[1]);
     float m13 = -windowmin[0] * (m11) + viewportmin[0];
@@ -32,6 +34,10 @@ public:
 
     void moveCamera(float xAmount, float yAmount) {
         pos->move_to(pos->getX() + xAmount, pos->getY() + yAmount);
+        windowmin[0] = -pos->getX();
+        windowmin[1] = -pos->getY();
+        windowmax[0] = -pos->getX() + 600;
+        windowmax[1] = -pos->getY() + 600;
     }
 
     Ponto* getPos() {
@@ -54,11 +60,13 @@ public:
 
     Ponto* drawTransform(Ponto* p) {
         // try clipping? considered
+        calculate_matrix(nmin,nmax);
         return new Ponto(p->getX() * m11 + m13 + pos->getX(), p->getY() * m22 + m23 + pos->getY());
     }
     
     Ponto* clickTransform(Ponto* p) {
         // try clipping? considered
+        calculate_matrix(nmin,nmax);
         return new Ponto((p->getX()- m13 - pos->getX()) / m11, (p->getY() - m23 - pos->getY()) / m22 );
     }
     
@@ -85,8 +93,10 @@ public:
         float medy = (viewportmax[1] + viewportmin[1]) / 2;
         float zx = medx * zoom;
         float zy = medy * zoom;
-        float nmin[2] = {medx - zx, medy - zy};
-        float nmax[2] = {medx + zx, medy + zy};
+        nmin[0] = medx - zx;
+        nmin[1] = medy - zy;
+        nmax[0] = medx + zx;
+        nmax[1] = medy + zy;
 
         calculate_matrix(nmin, nmax);
     }
