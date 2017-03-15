@@ -77,24 +77,20 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
 
 static void remove() {
     lista->retiraDaPosicao(delete_choice);
-    gtk_widget_queue_draw(window);  //good
+    gtk_widget_queue_draw(window); //good
 }
 
 static void on_changed(GtkComboBox *widget, gpointer user_data) {
     GtkComboBox *combo_box = widget;
 
     if (gtk_combo_box_get_active(combo_box) != 0) {
-        shape_choice = gtk_combo_box_get_active(combo_box);  //good
+        shape_choice = gtk_combo_box_get_active(combo_box); //good
     }
 }
 
 static void on_changed_del(GtkComboBox *widget, gpointer user_data) {
     GtkComboBox *combo_box = widget;
-    delete_choice = 0;
-    if (gtk_combo_box_get_has_entry(GTK_COMBO_BOX(combo_box))) { //good
-        delete_choice = gtk_combo_box_get_active(combo_box);
-    }
-
+    delete_choice = gtk_combo_box_get_active(combo_box);
 }
 
 static void delete_shape() {
@@ -122,7 +118,7 @@ static void delete_shape() {
     }
 
 
-    g_signal_connect(cancelB, "clicked", G_CALLBACK(gtk_window_close), window);         //decent
+    g_signal_connect(cancelB, "clicked", G_CALLBACK(gtk_window_close), window); //decent
     g_signal_connect(combo_box, "changed", G_CALLBACK(on_changed_del), NULL);
     g_signal_connect(delB, "clicked", G_CALLBACK(remove), NULL);
     g_signal_connect(delB, "clicked", G_CALLBACK(gtk_window_close), window);
@@ -147,20 +143,20 @@ static void delete_shape() {
 static void zoomIn() {
 
     cam->Zoom(true);
-    gtk_entry_set_text(GTK_ENTRY(zoomField), g_strdup_printf("%.0f", cam->getZoom() * 100));    //ok
+    gtk_entry_set_text(GTK_ENTRY(zoomField), g_strdup_printf("%.0f", cam->getZoom() * 100)); //ok
     gtk_widget_queue_draw(window);
 }
 
 static void zoomOut() {
 
     cam->Zoom(false);
-    gtk_entry_set_text(GTK_ENTRY(zoomField), g_strdup_printf("%.0f", cam->getZoom() * 100));    //ok
+    gtk_entry_set_text(GTK_ENTRY(zoomField), g_strdup_printf("%.0f", cam->getZoom() * 100)); //ok
     gtk_widget_queue_draw(window);
 }
 
 static void build_shape() {
 
-    if(shape_choice == 0){
+    if (shape_choice == 0) {
         return;
     }
     if (!clicking) {
@@ -179,7 +175,7 @@ static void build_shape() {
             float sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Retangulo* r = new Retangulo(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() - camPos->getY(),
-                    sizex,sizey);
+                    sizex, sizey);
             r->setName("Retangulo");
             lista->adiciona(r);
         }
@@ -194,7 +190,7 @@ static void build_shape() {
             float sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Quadrado* q = new Quadrado(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() - camPos->getY(),
-                    sizex > sizey ? sizex : sizey);       //poligon points list = good
+                    sizex > sizey ? sizex : sizey); //poligon points list = good
             q->setName("Quadrado");
             lista->adiciona(q);
         }
@@ -207,7 +203,7 @@ static void build_shape() {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
-            Poligono* p = new Poligono(-camPos->getX(),-camPos->getY(), polP);
+            Poligono* p = new Poligono(-camPos->getX(), -camPos->getY(), polP);
             p->setName("Poligono");
             lista->adiciona(p);
         }
@@ -223,7 +219,7 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
     g_print("Event box clicked at coordinates %f : %f\n",
             event->x, event->y);
 
-    polP->adiciona(cam->clickTransform(new Ponto((float) event->x, (float) event->y)));         //good
+    polP->adiciona(cam->clickTransform(new Ponto((float) event->x, (float) event->y))); //good
     // Returning TRUE means we handled the event, so the signal
     // emission should be stopped (don’t call any further callbacks
     // that may be connected). Return FALSE to continue invoking callbacks.
@@ -254,7 +250,7 @@ void cameraMoveU() {
 
 void cameraMoveR() {
 
-    Camera* cam = Camera::getInstance();                    //decent
+    Camera* cam = Camera::getInstance(); //decent
     cam->moveCamera(-10, 0);
     gtk_widget_queue_draw(window);
 }
@@ -265,6 +261,7 @@ void cameraMoveL() {
     cam->moveCamera(10, 0);
     gtk_widget_queue_draw(window);
 }
+
 /*
  * 
  */
