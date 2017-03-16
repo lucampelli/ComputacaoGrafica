@@ -65,7 +65,7 @@ public:
         cam = cam->getInstance();
     }
 
-    void setName(char* n){
+    void setName(string n){
         name = n;
     }
     

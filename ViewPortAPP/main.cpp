@@ -30,6 +30,9 @@ ListaEnc<Shape*> * lista;
 int shape_choice = 0;
 int delete_choice = 0;
 int clicks = 0;
+int rectangles_created = 0;
+int squares_created = 0;
+int polygons_created = 0;
 bool clicking = false;
 ListaEnc<Ponto*> * polP;
 Camera* cam = Camera::getInstance();
@@ -167,7 +170,7 @@ static void build_shape() {
     }
 
     if (shape_choice == 1) {
-
+        //Retangulo
         if (clicking) {
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
@@ -176,10 +179,12 @@ static void build_shape() {
             Retangulo* r = new Retangulo(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() - camPos->getY(),
                     sizex, sizey);
-            r->setName("Retangulo");
+            rectangles_created++;
+            string new_name = "Retângulo " + std::to_string(rectangles_created);
+            r->setName(new_name);
             lista->adiciona(r);
         }
-        //Retangulo
+        
     }
     if (shape_choice == 2) {
         //Quadrado
@@ -191,20 +196,24 @@ static void build_shape() {
             Quadrado* q = new Quadrado(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() - camPos->getY(),
                     sizex > sizey ? sizex : sizey); //poligon points list = good
-            q->setName("Quadrado");
+            squares_created++;
+            string new_name = "Quadrado " + std::to_string(squares_created);
+            q->setName(new_name);
             lista->adiciona(q);
         }
 
     }
 
     if (shape_choice == 3) {
-
+        //Polígono
         if (clicking) {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
             Poligono* p = new Poligono(-camPos->getX(), -camPos->getY(), polP);
-            p->setName("Poligono");
+            polygons_created++;
+            string new_name = "Polígono " + std::to_string(polygons_created);
+            p->setName(new_name);
             lista->adiciona(p);
         }
     }
