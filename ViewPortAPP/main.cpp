@@ -26,6 +26,7 @@ static GtkWidget *da;
 static GtkWidget *shapeField;
 static GtkWidget *combo_box_shape;
 static GtkWidget *zoomField;
+GtkWidget *buttonAdd;
 ListaEnc<Shape*> * lista;
 int shape_choice = 0;
 int delete_choice = 0;
@@ -116,7 +117,7 @@ static void delete_shape() {
 
     for (int i = 0; i < lista->getSize(); i++) {
 
-        gchar* c = g_strdup_printf("%i", i);
+        const gchar* c = lista->get(i)->getName().c_str();
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box), c);
     }
 
@@ -165,6 +166,9 @@ static void build_shape() {
     if (!clicking) {
         clicking = true;
         gtk_widget_set_sensitive(combo_box_shape, FALSE);
+        if (shape_choice != 3) {
+            gtk_widget_set_sensitive(buttonAdd, FALSE);
+        }
         polP = new ListaEnc<Ponto*>();
         return;
     }
@@ -174,6 +178,7 @@ static void build_shape() {
         if (clicking) {
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
+            gtk_widget_set_sensitive(buttonAdd, TRUE);
             float sizex = polP->get(1)->getX() - polP->get(0)->getX();
             float sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Retangulo* r = new Retangulo(polP->getHead()->getX() - camPos->getX(),
@@ -184,13 +189,14 @@ static void build_shape() {
             r->setName(new_name);
             lista->adiciona(r);
         }
-        
+
     }
     if (shape_choice == 2) {
         //Quadrado
         if (clicking) {
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
+            gtk_widget_set_sensitive(buttonAdd, TRUE);
             float sizex = polP->get(1)->getX() - polP->get(0)->getX();
             float sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Quadrado* q = new Quadrado(polP->getHead()->getX() - camPos->getX(),
@@ -283,7 +289,7 @@ int main(int argc, char** argv) {
     GtkWidget *buttonDown;
     GtkWidget *buttonLeft;
     GtkWidget *buttonRight;
-    GtkWidget *buttonAdd;
+
     GtkWidget *buttonZ1;
     GtkWidget *buttonZ2;
     GtkWidget *delete_button;

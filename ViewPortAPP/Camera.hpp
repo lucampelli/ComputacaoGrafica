@@ -61,13 +61,13 @@ public:
     Ponto* drawTransform(Ponto* p) {
         // try clipping? considered
         calculate_matrix(nmin,nmax);
-        return new Ponto(p->getX() * m11 + m13 + pos->getX(), p->getY() * m22 + m23 + pos->getY());
+        return new Ponto(p->getX() * m11 + m13 , p->getY() * m22 + m23 );
     }
     
     Ponto* clickTransform(Ponto* p) {
         // try clipping? considered
         calculate_matrix(nmin,nmax);
-        return new Ponto((p->getX()- m13 - pos->getX()) / m11, (p->getY() - m23 - pos->getY()) / m22 );
+        return new Ponto((p->getX()- m13 ) / m11, (p->getY() - m23 ) / m22 );
     }
     
 
