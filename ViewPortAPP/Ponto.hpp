@@ -6,7 +6,7 @@
 
 /* 
  * File:   Ponto.hpp
- * Author: lucampelli
+ * Author: Grupo10 - Luca Campelli e Jonatan Guesser
  *
  * Created on 9 de Março de 2017, 16:58
  */

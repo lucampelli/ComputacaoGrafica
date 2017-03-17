@@ -6,7 +6,7 @@
 
 /* 
  * File:   ListaEnc.hpp
- * Author: lucampelli
+ * Author: Grupo10 - Luca Campelli e Jonatan Guesser
  *
  * Created on 8 de Março de 2017, 14:04
  */
