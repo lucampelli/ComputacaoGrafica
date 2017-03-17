@@ -5,10 +5,15 @@
                    displayName="Arquivos de Cabeçalho"
                    projectFiles="true">
       <itemPath>Camera.hpp</itemPath>
+      <itemPath>Camera3D.hpp</itemPath>
       <itemPath>Elemento.hpp</itemPath>
       <itemPath>ListaEnc.hpp</itemPath>
+      <itemPath>Matriz.hpp</itemPath>
       <itemPath>Ponto.hpp</itemPath>
       <itemPath>Shape.hpp</itemPath>
+      <itemPath>Transform.hpp</itemPath>
+      <itemPath>Viewport.hpp</itemPath>
+      <itemPath>Window.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Arquivos de Código-Fonte"
@@ -55,13 +60,23 @@
       </compileType>
       <item path="Camera.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Camera3D.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Elemento.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ListaEnc.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Matriz.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Ponto.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Shape.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Transform.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Viewport.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Window.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -88,13 +103,23 @@
       </compileType>
       <item path="Camera.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Camera3D.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Elemento.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ListaEnc.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Matriz.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Ponto.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Shape.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Transform.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Viewport.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Window.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

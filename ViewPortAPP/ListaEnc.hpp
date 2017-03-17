@@ -123,6 +123,11 @@ public:
         size--;
         return info;
     }
+    
+    void modifica(int pos, const T& dado){
+        retiraDaPosicao(pos);
+        adicionaNaPosicao(dado, pos);
+    }
 
     //fim
     void adiciona(const T& dado){

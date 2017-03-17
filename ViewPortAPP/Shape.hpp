@@ -14,7 +14,7 @@
 #include "Ponto.hpp"
 #include "ListaEnc.hpp"
 #include "gtk/gtk.h"
-#include "Camera.hpp"
+#include "Camera3D.hpp"
 #include <iostream>
 #ifndef SHAPE_HPP
 #define SHAPE_HPP
@@ -23,7 +23,7 @@ using namespace std;
 
 class Shape {
 private:
-    Camera* cam;
+    Camera* cam = Camera::getInstance();;
     Ponto* pos;
     ListaEnc<Ponto*>* pontos;
     int vertices;
@@ -34,13 +34,13 @@ public:
     Shape() : vertices(0) {
         pos = new Ponto();
         pontos = new ListaEnc<Ponto*>();
-        cam = cam->getInstance();
+        
     }
 
     Shape(float x, float y) : vertices(0) {
         pos = new Ponto(x, y);
         pontos = new ListaEnc<Ponto*>();
-        cam = cam->getInstance();
+        
     }
 
     Shape(Ponto* p) : vertices(1) {
@@ -48,21 +48,21 @@ public:
         pos = p;
         pontos = new ListaEnc<Ponto*>();
         pontos->adiciona(p);
-        cam = cam->getInstance();
+        
     }
 
     Shape(ListaEnc<Ponto*>* points) {
         pos = new Ponto();
         pontos = points;
         vertices = points->getSize();
-        cam = cam->getInstance();
+        
     }
 
     Shape(float x, float y, ListaEnc<Ponto*>* points) {
         pos = new Ponto(x, y);
         pontos = points;
         vertices = points->getSize();
-        cam = cam->getInstance();
+    
     }
 
     void setName(string n){
@@ -96,7 +96,7 @@ public:
     }
 
     void draw(cairo_t* cr) {
-        Ponto* camPos = Camera::getInstance()->getPos();
+        Ponto* camPos = cam->getPos();
         
         cairo_set_source_rgb(cr, 0, 0, 0);
         cairo_set_line_width(cr, 0.5);

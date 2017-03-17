@@ -37,7 +37,7 @@ int polygons_created = 0;
 bool clicking = false;
 ListaEnc<Ponto*> * polP;
 Camera* cam = Camera::getInstance();
-Ponto* camPos = Camera::getInstance()->getPos();
+Ponto* camPos = cam->getPos();
 
 static void clear_surface() {
     cairo_t * cr;
@@ -251,28 +251,24 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
 
 void cameraMoveD() {
 
-    Camera* cam = Camera::getInstance();
     cam->moveCamera(0, -10);
     gtk_widget_queue_draw(window);
 }
 
 void cameraMoveU() {
 
-    Camera* cam = Camera::getInstance();
     cam->moveCamera(0, 10);
     gtk_widget_queue_draw(window);
 }
 
 void cameraMoveR() {
 
-    Camera* cam = Camera::getInstance(); //decent
     cam->moveCamera(-10, 0);
     gtk_widget_queue_draw(window);
 }
 
 void cameraMoveL() {
 
-    Camera* cam = Camera::getInstance();
     cam->moveCamera(10, 0);
     gtk_widget_queue_draw(window);
 }

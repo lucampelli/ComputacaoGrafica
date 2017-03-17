@@ -17,12 +17,13 @@
 class Ponto{
     
 private:
-    float x,y;
+    float x,y,z,w;
 
 public:
-    Ponto() : x(0),y(0){}
+    Ponto() : x(0),y(0),z(0),w(0){}
     
-    Ponto(float nx, float ny) : x(nx), y(ny){}
+    Ponto(float nx, float ny) : x(nx), y(ny),z(1),w(1){}
+    Ponto(float nx, float ny,float nz) : x(nx), y(ny),z(nz),w(1){}
     
     float getX(){
         return x;
@@ -32,10 +33,25 @@ public:
         return y;
     }
     
+    float getZ(){
+        return z;
+    }
+    
+    float getW(){
+        return w;
+    }
+    
     void move_to(float nx, float ny){
         x = nx;
         y = ny;
     }
+    
+    void move_to(float nx, float ny, float nz){
+        x = nx;
+        y = ny;
+        z = nz;
+    }
+
 };
 
 #endif /* PONTO_HPP */
