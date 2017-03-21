@@ -15,7 +15,7 @@
 #include <cstdlib>
 #include <string.h>
 #include "ListaEnc.hpp"
-#include "Camera.hpp"
+#include "Camera3D.hpp"
 #include "Shape.hpp"
 
 using namespace std;
@@ -36,7 +36,7 @@ int squares_created = 0;
 int polygons_created = 0;
 bool clicking = false;
 ListaEnc<Ponto*> * polP;
-Camera* cam = Camera::getInstance();
+Camera3D* cam = Camera3D::getInstance();
 Ponto* camPos = cam->getPos();
 
 static void clear_surface() {

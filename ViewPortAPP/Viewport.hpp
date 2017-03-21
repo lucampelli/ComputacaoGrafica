@@ -27,16 +27,16 @@ private:
 
     Viewport() : width(600), height(600) {
         viewportmin = new Ponto();
-        ogmin = viewportmin;
+        ogmin = new Ponto();
         viewportmax = new Ponto(600, 600);
-        ogmax = viewportmax;
+        ogmax = new Ponto(600, 600);;
     }
 
     Viewport(float width, float height) : width(width), height(height) {
         viewportmin = new Ponto();
-        ogmin = viewportmin;
+        ogmin = new Ponto();
         viewportmax = new Ponto(width, height);
-        ogmax = viewportmax;
+        ogmax = new Ponto(width, height);
     }
 
 public:

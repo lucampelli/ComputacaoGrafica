@@ -48,8 +48,8 @@ public:
 
     void moveCamera(float xAmount, float yAmount) {
         pos->move_to(pos->getX() + xAmount, pos->getY() + yAmount);
-        window->moveWindowToPoint(new Ponto(pos->getX(),pos->getY()));
-        calculate_matrix();
+        window->moveWindowToPoint(new Ponto(-pos->getX(),-pos->getY()));
+        
     }
 
     Ponto* getPos() {
@@ -58,11 +58,13 @@ public:
 
 
     Ponto* drawTransform(Ponto* p) {
-        return transform->T(p);
+        calculate_matrix();
+        return transform->T(p);;
     }
     
     Ponto* clickTransform(Ponto* p) {
-        return transform->iT(p);
+        calculate_matrix();
+        return transform->iT(p);;
     }
     
 

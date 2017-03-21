@@ -565,8 +565,7 @@ build/Debug/GNU-Linux/main.o: main.cpp /usr/include/gtk-3.0/gtk/gtk.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkvscrollbar.h \
  /usr/include/gtk-3.0/gtk/deprecated/gtkvseparator.h \
  /usr/include/gtk-3.0/gtk/gtk-autocleanups.h ListaEnc.hpp Elemento.hpp \
- Camera.hpp Ponto.hpp Shape.hpp Camera3D.hpp Window.hpp Viewport.hpp \
- Transform.hpp
+ Camera3D.hpp Ponto.hpp Window.hpp Viewport.hpp Transform.hpp Shape.hpp
 
 /usr/include/gtk-3.0/gtk/gtk.h:
 
@@ -1774,16 +1773,14 @@ ListaEnc.hpp:
 
 Elemento.hpp:
 
-Camera.hpp:
+Camera3D.hpp:
 
 Ponto.hpp:
-
-Shape.hpp:
-
-Camera3D.hpp:
 
 Window.hpp:
 
 Viewport.hpp:
 
 Transform.hpp:
+
+Shape.hpp:

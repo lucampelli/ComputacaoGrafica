@@ -23,7 +23,7 @@ using namespace std;
 
 class Shape {
 private:
-    Camera* cam = Camera::getInstance();;
+    Camera3D* cam = Camera3D::getInstance();;
     Ponto* pos;
     ListaEnc<Ponto*>* pontos;
     int vertices;

@@ -40,7 +40,6 @@ public:
         m22 = (vpmax->getY() - vpmin->getY()) / (wmax->getY() - wmin->getY());
         m13 = -wmin->getX() * (m11) + vpmin->getX();
         m23 = -wmin->getY() * (m22) + vpmin->getY();
-        std::cout<<"Transform: "<<m11<<" : "<<m13<<" : "<< m22 << " : " << m23 << std::endl;
     }
     
     Ponto* T(Ponto* p){
