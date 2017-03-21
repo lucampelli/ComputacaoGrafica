@@ -70,8 +70,10 @@ public:
         float medy = (ogmax->getY() + ogmin->getY()) / 2;
         float zx = medx * scaleValue;
         float zy = medy * scaleValue;
-        viewportmin->move_to(ogmin->getX() - zx, ogmin->getY() - zy);
-        viewportmax->move_to(ogmax->getX() + zx, ogmax->getY() + zy);
+        viewportmin->move_to(ogmin->getX() - zx + medx , ogmin->getY() - zy + medy);
+        viewportmax->move_to(ogmax->getX() + zx - medx, ogmax->getY() + zy - medy);
+        std::cout<<"ScaleViewPortMin:" << ogmin->getX()<<" : "<< ogmin->getY()<<std::endl;
+        std::cout<<"ScaleViewPortMax:" << viewportmin->getX()<<" : "<< viewportmin->getY()<<std::endl;
     }
 
 };
