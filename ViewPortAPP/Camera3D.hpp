@@ -73,7 +73,7 @@ public:
     }
     
     void calculate_matrix(){
-        transform->calculate_matrix(viewport->min(),viewport->max(),window->min(),window->max());
+        transform->calculate_draw_and_click_matrix(viewport->min(),viewport->max(),window->min(),window->max());
     }
 
     void Zoom(bool in) {
