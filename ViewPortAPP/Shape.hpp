@@ -111,6 +111,11 @@ public:
         
         return new Ponto(x,y);
     }
+    
+    void setRot(int degrees){
+        rotation2D = degrees;
+        applyRot(findCenter());
+    }
 
     void applyRot(Ponto* center){
         for(int i = 0; i < vertices; i++){
