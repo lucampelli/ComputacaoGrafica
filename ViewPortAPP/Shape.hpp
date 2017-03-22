@@ -85,13 +85,13 @@ public:
             pontos->adiciona(p[i]);
             vertices++;
         }
-        applyRot();
+        applyRot(findCenter());
     }
     
     void setPointsList(ListaEnc<Ponto*>* p){
         this->pontos = p;
         this->vertices = p->getSize();
-        applyRot();
+        applyRot(findCenter());
     }
 
     ListaEnc<Ponto*>* getPontos() {
@@ -112,10 +112,10 @@ public:
         return new Ponto(x,y);
     }
 
-    void applyRot(){
+    void applyRot(Ponto* center){
         for(int i = 0; i < vertices; i++){
             
-            Ponto* p = cam->rotateTransform(rotation2D, pontos->get(i), findCenter());
+            Ponto* p = cam->rotateTransform(rotation2D, pontos->get(i), center);
             pontos->get(i)->move_to(p->getX(), p->getY());
             
         }
