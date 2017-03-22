@@ -56,6 +56,9 @@ public:
         return pos;
     }
 
+    Ponto* rotateTransform(int angle, Ponto* p, Ponto* c){
+        return transform->rotationT2D(angle, p, c);
+    }
 
     Ponto* drawTransform(Ponto* p) {
         calculate_matrix();

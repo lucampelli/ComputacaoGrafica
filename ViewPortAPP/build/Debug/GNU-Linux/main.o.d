@@ -228,31 +228,34 @@ build/Debug/GNU-Linux/main.o: main.cpp /usr/include/gtk-3.0/gtk/gtk.h \
  /usr/include/glib-2.0/gio/glistmodel.h \
  /usr/include/glib-2.0/gio/gliststore.h \
  /usr/include/glib-2.0/gio/gio-autocleanups.h \
- /usr/include/gtk-3.0/gdk/gdktypes.h /usr/include/pango-1.0/pango/pango.h \
- /usr/include/pango-1.0/pango/pango-attributes.h \
- /usr/include/pango-1.0/pango/pango-font.h \
- /usr/include/pango-1.0/pango/pango-coverage.h \
- /usr/include/pango-1.0/pango/pango-types.h \
- /usr/include/pango-1.0/pango/pango-gravity.h \
- /usr/include/pango-1.0/pango/pango-matrix.h \
- /usr/include/pango-1.0/pango/pango-script.h \
- /usr/include/pango-1.0/pango/pango-language.h \
- /usr/include/pango-1.0/pango/pango-bidi-type.h \
- /usr/include/pango-1.0/pango/pango-break.h \
- /usr/include/pango-1.0/pango/pango-item.h \
- /usr/include/pango-1.0/pango/pango-context.h \
- /usr/include/pango-1.0/pango/pango-fontmap.h \
- /usr/include/pango-1.0/pango/pango-fontset.h \
- /usr/include/pango-1.0/pango/pango-engine.h \
- /usr/include/pango-1.0/pango/pango-glyph.h \
- /usr/include/pango-1.0/pango/pango-enum-types.h \
- /usr/include/pango-1.0/pango/pango-features.h \
- /usr/include/pango-1.0/pango/pango-glyph-item.h \
- /usr/include/pango-1.0/pango/pango-layout.h \
- /usr/include/pango-1.0/pango/pango-tabs.h \
- /usr/include/pango-1.0/pango/pango-renderer.h \
- /usr/include/pango-1.0/pango/pango-utils.h /usr/include/cairo/cairo.h \
- /usr/include/cairo/cairo-version.h /usr/include/cairo/cairo-features.h \
+ /usr/include/gtk-3.0/gdk/gdktypes.h \
+ /usr/local/include/pango-1.0/pango/pango.h \
+ /usr/local/include/pango-1.0/pango/pango-attributes.h \
+ /usr/local/include/pango-1.0/pango/pango-font.h \
+ /usr/local/include/pango-1.0/pango/pango-coverage.h \
+ /usr/local/include/pango-1.0/pango/pango-version-macros.h \
+ /usr/local/include/pango-1.0/pango/pango-features.h \
+ /usr/local/include/pango-1.0/pango/pango-types.h \
+ /usr/local/include/pango-1.0/pango/pango-gravity.h \
+ /usr/local/include/pango-1.0/pango/pango-matrix.h \
+ /usr/local/include/pango-1.0/pango/pango-script.h \
+ /usr/local/include/pango-1.0/pango/pango-language.h \
+ /usr/local/include/pango-1.0/pango/pango-bidi-type.h \
+ /usr/local/include/pango-1.0/pango/pango-break.h \
+ /usr/local/include/pango-1.0/pango/pango-item.h \
+ /usr/local/include/pango-1.0/pango/pango-context.h \
+ /usr/local/include/pango-1.0/pango/pango-fontmap.h \
+ /usr/local/include/pango-1.0/pango/pango-fontset.h \
+ /usr/local/include/pango-1.0/pango/pango-engine.h \
+ /usr/local/include/pango-1.0/pango/pango-glyph.h \
+ /usr/local/include/pango-1.0/pango/pango-enum-types.h \
+ /usr/local/include/pango-1.0/pango/pango-glyph-item.h \
+ /usr/local/include/pango-1.0/pango/pango-layout.h \
+ /usr/local/include/pango-1.0/pango/pango-tabs.h \
+ /usr/local/include/pango-1.0/pango/pango-renderer.h \
+ /usr/local/include/pango-1.0/pango/pango-utils.h \
+ /usr/include/cairo/cairo.h /usr/include/cairo/cairo-version.h \
+ /usr/include/cairo/cairo-features.h \
  /usr/include/cairo/cairo-deprecated.h \
  /usr/include/gtk-3.0/gdk/gdkscreen.h \
  /usr/include/gtk-3.0/gdk/gdkdisplay.h \
@@ -272,7 +275,7 @@ build/Debug/GNU-Linux/main.o: main.cpp /usr/include/gtk-3.0/gtk/gtk.h \
  /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-loader.h \
  /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-enum-types.h \
  /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-autocleanups.h \
- /usr/include/pango-1.0/pango/pangocairo.h \
+ /usr/local/include/pango-1.0/pango/pangocairo.h \
  /usr/include/gtk-3.0/gdk/gdkcursor.h \
  /usr/include/gtk-3.0/gdk/gdkdisplaymanager.h \
  /usr/include/gtk-3.0/gdk/gdkenumtypes.h \
@@ -1068,53 +1071,55 @@ build/Debug/GNU-Linux/main.o: main.cpp /usr/include/gtk-3.0/gtk/gtk.h \
 
 /usr/include/gtk-3.0/gdk/gdktypes.h:
 
-/usr/include/pango-1.0/pango/pango.h:
+/usr/local/include/pango-1.0/pango/pango.h:
 
-/usr/include/pango-1.0/pango/pango-attributes.h:
+/usr/local/include/pango-1.0/pango/pango-attributes.h:
 
-/usr/include/pango-1.0/pango/pango-font.h:
+/usr/local/include/pango-1.0/pango/pango-font.h:
 
-/usr/include/pango-1.0/pango/pango-coverage.h:
+/usr/local/include/pango-1.0/pango/pango-coverage.h:
 
-/usr/include/pango-1.0/pango/pango-types.h:
+/usr/local/include/pango-1.0/pango/pango-version-macros.h:
 
-/usr/include/pango-1.0/pango/pango-gravity.h:
+/usr/local/include/pango-1.0/pango/pango-features.h:
 
-/usr/include/pango-1.0/pango/pango-matrix.h:
+/usr/local/include/pango-1.0/pango/pango-types.h:
 
-/usr/include/pango-1.0/pango/pango-script.h:
+/usr/local/include/pango-1.0/pango/pango-gravity.h:
 
-/usr/include/pango-1.0/pango/pango-language.h:
+/usr/local/include/pango-1.0/pango/pango-matrix.h:
 
-/usr/include/pango-1.0/pango/pango-bidi-type.h:
+/usr/local/include/pango-1.0/pango/pango-script.h:
 
-/usr/include/pango-1.0/pango/pango-break.h:
+/usr/local/include/pango-1.0/pango/pango-language.h:
 
-/usr/include/pango-1.0/pango/pango-item.h:
+/usr/local/include/pango-1.0/pango/pango-bidi-type.h:
 
-/usr/include/pango-1.0/pango/pango-context.h:
+/usr/local/include/pango-1.0/pango/pango-break.h:
 
-/usr/include/pango-1.0/pango/pango-fontmap.h:
+/usr/local/include/pango-1.0/pango/pango-item.h:
 
-/usr/include/pango-1.0/pango/pango-fontset.h:
+/usr/local/include/pango-1.0/pango/pango-context.h:
 
-/usr/include/pango-1.0/pango/pango-engine.h:
+/usr/local/include/pango-1.0/pango/pango-fontmap.h:
 
-/usr/include/pango-1.0/pango/pango-glyph.h:
+/usr/local/include/pango-1.0/pango/pango-fontset.h:
 
-/usr/include/pango-1.0/pango/pango-enum-types.h:
+/usr/local/include/pango-1.0/pango/pango-engine.h:
 
-/usr/include/pango-1.0/pango/pango-features.h:
+/usr/local/include/pango-1.0/pango/pango-glyph.h:
 
-/usr/include/pango-1.0/pango/pango-glyph-item.h:
+/usr/local/include/pango-1.0/pango/pango-enum-types.h:
 
-/usr/include/pango-1.0/pango/pango-layout.h:
+/usr/local/include/pango-1.0/pango/pango-glyph-item.h:
 
-/usr/include/pango-1.0/pango/pango-tabs.h:
+/usr/local/include/pango-1.0/pango/pango-layout.h:
 
-/usr/include/pango-1.0/pango/pango-renderer.h:
+/usr/local/include/pango-1.0/pango/pango-tabs.h:
 
-/usr/include/pango-1.0/pango/pango-utils.h:
+/usr/local/include/pango-1.0/pango/pango-renderer.h:
+
+/usr/local/include/pango-1.0/pango/pango-utils.h:
 
 /usr/include/cairo/cairo.h:
 
@@ -1164,7 +1169,7 @@ build/Debug/GNU-Linux/main.o: main.cpp /usr/include/gtk-3.0/gtk/gtk.h \
 
 /usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-autocleanups.h:
 
-/usr/include/pango-1.0/pango/pangocairo.h:
+/usr/local/include/pango-1.0/pango/pangocairo.h:
 
 /usr/include/gtk-3.0/gdk/gdkcursor.h:
 

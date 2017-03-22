@@ -27,6 +27,7 @@ private:
     Ponto* pos;
     ListaEnc<Ponto*>* pontos;
     int vertices;
+    int rotation2D = 0;
     string name;
     
 public:
@@ -84,20 +85,45 @@ public:
             pontos->adiciona(p[i]);
             vertices++;
         }
+        applyRot();
     }
     
     void setPointsList(ListaEnc<Ponto*>* p){
         this->pontos = p;
         this->vertices = p->getSize();
+        applyRot();
     }
 
     ListaEnc<Ponto*>* getPontos() {
         return pontos;
     }
+    
+    Ponto* findCenter(){
+        float x = 0;
+        float y = 0;
+        for(int i = 0; i < vertices; i++){
+            x += pontos->get(i)->getX();
+            y += pontos->get(i)->getY();
+        }
+        
+        x = x / vertices;
+        y = y / vertices;
+        
+        return new Ponto(x,y);
+    }
 
+    void applyRot(){
+        for(int i = 0; i < vertices; i++){
+            
+            Ponto* p = cam->rotateTransform(rotation2D, pontos->get(i), findCenter());
+            pontos->get(i)->move_to(p->getX(), p->getY());
+            
+        }
+    }
+    
     void draw(cairo_t* cr) {
         Ponto* camPos = cam->getPos();
-        
+        Ponto* center = findCenter();
         cairo_set_source_rgb(cr, 0, 0, 0);
         cairo_set_line_width(cr, 0.5);
         //do_transform;

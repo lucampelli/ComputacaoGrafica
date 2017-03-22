@@ -15,13 +15,14 @@
 #define TRANSFORM_HPP
 
 #include "Ponto.hpp"
+#include <math.h>
 
 
 class Transform{
     
 private:
     float m11,m13,m22,m23;
-    float t11,t12,t13,t21,t22,t23,t31 = 0,t32 = 0,t33 = 1;
+    float t11,t12,t13 = 0,t21,t22,t23 = 0,t31,t32,t33 = 1;
     
     Transform(){
         
@@ -44,8 +45,18 @@ public:
         m23 = -wmin->getY() * (m22) + vpmin->getY();
     }
     
-    void set_2D_rotation_matrix(int degrees, Ponto* shapePos){ // shapePos should be shape center for all matrixes 
+    void set_2D_rotation_matrix(int degrees, Ponto* shapePos){ // shapePos should be rotation center 
         
+    }
+    
+    Ponto* rotationT2D(int degrees, Ponto* p, Ponto* c){
+        float rad = (degrees * M_PI)/180;
+        //test purposes only
+        float x = p->getX() - c->getX();
+        float y = p->getY() - c->getY();
+        Ponto* r = new Ponto(x * cosf(rad) - y * sinf(rad), x * sinf(rad) + y* cosf(rad));
+        r->move_to(r->getX() + c->getX(), r->getY() + c->getY());
+        return r;
     }
     
     void set_2D_move_matrix(float Dx, float Dy, Ponto* shapePos){
