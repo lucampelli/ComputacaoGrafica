@@ -255,7 +255,6 @@ static void build_shape() {
             rectangles_created++;
             string new_name = "Retângulo " + std::to_string(rectangles_created);
             r->setName(new_name);
-            move_shape(r,40,40);
             lista->adiciona(r);
         }
 
