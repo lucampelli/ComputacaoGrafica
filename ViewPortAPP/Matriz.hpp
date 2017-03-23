@@ -58,12 +58,11 @@ public:
         for(int l = 1; l =< res->lin(); l++){
             for(int c = 1; c =< res->col(); c++){
                 float dado_novo = 0.0;
-                for(int i = 0; i < num_lin; i++){
-                    dado_novo += this->get(l, c+i) * m->get(l+i, c); //wrong
+                for(int i = 0; i < this->col(); i++){
+                    dado_novo += this->get(l, i+1) * m->get(i+1, c);
                 }
-                res->set(l, c, dado_novo);
+                res>set(l, c, dado_novo);
             }
-            
         }
         return res;
     }
