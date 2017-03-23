@@ -30,7 +30,7 @@ public:
     Matriz(int linhas, int colunas){
         num_lin = linhas;
         num_col = colunas;
-        valores->assign(num_lin*num_col, 0.0);
+        valores.assign(num_lin*num_col, 0.0);
     }
     
     /*Cada linha inteira possui [nº colunas] valores, então o índice
@@ -53,15 +53,15 @@ public:
         return num_col;
     }
     
-    Matriz* operator*(Matriz* m){
-        Matriz res = new Matriz(num_lin, m->col());
-        for(int l = 1; l =< res->lin(); l++){
-            for(int c = 1; c =< res->col(); c++){
+    Matriz operator*(Matriz m){
+        Matriz res = new Matriz(num_lin, m.col());
+        for(int l = 1; l <= res.lin(); l++){
+            for(int c = 1; c <= res.col(); c++){
                 float dado_novo = 0.0;
                 for(int i = 0; i < this->col(); i++){
-                    dado_novo += this->get(l, i+1) * m->get(i+1, c);
+                    dado_novo += this->get(l, i+1) * m.get(i+1, c);
                 }
-                res>set(l, c, dado_novo);
+                res.set(l, c, dado_novo);
             }
         }
         return res;

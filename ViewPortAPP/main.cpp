@@ -404,13 +404,13 @@ int main(int argc, char** argv) {
     Matriz m1 = new Matriz(1, 3);
     Matriz m2 = new Matriz(3, 3);
     
-    m1->set(1,1, 1.0);
-    m1->set(1,2, 2.0);
-    m1->set(1,3, 3.0);
+    m1.set(1,1, 1.0);
+    m1.set(1,2, 2.0);
+    m1.set(1,3, 3.0);
     
-    m2->set(1,1, 1.0);
-    m2->set(2,2, 1.0);
-    m2->set(3,3, 1.0);
+    m2.set(1,1, 1.0);
+    m2.set(2,2, 1.0);
+    m2.set(3,3, 1.0);
     
     Matriz m3 = m1*m2;
     
