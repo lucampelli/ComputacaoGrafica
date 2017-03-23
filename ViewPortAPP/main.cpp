@@ -31,6 +31,7 @@ GtkWidget *buttonAdd;
 ListaEnc<Shape*> * lista;
 int shape_choice = 0;
 int delete_choice = 0;
+int transform_choice = = 0;
 int clicks = 0;
 int rectangles_created = 0;
 int squares_created = 0;
@@ -91,6 +92,11 @@ static void on_changed(GtkComboBox *widget, gpointer user_data) {
     if (gtk_combo_box_get_active(combo_box) != 0) {
         shape_choice = gtk_combo_box_get_active(combo_box); //good
     }
+}
+
+static void on_changed_trans(GtkComboBox *widget, gpointer user_data){
+    GtkComboBox *combo_box = widget;
+    transform_choice = gtk_combo_box_get_active(combo_box);
 }
 
 static void on_changed_del(GtkComboBox *widget, gpointer user_data) {
@@ -159,6 +165,67 @@ static void zoomOut() {
     gtk_widget_queue_draw(window);
 }
 
+static void move_shape(Shape* s, float Dx, float Dy){
+    Transform* t = Transform::getInstance();
+    t->setT(t->set_2D_move_matrix(Dx,Dy));
+    
+    s->move(Dx,Dy);
+} 
+
+static void scale_shape(Shape* s, float scaleX, float scaleY, Ponto* scale_center = new Ponto(0,0)){
+    Transform* t = Transform::getInstance();
+    t->setT(t->set_2D_move_matrix(-scale_center->getX(),-scale_center->getY()));
+    t->concatenate_matrix(t->set_2D_scale_matrix(scaleX, scaleY));
+    t->concatenate_matrix(t->set_2D_move_matrix(scale_center->getX(),scale_center->getY()));
+    if(scale_center->getX() == s->findCenter()->getX() && scale_center->getY() == s->findCenter()->getY()){
+        s->setScale(scaleX, scaleY);
+    } else {
+        s->applyT();
+    }
+    
+}
+
+static void rotate_shape(Shape* s, int degrees, Ponto* rot_center = new Ponto(0,0)){
+    Transform* t = Transform::getInstance();
+    t->setT(t->set_2D_move_matrix(-rot_center->getX(),-rot_center->getY()));
+    t->concatenate_matrix(t->set_2D_rotation_matrix(degrees));
+    t->concatenate_matrix(t->set_2D_move_matrix(rot_center->getX(),rot_center->getY()));
+    if(rot_center->getX() == s->findCenter()->getX() && rot_center->getY() == s->findCenter()->getY()){
+        s->setRot(degrees);
+    } else {
+        s->applyT();
+    }
+}
+
+static void rotate_cam(int degrees){
+    cam->rotateCamera(degrees);
+    for(int i = 0; i < lista->getSize(); i++){
+        rotate_shape(lista->get(i),cam->getRot());
+    }
+}
+
+
+static void transform_shape(){
+    //here to popup transform shape
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //here to popup transform shape
+}
+
 static void build_shape() {
 
     if (shape_choice == 0) {
@@ -188,6 +255,7 @@ static void build_shape() {
             rectangles_created++;
             string new_name = "Retângulo " + std::to_string(rectangles_created);
             r->setName(new_name);
+            move_shape(r,40,40);
             lista->adiciona(r);
         }
 
@@ -278,7 +346,7 @@ void cameraMoveL() {
  * 
  */
 int main(int argc, char** argv) {
-/*
+
     lista = new ListaEnc<Shape*>();
     //lista->getHead()->printPontos();
 
@@ -399,20 +467,7 @@ int main(int argc, char** argv) {
 
 
     gtk_main();
-*/
-    
-    Matriz* m1 = new Matriz(1, 3);
-    Matriz* m2 = new Matriz(3, 3);
-    
-    m1->set(1,1, 1.0);
-    m1->set(1,2, 2.0);
-    m1->set(1,3, 3.0);
-    
-    m2->set(1,1, 1.0);
-    m2->set(2,2, 1.0);
-    m2->set(3,3, 1.0);
-    
-    Matriz m3 = *m1 * *m2;
+
     
     return 0;
 }

@@ -28,6 +28,8 @@ private:
     ListaEnc<Ponto*>* pontos;
     int vertices;
     int rotation2D = 0;
+    float scaleX = 1;
+    float scaleY = 1;
     string name;
     
 public:
@@ -85,13 +87,11 @@ public:
             pontos->adiciona(p[i]);
             vertices++;
         }
-        applyRot(findCenter());
     }
     
     void setPointsList(ListaEnc<Ponto*>* p){
         this->pontos = p;
         this->vertices = p->getSize();
-        applyRot(findCenter());
     }
 
     ListaEnc<Ponto*>* getPontos() {
@@ -112,15 +112,25 @@ public:
         return new Ponto(x,y);
     }
     
-    void setRot(int degrees){
+    void setRot(int degrees){ //usar este método para rotacionar a figura pelo centro.
         rotation2D = degrees;
-        applyRot(findCenter());
+        applyT();
+    }
+    
+    void setScale(float X, float Y){
+        scaleX = X;
+        scaleY = Y;
+        applyT();
     }
 
-    void applyRot(Ponto* center){
+    void move(float Dx, float Dy){
+        pos->move_to(pos->getX() + Dx, pos->getY() + Dy);
+    }
+    
+    void applyT(){  //e este para rotacionar ao redor de um ponto qualquer
         for(int i = 0; i < vertices; i++){
             
-            Ponto* p = cam->rotateTransform(rotation2D, pontos->get(i), center);
+            Ponto* p = cam->T(pontos->get(i));
             pontos->get(i)->move_to(p->getX(), p->getY());
             
         }

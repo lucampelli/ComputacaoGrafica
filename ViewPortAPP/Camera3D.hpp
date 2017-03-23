@@ -26,6 +26,7 @@ private:
     Window* window;
     Viewport* viewport;
     Transform* transform;
+    int rot = 0;
     float zoom = 1.0f;
 
 public:
@@ -45,7 +46,15 @@ public:
         }
         return camera;
     }
+    
+    void rotateCamera(int degrees){
+        rot = degrees; 
+    }
 
+    int getRot(){
+       return rot; 
+    }
+    
     void moveCamera(float xAmount, float yAmount) {
         pos->move_to(pos->getX() + xAmount, pos->getY() + yAmount);
         window->moveWindowToPoint(new Ponto(-pos->getX(),-pos->getY()));
@@ -55,6 +64,10 @@ public:
     Ponto* getPos() {
         return pos;
     }
+    
+    Ponto* T(Ponto* p){
+        return transform->transform(p);
+    }
 
     Ponto* rotateTransform(int angle, Ponto* p, Ponto* c){
         return transform->rotationT2D(angle, p, c);
@@ -62,12 +75,12 @@ public:
 
     Ponto* drawTransform(Ponto* p) {
         calculate_matrix();
-        return transform->T(p);;
+        return transform->dT(p);;
     }
     
     Ponto* clickTransform(Ponto* p) {
         calculate_matrix();
-        return transform->iT(p);;
+        return transform->cT(p);;
     }
     
 

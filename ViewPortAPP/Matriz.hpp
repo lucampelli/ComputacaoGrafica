@@ -23,48 +23,48 @@ private:
     int num_lin, num_col;
     //Os valores da matriz são armazeados linearmente em um único vetor
     std::vector<float> valores;
-    
+
 
 public:
 
-    Matriz(int linhas, int colunas){
+    Matriz(int linhas, int colunas) {
         num_lin = linhas;
         num_col = colunas;
         valores.assign(num_lin*num_col, 0.0);
     }
-    
+
     /*Cada linha inteira possui [nº colunas] valores, então o índice
      é calculado pelo número de 'linhas cheias' no vetor mais o número
      da coluna desejada. O valor é subtraido em 1 pois o vector conta
      as posições a partir de 0.*/
-    float get(int l, int c){
-        return valores[(l-1)*num_col + c-1];
+    float get(int l, int c) {
+        return valores[(l) * num_col + c];
     }
-    
-    float set(int l, int c, float dado){
-        valores[(l-1)*num_col + c-1] = dado;
+
+    float set(int l, int c, float dado) {
+        valores[(l) * num_col + c] = dado;
     }
-    
-    int lin(){
+
+    int lin() {
         return num_lin;
     }
-    
-    int col(){
+
+    int col() {
         return num_col;
     }
-    
-    Matriz operator*(Matriz m){
-        Matriz* res = new Matriz(num_lin, m.col());
-        for(int l = 1; l <= res->lin(); l++){
-            for(int c = 1; c <= res->col(); c++){
-                float dado_novo = 0.0;
-                for(int i = 0; i < this->col(); i++){
-                    dado_novo += this->get(l, i+1) * m.get(i+1, c);
+
+    Matriz* multiply(Matriz* m) {
+
+        Matriz* m3 = new Matriz(num_lin, m->col());
+
+        for (int i = 0; i < num_lin; ++i)
+            for (int j = 0; j < m->col(); ++j)
+                for (int k = 0; k < num_col; ++k) {
+                    m3->set(i,j, m3->get(i,j) + (this->get(i,k) * m->get(k,j)));
                 }
-                res->set(l, c, dado_novo);
-            }
-        }
-        return *res;
+
+        return m3;
+
     }
 
 };
