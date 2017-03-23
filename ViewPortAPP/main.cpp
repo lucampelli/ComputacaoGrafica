@@ -22,7 +22,8 @@
 using namespace std;
 
 static cairo_surface_t * surface = NULL;
-static GtkWidget *window;
+static GtkWidget *main_window;
+static GtkWidget *trans_window;
 static GtkWidget *da;
 static GtkWidget *shapeField;
 static GtkWidget *combo_box_shape;
@@ -31,7 +32,7 @@ GtkWidget *buttonAdd;
 ListaEnc<Shape*> * lista;
 int shape_choice = 0;
 int delete_choice = 0;
-int transform_choice = = 0;
+int transform_choice = 0;
 int clicks = 0;
 int rectangles_created = 0;
 int squares_created = 0;
@@ -83,7 +84,7 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
 
 static void remove() {
     lista->retiraDaPosicao(delete_choice);
-    gtk_widget_queue_draw(window); //good
+    gtk_widget_queue_draw(main_window); //good
 }
 
 static void on_changed(GtkComboBox *widget, gpointer user_data) {
@@ -155,14 +156,14 @@ static void zoomIn() {
 
     cam->Zoom(true);
     gtk_entry_set_text(GTK_ENTRY(zoomField), g_strdup_printf("%.0f", cam->getZoom() * 100)); //ok
-    gtk_widget_queue_draw(window);
+    gtk_widget_queue_draw(main_window);
 }
 
 static void zoomOut() {
 
     cam->Zoom(false);
     gtk_entry_set_text(GTK_ENTRY(zoomField), g_strdup_printf("%.0f", cam->getZoom() * 100)); //ok
-    gtk_widget_queue_draw(window);
+    gtk_widget_queue_draw(main_window);
 }
 
 static void move_shape(Shape* s, float Dx, float Dy){
@@ -291,7 +292,7 @@ static void build_shape() {
             lista->adiciona(p);
         }
     }
-    gtk_widget_queue_draw(window);
+    gtk_widget_queue_draw(main_window);
 }
 
 static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data) {
@@ -320,25 +321,25 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
 void cameraMoveD() {
 
     cam->moveCamera(0, -10);
-    gtk_widget_queue_draw(window);
+    gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveU() {
 
     cam->moveCamera(0, 10);
-    gtk_widget_queue_draw(window);
+    gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveR() {
 
     cam->moveCamera(-10, 0);
-    gtk_widget_queue_draw(window);
+    gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveL() {
 
     cam->moveCamera(10, 0);
-    gtk_widget_queue_draw(window);
+    gtk_widget_queue_draw(main_window);
 }
 
 /*
@@ -359,20 +360,22 @@ int main(int argc, char** argv) {
     GtkWidget *delete_button;
     GtkWidget *event_box;
 
-    GtkWidget *hbox, *vbox1, *vbox2, *hboxlr, *hboxZ, *vboxZ;
+    GtkWidget *hbox, *vbox1, *vbox2, *hboxlr, *hboxZ, *vboxZ, *tbox;
     GtkWidget *camLabel, *zoomLabel;
+    
+    GtkWidget *buttonTrans;
 
     gtk_init(&argc, &argv);
 
-    //Window
-    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    //Main Window
+    main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-    gtk_window_set_title(GTK_WINDOW(window), "Computação Grafica");
-    gtk_window_set_position(GTK_WINDOW(window), GtkWindowPosition(GTK_WIN_POS_CENTER));
-    gtk_widget_set_size_request(window, 800, 600);
-    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+    gtk_window_set_title(GTK_WINDOW(main_window), "Computação Grafica");
+    gtk_window_set_position(GTK_WINDOW(main_window), GtkWindowPosition(GTK_WIN_POS_CENTER));
+    gtk_widget_set_size_request(main_window, 800, 600);
+    gtk_container_set_border_width(GTK_CONTAINER(main_window), 11);
 
-    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(main_window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     //ComboBox
     combo_box_shape = gtk_combo_box_text_new();
@@ -390,6 +393,7 @@ int main(int argc, char** argv) {
     hboxlr = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
     hboxZ = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     vboxZ = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+    tbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
 
     //Drawing Area
     da = gtk_drawing_area_new();
@@ -407,6 +411,7 @@ int main(int argc, char** argv) {
     zoomLabel = gtk_label_new("Zoom: ");
     event_box = gtk_event_box_new();
     delete_button = gtk_button_new_with_label("Remover Forma");
+    buttonTrans = gtk_button_new_with_label("Transformar...");
 
     //TextField
     shapeField = gtk_text_view_new();
@@ -423,6 +428,8 @@ int main(int argc, char** argv) {
     gtk_container_add(GTK_CONTAINER(hboxlr), buttonRight);
     gtk_container_add(GTK_CONTAINER(vbox1), buttonDown);
     gtk_container_add(GTK_CONTAINER(vbox1), hboxZ);
+    
+    gtk_container_add(GTK_CONTAINER(tbox), buttonTrans);
 
     gtk_container_add(GTK_CONTAINER(hboxZ), zoomLabel);
     gtk_container_add(GTK_CONTAINER(hboxZ), zoomField);
@@ -432,9 +439,11 @@ int main(int argc, char** argv) {
 
     gtk_container_add(GTK_CONTAINER(event_box), da);
     gtk_container_add(GTK_CONTAINER(vbox2), event_box);
-    gtk_container_add(GTK_CONTAINER(window), hbox);
+    gtk_container_add(GTK_CONTAINER(main_window), hbox);
     gtk_container_add(GTK_CONTAINER(hbox), vbox1);
     gtk_container_add(GTK_CONTAINER(hbox), vbox2);
+    
+    gtk_container_add(GTK_CONTAINER(main_window), tbox);
 
     gtk_widget_set_size_request(event_box, 600, 600);
     gtk_widget_set_size_request(da, 600, 600);
@@ -458,8 +467,10 @@ int main(int argc, char** argv) {
     g_signal_connect(combo_box_shape, "changed", G_CALLBACK(on_changed), NULL);
     g_signal_connect(buttonZ1, "clicked", G_CALLBACK(zoomIn), NULL);
     g_signal_connect(buttonZ2, "clicked", G_CALLBACK(zoomOut), NULL);
+    
+    g_signal_connect(buttonTrans, "clicked", G_CALLBACK(transform_shape), NULL);
 
-    gtk_widget_show_all(window);
+    gtk_widget_show_all(main_window);
 
     gtk_entry_set_text(GTK_ENTRY(zoomField), g_strdup_printf("%.0f", cam->getZoom() * 100));
 
