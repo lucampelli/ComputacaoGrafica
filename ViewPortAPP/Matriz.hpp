@@ -6,7 +6,7 @@
 
 /* 
  * File:   Matriz.hpp
- * Author: lucampelli
+ * Author: Grupo10 - Luca Campelli e Jonatan Guesser
  *
  * Created on 17 de Março de 2017, 16:17
  */

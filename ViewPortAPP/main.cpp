@@ -207,7 +207,7 @@ static void rotate_cam(int degrees){
 
 
 static void transform_shape(){
-    //here to popup transform shape
+    
     GtkBuilder  *gtkBuilder;
     GtkWidget *entryX, *entryY;
     GtkWidget *button_move;
@@ -231,7 +231,7 @@ static void transform_shape(){
     combobox_scale = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select2") );
     combobox_rotation = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select3") );
     
-    /* Com dor de barriga
+    /*
     g_signal_connect(button_move, "clicked", G_CALLBACK(moveShape), NULL);
     g_signal_connect(button_expand, "clicked", G_CALLBACK(scaleShape), NULL);
     g_signal_connect(button_decrease, "clicked", G_CALLBACK(scaleShape), NULL);
@@ -253,11 +253,7 @@ static void transform_shape(){
     }
 
     gtk_widget_show_all(trans_window);
-    
-    
-    
-    
-    //here to popup transform shape
+
 }
 
 static void build_shape() {
