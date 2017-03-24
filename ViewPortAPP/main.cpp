@@ -208,18 +208,37 @@ static void rotate_cam(int degrees){
 
 static void transform_shape(){
     //here to popup transform shape
+    GtkBuilder  *gtkBuilder;
+    GtkWidget *entryX, *entryY;
+    GtkWidget *button_move;
+    GtkWidget *button_expand, *button_decrease;
+    GtkWidget *button_antirotate, *button_rotate;
+    GtkWidget *combobox_translate, *combobox_scale, *combobox_rotation;
     
+
+    gtkBuilder = gtk_builder_new();
+    gtk_builder_add_from_file(gtkBuilder, "ViewportApp1.glade", NULL);
+
+    trans_window = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "transform_window") );
+    entryX = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "entry_X") );
+    entryY = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "entry_Y") );
+    button_move = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_trans") );
+    button_expand = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_plus") );
+    button_decrease = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_minus") );
+    button_antirotate = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_antiRot") );
+    button_rotate = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_Rot") );
+    combobox_translate = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select") );
+    combobox_scale = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select2") );
+    combobox_rotation = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select3") );
     
+    g_signal_connect(trans_window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(button_move, "clicked", G_CALLBACK(moveShape), NULL);
+    g_signal_connect(button_expand, "clicked", G_CALLBACK(scaleShape), NULL);
+    g_signal_connect(button_decrease, "clicked", G_CALLBACK(scaleShape), NULL);
+    g_signal_connect(button_antirotate, "clicked", G_CALLBACK(rotateShape), NULL);
+    g_signal_connect(button_rotate, "clicked", G_CALLBACK(rotateShape), NULL);
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    gtk_widget_show_all(trans_window);
     
     
     
@@ -360,7 +379,7 @@ int main(int argc, char** argv) {
     GtkWidget *delete_button;
     GtkWidget *event_box;
 
-    GtkWidget *hbox, *vbox1, *vbox2, *hboxlr, *hboxZ, *vboxZ, *tbox;
+    GtkWidget *hbox, *vbox1, *vbox2, *hboxlr, *hboxZ, *vboxZ;
     GtkWidget *camLabel, *zoomLabel;
     
     GtkWidget *buttonTrans;
@@ -393,7 +412,6 @@ int main(int argc, char** argv) {
     hboxlr = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
     hboxZ = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     vboxZ = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-    tbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
 
     //Drawing Area
     da = gtk_drawing_area_new();
@@ -429,7 +447,7 @@ int main(int argc, char** argv) {
     gtk_container_add(GTK_CONTAINER(vbox1), buttonDown);
     gtk_container_add(GTK_CONTAINER(vbox1), hboxZ);
     
-    gtk_container_add(GTK_CONTAINER(tbox), buttonTrans);
+    gtk_container_add(GTK_CONTAINER(vbox1), buttonTrans);
 
     gtk_container_add(GTK_CONTAINER(hboxZ), zoomLabel);
     gtk_container_add(GTK_CONTAINER(hboxZ), zoomField);
@@ -442,8 +460,6 @@ int main(int argc, char** argv) {
     gtk_container_add(GTK_CONTAINER(main_window), hbox);
     gtk_container_add(GTK_CONTAINER(hbox), vbox1);
     gtk_container_add(GTK_CONTAINER(hbox), vbox2);
-    
-    gtk_container_add(GTK_CONTAINER(main_window), tbox);
 
     gtk_widget_set_size_request(event_box, 600, 600);
     gtk_widget_set_size_request(da, 600, 600);
