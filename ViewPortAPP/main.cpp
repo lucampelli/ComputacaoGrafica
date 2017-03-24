@@ -230,23 +230,28 @@ static void transform_shape(){
     combobox_translate = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select") );
     combobox_scale = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select2") );
     combobox_rotation = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select3") );
+    
     /* Com dor de barriga
     g_signal_connect(button_move, "clicked", G_CALLBACK(moveShape), NULL);
     g_signal_connect(button_expand, "clicked", G_CALLBACK(scaleShape), NULL);
     g_signal_connect(button_decrease, "clicked", G_CALLBACK(scaleShape), NULL);
     g_signal_connect(button_antirotate, "clicked", G_CALLBACK(rotateShape), NULL);
     g_signal_connect(button_rotate, "clicked", G_CALLBACK(rotateShape), NULL);
+     */
     
     for (int i = 0; i < G_N_ELEMENTS(lista); i++) {
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_translate), lista->get(i)->getName());
+        const gchar* c = lista->get(i)->getName().c_str();
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_translate), c);
     }
     for (int i = 0; i < G_N_ELEMENTS(lista); i++) {
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_scale), lista->get(i)->getName());
+        const gchar* c = lista->get(i)->getName().c_str();
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_scale), c);
     }
     for (int i = 0; i < G_N_ELEMENTS(lista); i++) {
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_rotation), lista->get(i)->getName());
+        const gchar* c = lista->get(i)->getName().c_str();
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_rotation), c);
     }
-    */
+
     gtk_widget_show_all(trans_window);
     
     
