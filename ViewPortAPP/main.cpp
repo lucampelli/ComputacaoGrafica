@@ -28,7 +28,11 @@ static GtkWidget *da;
 static GtkWidget *shapeField;
 static GtkWidget *combo_box_shape;
 static GtkWidget *zoomField;
-GtkWidget *buttonAdd;
+static GtkWidget *buttonAdd;
+
+static GtkWidget *CXE1, *CXE2, *CYE1, *CYE2;
+static GtkWidget *entryX, *entryY, *entryS, *entryA;
+
 ListaEnc<Shape*> * lista;
 int shape_choice = 0;
 int delete_choice = 0;
@@ -37,6 +41,11 @@ int clicks = 0;
 int rectangles_created = 0;
 int squares_created = 0;
 int polygons_created = 0;
+float TX = 0;
+float TY = 0;
+int rotation = 0;
+float SX = 1;
+float SY = 1;
 bool clicking = false;
 ListaEnc<Ponto*> * polP;
 Camera3D* cam = Camera3D::getInstance();
@@ -206,19 +215,128 @@ static void rotate_cam(int degrees) {
     }
 }
 
+static void cam_cw() {
+    rotate_cam(-10);
+}
+
+static void cam_ccw() {
+    rotate_cam(10);
+}
+
+static void rotate() {    
+    Shape* s = lista->get(transform_choice);
+    const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE2));
+    const char* y1 = gtk_entry_get_text(GTK_ENTRY(CYE2));
+
+    cout << x1 << ", " << y1 << endl;
+    
+    if (strlen(x1) == 0) {
+        TX = s->findCenter()->getX();
+    } else {
+        TX = atoi(x1);
+    }
+    if (strlen(y1) == 0) {
+        TY = s->findCenter()->getY();
+    } else {
+        TY = atoi(y1);
+    }
+    if (gtk_entry_get_text(GTK_ENTRY(entryA)) == "") {
+        rotation = 0;
+    } else {
+        rotation = atoi(gtk_entry_get_text(GTK_ENTRY(entryA)));
+    }
+
+    cout << TX << ", " << TY << endl;
+
+    rotate_shape(s, rotation, new Ponto(TX, TY));
+}
+
+static void scale() {
+    Shape* s = lista->get(transform_choice);
+    const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE1));
+    const char* y1 = gtk_entry_get_text(GTK_ENTRY(CYE1));
+
+    if (strlen(x1) == 0) {
+        TX = s->findCenter()->getX();
+    } else {
+        TX = atoi(x1);
+    }
+    if (strlen(y1) == 0) {
+        TY = s->findCenter()->getY();
+    } else {
+        TY = atoi(y1);
+    }
+
+    if (gtk_entry_get_text(GTK_ENTRY(entryS)) == "") {
+        SX = 1;
+        SY = 1;
+    } else {
+        SX = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
+        SY = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
+    }
+
+    scale_shape(s, SX, SY, new Ponto(TX, TY));
+}
+
+static void unscale(){
+    Shape* s = lista->get(transform_choice);
+    const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE1));
+    const char* y1 = gtk_entry_get_text(GTK_ENTRY(CYE1));
+
+    if (strlen(x1) == 0) {
+        TX = s->findCenter()->getX();
+    } else {
+        TX = atoi(x1);
+    }
+    if (strlen(y1) == 0) {
+        TY = s->findCenter()->getY();
+    } else {
+        TY = atoi(y1);
+    }
+
+    if (gtk_entry_get_text(GTK_ENTRY(entryS)) == "") {
+        SX = 1;
+        SY = 1;
+    } else {
+        SX = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
+        SY = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
+    }
+
+    scale_shape(s, 1/SX, 1/SY, new Ponto(TX, TY));
+}
+
+static void move() {
+    Shape* s = lista->get(transform_choice);
+    const char* x1 = gtk_entry_get_text(GTK_ENTRY(entryX));
+    const char* y1 = gtk_entry_get_text(GTK_ENTRY(entryY));
+
+    if (strlen(x1) == 0) {
+        TX = 0;
+    } else {
+        TX = atoi(x1);
+    }
+    if (strlen(y1) == 0) {
+        TY = 0;
+    } else {
+        TY = atoi(y1);
+    }
+    move_shape(s, TX, TY);
+}
+
 static void transform_shape() {
 
-    GtkWidget *entryX, *entryY, *entryS, *entryA;
+
     GtkWidget *button_move;
     GtkWidget *button_expand;
+    GtkWidget *button_reduce;
     GtkWidget *button_rotate;
     GtkWidget *combobox_translate, *combobox_scale, *combobox_rotation;
     GtkWidget *vbox1, *vbox2, *vbox3, *note;
-    GtkWidget *hbox1, *hbox2, *hbox3, *hbox21, *hbox31;
+    GtkWidget *hbox1, *hbox2, *hbox3, *hbox21, *hbox31, *hbox22;
     GtkWidget *label1, *label2, *label3;
     GtkWidget *XLabel, *YLabel, *ScaleLabel, *AngleLabel;
     GtkWidget *CXL1, *CXL2, *CYL1, *CYL2;
-    GtkWidget *CXE1, *CXE2, *CYE1, *CYE2;
+
 
     transform_choice = 0;
 
@@ -250,6 +368,7 @@ static void transform_shape() {
 
     button_move = gtk_button_new_with_label("Mover");
     button_expand = gtk_button_new_with_label("Expandir");
+    button_reduce = gtk_button_new_with_label("Reduzir");
     button_rotate = gtk_button_new_with_label("Rotacionar");
 
     note = gtk_notebook_new();
@@ -261,6 +380,7 @@ static void transform_shape() {
     hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     hbox3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
     hbox21 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox22 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     hbox31 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 
     combobox_translate = gtk_combo_box_text_new();
@@ -280,17 +400,19 @@ static void transform_shape() {
     gtk_container_add(GTK_CONTAINER(vbox2), combobox_scale);
     gtk_container_add(GTK_CONTAINER(vbox2), hbox2);
     gtk_container_add(GTK_CONTAINER(vbox2), hbox21);
-    gtk_container_add(GTK_CONTAINER(hbox21), CXL2);
-    gtk_container_add(GTK_CONTAINER(hbox21), CXE2);
-    gtk_container_add(GTK_CONTAINER(hbox21), CYL2);
-    gtk_container_add(GTK_CONTAINER(hbox21), CYE2);
+    gtk_container_add(GTK_CONTAINER(vbox2), hbox22);
+    gtk_container_add(GTK_CONTAINER(hbox21), CXL1);
+    gtk_container_add(GTK_CONTAINER(hbox21), CXE1);
+    gtk_container_add(GTK_CONTAINER(hbox21), CYL1);
+    gtk_container_add(GTK_CONTAINER(hbox21), CYE1);
     gtk_container_add(GTK_CONTAINER(hbox2), ScaleLabel);
     gtk_container_add(GTK_CONTAINER(hbox2), entryS);
-    gtk_container_add(GTK_CONTAINER(vbox2), button_expand);
+    gtk_container_add(GTK_CONTAINER(hbox22), button_expand);
+    gtk_container_add(GTK_CONTAINER(hbox22), button_reduce);
 
     gtk_container_add(GTK_CONTAINER(vbox3), combobox_rotation);
     gtk_container_add(GTK_CONTAINER(vbox3), hbox3);
-    gtk_container_add(GTK_CONTAINER(vbox2), hbox31);
+    gtk_container_add(GTK_CONTAINER(vbox3), hbox31);
     gtk_container_add(GTK_CONTAINER(hbox3), AngleLabel);
     gtk_container_add(GTK_CONTAINER(hbox31), CXL2);
     gtk_container_add(GTK_CONTAINER(hbox31), CXE2);
@@ -318,18 +440,29 @@ static void transform_shape() {
 
 
 
-    /*
-    g_signal_connect(button_move, "clicked", G_CALLBACK(moveShape), NULL);
-    g_signal_connect(button_expand, "clicked", G_CALLBACK(scaleShape), NULL);
-    g_signal_connect(button_decrease, "clicked", G_CALLBACK(scaleShape), NULL);
-    g_signal_connect(button_antirotate, "clicked", G_CALLBACK(rotateShape), NULL);
-    g_signal_connect(button_rotate, "clicked", G_CALLBACK(rotateShape), NULL);
-     */
+
+    g_signal_connect(button_move, "clicked", G_CALLBACK(move), NULL);
+    g_signal_connect(button_expand, "clicked", G_CALLBACK(scale), NULL);
+    g_signal_connect(button_reduce, "clicked", G_CALLBACK(unscale), NULL);
+    g_signal_connect(button_rotate, "clicked", G_CALLBACK(rotate), NULL);
+    g_signal_connect(button_move, "clicked", G_CALLBACK(gtk_window_close), NULL);
+    g_signal_connect(button_expand, "clicked", G_CALLBACK(gtk_window_close), NULL);
+    g_signal_connect(button_reduce, "clicked", G_CALLBACK(gtk_window_close), NULL);
+    g_signal_connect(button_rotate, "clicked", G_CALLBACK(gtk_window_close), NULL);
+
 
     g_signal_connect(combobox_translate, "changed", G_CALLBACK(on_changed_trans), NULL);
     g_signal_connect(combobox_rotation, "changed", G_CALLBACK(on_changed_trans), NULL);
     g_signal_connect(combobox_scale, "changed", G_CALLBACK(on_changed_trans), NULL);
 
+    if(lista->getSize() == 0){
+        
+        gtk_widget_set_sensitive(button_move, FALSE);
+        gtk_widget_set_sensitive(button_expand, FALSE);
+        gtk_widget_set_sensitive(button_reduce, FALSE);
+        gtk_widget_set_sensitive(button_rotate, FALSE);
+    }
+    
     gtk_widget_show_all(trans_window);
 
 }
