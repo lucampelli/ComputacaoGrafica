@@ -216,6 +216,7 @@ static void rotate_cam(int degrees) {
     for (int i = 0; i < lista->getSize(); i++) {
         rotate_shape(lista->get(i), degrees, cam->getPos());
     }
+    gtk_widget_queue_draw(main_window);
 }
 
 /*
@@ -223,12 +224,12 @@ static void rotate_cam(int degrees) {
  */
 static void cam_cw() {
     rotate_cam(-10);
-    gtk_widget_queue_draw(main_window);
+    
 }
 
 static void cam_ccw() {
     rotate_cam(10);
-    gtk_widget_queue_draw(main_window);
+    
 }
 
 
@@ -262,6 +263,8 @@ static void rotate() {
     cout << TX << ", " << TY << endl;
 
     rotate_shape(s, rotation, new Ponto(TX, TY));
+    gtk_widget_queue_draw(main_window);
+    
 }
 
 
@@ -293,6 +296,7 @@ static void scale() {
     }
 
     scale_shape(s, SX, SY, new Ponto(TX, TY));
+    gtk_widget_queue_draw(main_window);
 }
 
 /*
@@ -323,6 +327,7 @@ static void unscale(){
     }
 
     scale_shape(s, 1/SX, 1/SY, new Ponto(TX, TY));
+    gtk_widget_queue_draw(main_window);
 }
 
 
@@ -345,6 +350,7 @@ static void move() {
         TY = atoi(y1);
     }
     move_shape(s, TX, TY);
+    gtk_widget_queue_draw(main_window);
 }
 /*
  Abre a caixa de dialogo de popup
