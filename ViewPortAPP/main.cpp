@@ -208,20 +208,33 @@ static void rotate_shape(Shape* s, int degrees, Ponto* rot_center = new Ponto(0,
     }
 }
 
+/*
+ Rodar a camera significa girar todas as formas ao redor da posicao da camera
+ */
 static void rotate_cam(int degrees) {
     cam->rotateCamera(degrees);
     for (int i = 0; i < lista->getSize(); i++) {
-        rotate_shape(lista->get(i), cam->getRot());
+        rotate_shape(lista->get(i), degrees, cam->getPos());
     }
 }
 
+/*
+ roda a camera em 10 graus
+ */
 static void cam_cw() {
     rotate_cam(-10);
+    gtk_widget_queue_draw(main_window);
 }
 
 static void cam_ccw() {
     rotate_cam(10);
+    gtk_widget_queue_draw(main_window);
 }
+
+
+/*
+ Arruma as variáveis para rodar uma forma
+ */
 
 static void rotate() {    
     Shape* s = lista->get(transform_choice);
@@ -251,6 +264,10 @@ static void rotate() {
     rotate_shape(s, rotation, new Ponto(TX, TY));
 }
 
+
+/*
+ Arruma as variáveis para aumentar uma forma
+ */
 static void scale() {
     Shape* s = lista->get(transform_choice);
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE1));
@@ -278,6 +295,9 @@ static void scale() {
     scale_shape(s, SX, SY, new Ponto(TX, TY));
 }
 
+/*
+ Arruma as variáveis para reduzir uma forma
+ */
 static void unscale(){
     Shape* s = lista->get(transform_choice);
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE1));
@@ -305,6 +325,10 @@ static void unscale(){
     scale_shape(s, 1/SX, 1/SY, new Ponto(TX, TY));
 }
 
+
+/*
+ Arruma as variáveis para mover uma forma
+ */
 static void move() {
     Shape* s = lista->get(transform_choice);
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(entryX));
@@ -322,7 +346,9 @@ static void move() {
     }
     move_shape(s, TX, TY);
 }
-
+/*
+ Abre a caixa de dialogo de popup
+ */
 static void transform_shape() {
 
 
@@ -657,14 +683,16 @@ int main(int argc, char** argv) {
     GtkWidget *buttonDown;
     GtkWidget *buttonLeft;
     GtkWidget *buttonRight;
+    GtkWidget *buttonRotcw;
+    GtkWidget *buttonRotccw;
 
     GtkWidget *buttonZ1;
     GtkWidget *buttonZ2;
     GtkWidget *delete_button;
     GtkWidget *event_box;
 
-    GtkWidget *hbox, *vbox1, *vbox2, *hboxlr, *hboxZ, *vboxZ;
-    GtkWidget *camLabel, *zoomLabel;
+    GtkWidget *hbox, *vbox1, *vbox2, *hboxlr, *hboxZ, *vboxZ, *hboxRot;
+    GtkWidget *camLabel, *camRLabel, *zoomLabel;
 
     GtkWidget *buttonTrans;
 
@@ -696,6 +724,7 @@ int main(int argc, char** argv) {
     hboxlr = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
     hboxZ = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     vboxZ = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+    hboxRot = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 
     //Drawing Area
     da = gtk_drawing_area_new();
@@ -706,6 +735,9 @@ int main(int argc, char** argv) {
     buttonDown = gtk_button_new_with_label("▼");
     buttonRight = gtk_button_new_with_label("►");
     camLabel = gtk_label_new("Camera");
+    camRLabel = gtk_label_new("Cam \n Rotacao");
+    buttonRotcw = gtk_button_new_with_label("+10");
+    buttonRotccw = gtk_button_new_with_label("-10");
     buttonLeft = gtk_button_new_with_label("◄");
     buttonZ1 = gtk_button_new_with_label("+");
     buttonZ2 = gtk_button_new_with_label("-");
@@ -744,6 +776,11 @@ int main(int argc, char** argv) {
     gtk_container_add(GTK_CONTAINER(main_window), hbox);
     gtk_container_add(GTK_CONTAINER(hbox), vbox1);
     gtk_container_add(GTK_CONTAINER(hbox), vbox2);
+    gtk_container_add(GTK_CONTAINER(vbox1), hboxRot);
+    gtk_container_add(GTK_CONTAINER(hboxRot), buttonRotccw);
+    gtk_container_add(GTK_CONTAINER(hboxRot), camRLabel);
+    gtk_container_add(GTK_CONTAINER(hboxRot), buttonRotcw);
+    
 
     gtk_widget_set_size_request(event_box, 600, 600);
     gtk_widget_set_size_request(da, 600, 600);
@@ -767,6 +804,8 @@ int main(int argc, char** argv) {
     g_signal_connect(combo_box_shape, "changed", G_CALLBACK(on_changed), NULL);
     g_signal_connect(buttonZ1, "clicked", G_CALLBACK(zoomIn), NULL);
     g_signal_connect(buttonZ2, "clicked", G_CALLBACK(zoomOut), NULL);
+    g_signal_connect(buttonRotccw, "clicked", G_CALLBACK(cam_ccw), NULL);
+    g_signal_connect(buttonRotcw, "clicked", G_CALLBACK(cam_cw), NULL);
 
     g_signal_connect(buttonTrans, "clicked", G_CALLBACK(transform_shape), NULL);
 

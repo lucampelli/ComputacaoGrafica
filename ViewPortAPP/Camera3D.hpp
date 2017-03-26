@@ -32,10 +32,10 @@ private:
 public:
 
     Camera3D() {
-        pos = new Ponto();
         window = Window::getInstance();
         viewport = Viewport::getInstance();
         transform = Transform::getInstance();
+        pos = new Ponto(150,150);
         calculate_matrix();
     }
 
