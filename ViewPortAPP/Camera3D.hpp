@@ -35,7 +35,7 @@ public:
         window = Window::getInstance();
         viewport = Viewport::getInstance();
         transform = Transform::getInstance();
-        pos = new Ponto(150,150);
+        pos = new Ponto();
         calculate_matrix();
     }
 
