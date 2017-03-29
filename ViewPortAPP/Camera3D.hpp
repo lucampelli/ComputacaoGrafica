@@ -57,6 +57,7 @@ public:
     
     void moveCamera(float xAmount, float yAmount) {
         pos->move_to(pos->getX() + xAmount, pos->getY() + yAmount);
+        cout<<pos->getX()<<endl;
         window->moveWindowToPoint(new Ponto(-pos->getX(),-pos->getY()));
         
     }
@@ -113,6 +114,11 @@ public:
     void Zoom(float value) {
         zoom = value / 100;
     }
+    
+    Ponto* getCenter(){
+        return new Ponto(window->wC()->getX() - 2* pos->getX(),window->wC()->getY() - 2* pos->getY());
+    }
+    
 };
 
 //#endif /* CAMERA_HPP */

@@ -18,6 +18,7 @@
 #include "Camera3D.hpp"
 #include "Shape.hpp"
 #include "Matriz.hpp"
+#include "SCN.hpp"
 
 using namespace std;
 
@@ -49,6 +50,7 @@ float SY = 1;
 bool clicking = false;
 ListaEnc<Ponto*> * polP;
 Camera3D* cam = Camera3D::getInstance();
+SCN* scn = SCN::getInstance();
 Ponto* camPos = cam->getPos();
 
 static void clear_surface() {
@@ -93,6 +95,7 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
 
 static void remove() {
     lista->retiraDaPosicao(delete_choice);
+    scn->remShape(delete_choice);
     gtk_widget_queue_draw(main_window); //good
 }
 
@@ -214,7 +217,7 @@ static void rotate_shape(Shape* s, int degrees, Ponto* rot_center = new Ponto(0,
 static void rotate_cam(int degrees) {
     cam->rotateCamera(degrees);
     for (int i = 0; i < lista->getSize(); i++) {
-        rotate_shape(lista->get(i), degrees, cam->getPos());
+        rotate_shape(lista->get(i), degrees, cam->getCenter());
     }
     gtk_widget_queue_draw(main_window);
 }
@@ -262,7 +265,7 @@ static void rotate() {
 
     cout << TX << ", " << TY << endl;
 
-    rotate_shape(s, rotation, new Ponto(TX, TY));
+    rotate_shape(s, rotation, new Ponto(TX - camPos->getX(), TY - camPos->getY()));
     gtk_widget_queue_draw(main_window);
     
 }
@@ -295,7 +298,7 @@ static void scale() {
         SY = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
     }
 
-    scale_shape(s, SX, SY, new Ponto(TX, TY));
+    scale_shape(s, SX, SY, new Ponto(TX - camPos->getX(), TY - camPos->getY()));
     gtk_widget_queue_draw(main_window);
 }
 

@@ -10,6 +10,7 @@
       <itemPath>ListaEnc.hpp</itemPath>
       <itemPath>Matriz.hpp</itemPath>
       <itemPath>Ponto.hpp</itemPath>
+      <itemPath>SCN.hpp</itemPath>
       <itemPath>Shape.hpp</itemPath>
       <itemPath>Transform.hpp</itemPath>
       <itemPath>Viewport.hpp</itemPath>
@@ -70,6 +71,8 @@
       </item>
       <item path="Ponto.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="SCN.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Shape.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Transform.hpp" ex="false" tool="3" flavor2="0">
@@ -112,6 +115,8 @@
       <item path="Matriz.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Ponto.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="SCN.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Shape.hpp" ex="false" tool="3" flavor2="0">
       </item>

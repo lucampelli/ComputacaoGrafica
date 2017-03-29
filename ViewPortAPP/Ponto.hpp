@@ -51,6 +51,10 @@ public:
         y = ny;
         z = nz;
     }
+    
+    Ponto* sum(Ponto* p){
+        return new Ponto(this->getX() + p->getX(),this->getY() + p->getY(),this->getZ() + p->getZ());
+    }
 
 };
 

@@ -70,7 +70,10 @@ public:
     void moveWindowToPoint(Ponto* p){
         windowmin = p;
         windowmax = new Ponto(p->getX() + width, p->getY() + height, p->getZ());
-        std::cout<<"Window: "<<windowmax->getX()<<" : "<<windowmax->getY()<<std::endl;
+    }
+    
+    Ponto* wC(){
+        return new Ponto((windowmax->getX() - windowmin->getX())/2,(windowmax->getY() - windowmin->getY())/2 );
     }
 };
 #endif /* WINDOW_HPP */
