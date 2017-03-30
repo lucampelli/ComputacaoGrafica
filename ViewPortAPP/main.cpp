@@ -206,6 +206,7 @@ static void rotate_shape(Shape* s, int degrees, Ponto* rot_center = new Ponto(0,
     } else {
         s->applyT();
     }
+    //cout<<rot_center->getX()<<", " << rot_center->getY()<< ", " << s->findCenter()->getX() << ", " << s->findCenter()->getY()<<endl;
 }
 
 /*
@@ -254,7 +255,7 @@ static void rotate() {
     } else {
         TY = atoi(y1);
     }
-    if (gtk_entry_get_text(GTK_ENTRY(entryA)) == "") {
+    if (strlen(gtk_entry_get_text(GTK_ENTRY(entryA))) == 0) {
         rotation = 0;
     } else {
         rotation = atoi(gtk_entry_get_text(GTK_ENTRY(entryA)));
@@ -262,7 +263,7 @@ static void rotate() {
 
     cout << TX << ", " << TY << endl;
 
-    rotate_shape(s, rotation, new Ponto(TX - camPos->getX(), TY - camPos->getY()));
+    rotate_shape(s, rotation, new Ponto(TX, TY));
     gtk_widget_queue_draw(main_window);
     
 }
@@ -295,7 +296,7 @@ static void scale() {
         SY = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
     }
 
-    scale_shape(s, SX, SY, new Ponto(TX - camPos->getX(), TY - camPos->getY()));
+    scale_shape(s, SX, SY, new Ponto(TX, TY ));
     gtk_widget_queue_draw(main_window);
 }
 

@@ -70,7 +70,8 @@ public:
     
     void moveCamera(float xAmount, float yAmount) {
         pos->move_to(pos->getX() + xAmount, pos->getY() + yAmount);
-        cout<<pos->getX()<<endl;
+        windowmin = pos;
+        windowmax = new Ponto(pos->getX() + width, pos->getY() + height);
         
     }
 
@@ -88,12 +89,12 @@ public:
 
     Ponto* drawTransform(Ponto* p) {
         calculate_matrix();
-        return transform->dT(p);;
+        return transform->dT(p);
     }
     
     Ponto* clickTransform(Ponto* p) {
         calculate_matrix();
-        return transform->cT(p);;
+        return transform->cT(p);
     }
     
 
@@ -129,6 +130,7 @@ public:
     
     void SCN(){
         transform->setT(transform->set_2D_move_matrix(-winCenter()->getX(), -winCenter()->getY()));
+        transform->concatenate_matrix(transform->set_2D_rotation_matrix(rot));
     }
     
 };

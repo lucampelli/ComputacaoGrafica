@@ -115,7 +115,7 @@ public:
         
         Matriz* r = m1->multiply(t);
         Ponto* t = new Ponto(r->get(0,0), r->get(0,1), r->get(0,2));
-        cout<<t->getX()<<", "<<t->getY()<<endl;
+        //cout<<t->getX()<<", "<<t->getY()<<endl;
         return t;
     }
     
