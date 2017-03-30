@@ -23,6 +23,8 @@ class Transform{
     
 private:
     float m11,m13,m22,m23;
+    Matriz* dc = new Matriz(3,3);
+    Matriz* idc = new Matriz(3,3);
     Matriz* t = NULL;
     Matriz* w = new Matriz(3,3);
     
@@ -41,12 +43,21 @@ public:
         return t;
     }
     
-    void calculate_draw_and_click_matrix(Ponto* vpmin, Ponto* vpmax, Ponto* wmin, Ponto* wmax){ //to be substituted
+    void calculate_draw_and_click_matrix(Ponto* vpmin, Ponto* vpmax, Ponto* wmin, Ponto* wmax, float zoom){ //to be substituted
         //it has movemnet and scale
         m11 = (vpmax->getX() - vpmin->getX()) / (wmax->getX() - wmin->getX());
         m22 = (vpmax->getY() - vpmin->getY()) / (wmax->getY() - wmin->getY());
         m13 = -wmin->getX() * (m11) + vpmin->getX();
         m23 = -wmin->getY() * (m22) + vpmin->getY();
+        
+        dc->set(0,0,zoom);
+        dc->set(1,1,zoom);
+        dc->set(2,2,1);
+        
+        idc->set(0,0,1/zoom);
+        idc->set(1,1,1/zoom);
+        idc->set(2,2,1);
+
     }
     
     Matriz* set_2D_rotation_matrix(int degrees){
@@ -104,16 +115,20 @@ public:
         
         Matriz* r = m1->multiply(t);
         Ponto* t = new Ponto(r->get(0,0), r->get(0,1), r->get(0,2));
+        cout<<t->getX()<<", "<<t->getY()<<endl;
         return t;
     }
     
     Ponto* dT(Ponto* p){
-        
-        return new Ponto(p->getX() * m11 + m13 , p->getY() * m22 + m23 );
+        setT(dc);
+        return transform(p);
+        //return new Ponto(p->getX() * m11 + m13 , p->getY() * m22 + m23 );
     }
     
     Ponto* cT(Ponto* p){
-        return new Ponto((p->getX()- m13 ) / m11, (p->getY() - m23 ) / m22 );
+        setT(idc);
+        return transform(p);
+        //return new Ponto((p->getX()- m13 ) / m11, (p->getY() - m23 ) / m22 );
     }
     
     

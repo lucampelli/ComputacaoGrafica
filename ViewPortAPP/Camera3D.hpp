@@ -12,7 +12,6 @@
  */
 
 #include "Ponto.hpp"
-#include "Window.hpp"
 #include "Viewport.hpp"
 #include "Transform.hpp"
 
@@ -21,9 +20,15 @@
 
 class Camera3D {
 private:
+    float width;
+    float height;
+    float depth;
+    Ponto* ogmin;
+    Ponto* ogmax;
+    Ponto* windowmin;
+    Ponto* windowmax;
+    
     Ponto* pos;
-    Ponto* center;
-    Window* window;
     Viewport* viewport;
     Transform* transform;
     int rot = 0;
@@ -32,7 +37,11 @@ private:
 public:
 
     Camera3D() {
-        window = Window::getInstance();
+        windowmin = new Ponto();
+        ogmin = new Ponto();
+        windowmax = new Ponto(600, 600);
+        ogmax =  new Ponto(600, 600);
+        
         viewport = Viewport::getInstance();
         transform = Transform::getInstance();
         pos = new Ponto();
@@ -47,6 +56,10 @@ public:
         return camera;
     }
     
+    Ponto* winCenter(){
+        return new Ponto((windowmax->getX() - windowmin->getX())/2,(windowmax->getY() - windowmin->getY())/2);
+    }
+    
     void rotateCamera(int degrees){
         rot = degrees; 
     }
@@ -58,7 +71,6 @@ public:
     void moveCamera(float xAmount, float yAmount) {
         pos->move_to(pos->getX() + xAmount, pos->getY() + yAmount);
         cout<<pos->getX()<<endl;
-        window->moveWindowToPoint(new Ponto(-pos->getX(),-pos->getY()));
         
     }
 
@@ -90,7 +102,7 @@ public:
     }
     
     void calculate_matrix(){
-        transform->calculate_draw_and_click_matrix(viewport->min(),viewport->max(),window->min(),window->max());
+        transform->calculate_draw_and_click_matrix(viewport->min(),viewport->max(),windowmin,windowmax, zoom);
     }
 
     void Zoom(bool in) {
@@ -115,8 +127,8 @@ public:
         zoom = value / 100;
     }
     
-    Ponto* getCenter(){
-        return new Ponto(window->wC()->getX() - 2* pos->getX(),window->wC()->getY() - 2* pos->getY());
+    void SCN(){
+        transform->setT(transform->set_2D_move_matrix(-winCenter()->getX(), -winCenter()->getY()));
     }
     
 };
