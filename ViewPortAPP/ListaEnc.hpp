@@ -91,6 +91,15 @@ public:
         size++;
         
     }
+    
+    void clean(){
+        
+        int s = size;
+        
+        for(int i = 0; i < s; i++){
+            retiraDoInicio();
+        }
+    }
 
     int posicao(const T& dado) const;
 

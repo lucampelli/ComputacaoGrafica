@@ -81,7 +81,6 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
 
     string print = "";
     
-    cam->calculate_matrix();
     cam->SCN();
     for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());

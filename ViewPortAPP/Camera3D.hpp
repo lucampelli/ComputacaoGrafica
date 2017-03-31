@@ -57,7 +57,7 @@ public:
     ListaEnc<Shape*>* getShapeList() {
         return shapes;
     }
-    
+
     ListaEnc<Shape*>* getNormList() {
         return normShapes;
     }
@@ -86,7 +86,7 @@ public:
         pos->move_to(pos->getX() + xAmount, pos->getY() + yAmount);
         ogmin = new Ponto(pos->getX(), pos->getY());
         ogmax = new Ponto(pos->getX() + width, pos->getY() + height);
-        cout << ogmin->getX() << "," << ogmin->getY() << endl;
+        //cout << ogmin->getX() << " , " << ogmin->getY() << endl;
 
     }
 
@@ -123,21 +123,32 @@ public:
                 zoom = 3;
                 return;
             }
+            windowmin->move_by(width / 10, height / 10);
+            windowmax->move_by(-width / 10, -height / 10);
+            
         } else {
             zoom -= 0.1f;
             if (zoom < 0.1f) {
                 zoom = 0.1f;
                 return;
             }
+            
+            windowmin->move_by(-width/10,-height/10);
+            windowmax->move_by(width/10,height/10);
         }
+
         /*
-        float medx = (ogmax->getX() + ogmin->getX()) / 2;
-        float medy = (ogmax->getY() + ogmin->getY()) / 2;
+        float medx = width /2;
+        float medy = height /2;
         float zx = medx * zoom;
         float zy = medy * zoom;
         windowmin->move_to((ogmin->getX() - zx + medx) , (ogmin->getY() - zy + medy));
         windowmax->move_to((ogmax->getX() + zx - medx), (ogmax->getY() + zy - medy));
          */
+
+
+
+
         calculate_matrix();
     }
 
@@ -146,34 +157,27 @@ public:
     }
 
     void SCN() {
-        
+
         transform->setT(transform->set_2D_move_matrix(-winCenter()->getX(), -winCenter()->getY()));
         transform->concatenate_matrix(transform->set_2D_rotation_matrix(-rot));
         transform->concatenate_matrix(transform->set_2D_scale_matrix(zoom, zoom));
         transform->concatenate_matrix(transform->set_2D_move_matrix(winCenter()->getX(), winCenter()->getY()));
-        
-        if (normShapes->listaVazia()) {
-            for (int i = 0; i < shapes->getSize(); i++) {
-                normShapes->adiciona(shapes->get(i));
-            }
-        }
+
+        normShapes->clean();
         
         for (int i = 0; i < shapes->getSize(); i++) {
             Shape* s = shapes->get(i);
             ListaEnc<Ponto*>* nPontos = new ListaEnc<Ponto*>();
-            for(int j = 0; j < s->getPontos()->getSize(); j++){
-                nPontos->adiciona(transform->transform( new Ponto(s->getPontos()->get(j)->getX() / width, s->getPontos()->get(j)->getY() / height)));
+            for (int j = 0; j < s->getPontos()->getSize(); j++) {
+                nPontos->adiciona(transform->transform(new Ponto(s->getPontos()->get(j)->getX() / 1, s->getPontos()->get(j)->getY() / 1)));
             }
             Shape* n = new Shape(nPontos);
-            normShapes->modifica(i,n);
-            
+            normShapes->adiciona(n);
         }
 
     }
 
 };
 
-//#endif /* CAMERA_HPP */
-
-#endif /* CAMERA_HPP */
+#endif /* CAMERA2_HPP */
 
