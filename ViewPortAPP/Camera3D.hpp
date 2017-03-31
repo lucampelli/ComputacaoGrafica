@@ -83,9 +83,11 @@ public:
     }
 
     void moveCamera(float xAmount, float yAmount) {
-        pos->move_to(pos->getX() + xAmount, pos->getY() + yAmount);
-        ogmin = new Ponto(pos->getX(), pos->getY());
-        ogmax = new Ponto(pos->getX() + width, pos->getY() + height);
+        pos->move_by(xAmount,yAmount);
+        windowmin->move_by(xAmount,yAmount);
+        windowmax->move_by(xAmount,yAmount);
+        ogmin->move_by(xAmount,yAmount);
+        ogmax->move_by(xAmount,yAmount);
         //cout << ogmin->getX() << " , " << ogmin->getY() << endl;
 
     }
@@ -137,6 +139,9 @@ public:
             windowmax->move_by(width/10,height/10);
         }
 
+        cout<<windowmin->getX()<< " , " << windowmin->getY()<<endl;
+        cout<<windowmax->getX()<< " , " << windowmax->getY()<<endl;
+        
         /*
         float medx = width /2;
         float medy = height /2;
