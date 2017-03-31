@@ -16,7 +16,7 @@
 #include <string.h>
 #include "ListaEnc.hpp"
 #include "Camera3D.hpp"
-#include "Shape.hpp"
+
 #include "Matriz.hpp"
 
 using namespace std;
@@ -79,11 +79,13 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
     cairo_paint(cr);
 
     string print = "";
+    
+    cam->calculate_matrix();
 
     for (int i = 0; i < lista->getSize(); i++) {
         print.append(lista->get(i)->getName());
         print.append("\n");
-        lista->get(i)->draw(cr);
+        lista->get(i)->draw(cr, camPos);
     }
 
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(shapeField));
@@ -683,7 +685,7 @@ void cameraMoveL() {
  */
 int main(int argc, char** argv) {
 
-    lista = new ListaEnc<Shape*>();
+    lista = cam->getShapeList();
     //lista->getHead()->printPontos();
 
     GtkWidget *buttonUp;

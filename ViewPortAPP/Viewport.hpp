@@ -65,17 +65,6 @@ public:
         return viewportmax;
     }
 
-    void scaleViewPort(float scaleValue) {
-        float medx = (ogmax->getX() + ogmin->getX()) / 2;
-        float medy = (ogmax->getY() + ogmin->getY()) / 2;
-        float zx = medx * scaleValue;
-        float zy = medy * scaleValue;
-        viewportmin->move_to(ogmin->getX() - zx + medx , ogmin->getY() - zy + medy);
-        viewportmax->move_to(ogmax->getX() + zx - medx, ogmax->getY() + zy - medy);
-        std::cout<<"ScaleViewPortMin:" << viewportmin->getX()<<" : "<< viewportmin->getY()<<std::endl;
-        std::cout<<"ScaleViewPortMax:" << viewportmax->getX()<<" : "<< viewportmax->getY()<<std::endl;
-    }
-
 };
 #endif /* VIEWPORT_HPP */
 

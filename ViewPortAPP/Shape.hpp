@@ -14,7 +14,7 @@
 #include "Ponto.hpp"
 #include "ListaEnc.hpp"
 #include "gtk/gtk.h"
-#include "Camera3D.hpp"
+#include "Transform.hpp"
 #include <iostream>
 #ifndef SHAPE_HPP
 #define SHAPE_HPP
@@ -23,7 +23,7 @@ using namespace std;
 
 class Shape {
 private:
-    Camera3D* cam = Camera3D::getInstance();;
+    Transform* transform = Transform::getInstance();
     Ponto* pos;
     ListaEnc<Ponto*>* pontos;
     int vertices;
@@ -130,31 +130,31 @@ public:
     void applyT(){  //e este para rotacionar ao redor de um ponto qualquer
         for(int i = 0; i < vertices; i++){
             
-            Ponto* p = cam->T(pontos->get(i));
+            Ponto* p = transform->transform(pontos->get(i));
             pontos->get(i)->move_to(p->getX(), p->getY());
             
         }
     }
     
-    void draw(cairo_t* cr) {
-        Ponto* camPos = cam->getPos();
+    void draw(cairo_t* cr, Ponto* camPos) {
+        
         Ponto* center = findCenter();
         cairo_set_source_rgb(cr, 0, 0, 0);
         cairo_set_line_width(cr, 0.5);
         //do_transform;
         if (vertices > 1) {
             Ponto* atual = pontos->get(0);
-            atual = cam->drawTransform(atual);
+            atual = transform->dT(atual);
             cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
             
             for (int i = 1; i < vertices; i++) {
                 Ponto* atual = pontos->get(i);
-                atual = cam->drawTransform(atual);
+                atual = transform->dT(atual);
                 cairo_line_to(cr,atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY()); //good
                 cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
             }
             atual = pontos->get(0);
-            atual = cam->drawTransform(atual);
+            atual = transform->dT(atual);
             cairo_line_to(cr,atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
             
             cairo_stroke(cr);

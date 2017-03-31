@@ -13,7 +13,7 @@
 
 #include "Ponto.hpp"
 #include "Viewport.hpp"
-#include "Transform.hpp"
+#include "Shape.hpp"
 
 #ifndef CAMERA2_HPP
 #define CAMERA2_HPP
@@ -28,6 +28,9 @@ private:
     Ponto* windowmin;
     Ponto* windowmax;
     
+    ListaEnc<Shape*> * shapes = new ListaEnc<Shape*>();
+    ListaEnc<Shape*> * normShapes = new ListaEnc<Shape*>();
+    
     Ponto* pos;
     Viewport* viewport;
     Transform* transform;
@@ -37,6 +40,9 @@ private:
 public:
 
     Camera3D() {
+        height = 600;
+        width = 600;
+        
         windowmin = new Ponto();
         ogmin = new Ponto();
         windowmax = new Ponto(600, 600);
@@ -46,6 +52,10 @@ public:
         transform = Transform::getInstance();
         pos = new Ponto();
         calculate_matrix();
+    }
+    
+    ListaEnc<Shape*>* getShapeList(){
+        return shapes;
     }
 
     static Camera3D* getInstance() {
@@ -57,7 +67,7 @@ public:
     }
     
     Ponto* winCenter(){
-        return new Ponto((windowmax->getX() - windowmin->getX())/2,(windowmax->getY() - windowmin->getY())/2);
+        return new Ponto(-pos->getX() + (windowmax->getX() - windowmin->getX())/2, -pos->getY() + (windowmax->getY() - windowmin->getY())/2);
     }
     
     void rotateCamera(int degrees){
@@ -72,6 +82,9 @@ public:
         pos->move_to(pos->getX() + xAmount, pos->getY() + yAmount);
         windowmin = pos;
         windowmax = new Ponto(pos->getX() + width, pos->getY() + height);
+        cout<<windowmin->getX()<<", " << windowmin->getY()<<endl;
+        cout<<windowmax->getX()<<", " << windowmax->getY()<<endl;
+        cout<<winCenter()->getX()<<", " << winCenter()->getY()<<endl;
         
     }
 
@@ -85,11 +98,6 @@ public:
 
     Ponto* rotateTransform(int angle, Ponto* p, Ponto* c){
         return transform->rotationT2D(angle, p, c);
-    }
-
-    Ponto* drawTransform(Ponto* p) {
-        calculate_matrix();
-        return transform->dT(p);
     }
     
     Ponto* clickTransform(Ponto* p) {
@@ -120,7 +128,13 @@ public:
                 return;
             }
         }
-        viewport->scaleViewPort(zoom);
+        float medx = (ogmax->getX() + ogmin->getX()) / 2;
+        float medy = (ogmax->getY() + ogmin->getY()) / 2;
+        float zx = medx * zoom;
+        float zy = medy * zoom;
+        windowmin->move_to((ogmin->getX() - zx + medx) , ogmin->getY() - zy + medy);
+        windowmax->move_to(ogmax->getX() + zx - medx, ogmax->getY() + zy - medy);
+        
         calculate_matrix();
     }
 
@@ -130,7 +144,15 @@ public:
     
     void SCN(){
         transform->setT(transform->set_2D_move_matrix(-winCenter()->getX(), -winCenter()->getY()));
-        transform->concatenate_matrix(transform->set_2D_rotation_matrix(rot));
+        transform->concatenate_matrix(transform->set_2D_rotation_matrix(-rot));
+        transform->concatenate_matrix(transform->set_2D_scale_matrix(zoom,zoom));
+        transform->concatenate_matrix(transform->set_2D_move_matrix(winCenter()->getX(), winCenter()->getY()));
+        
+        
+        for(int i = 0; i< shapes->getSize();i++ ){
+            
+        }
+        
     }
     
 };
