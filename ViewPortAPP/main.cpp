@@ -34,6 +34,7 @@ static GtkWidget *CXE1, *CXE2, *CYE1, *CYE2;
 static GtkWidget *entryX, *entryY, *entryS, *entryA;
 
 ListaEnc<Shape*> * lista;
+ListaEnc<Shape*> * normLista;
 int shape_choice = 0;
 int delete_choice = 0;
 int transform_choice = 0;
@@ -81,11 +82,12 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
     string print = "";
     
     cam->calculate_matrix();
-
-    for (int i = 0; i < lista->getSize(); i++) {
+    cam->SCN();
+    for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());
         print.append("\n");
-        lista->get(i)->draw(cr, camPos);
+        normLista->get(i)->draw(cr, camPos);
+        
     }
 
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(shapeField));
@@ -686,6 +688,7 @@ void cameraMoveL() {
 int main(int argc, char** argv) {
 
     lista = cam->getShapeList();
+    normLista = cam->getNormList();
     //lista->getHead()->printPontos();
 
     GtkWidget *buttonUp;

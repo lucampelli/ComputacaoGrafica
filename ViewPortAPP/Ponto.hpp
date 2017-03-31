@@ -52,6 +52,17 @@ public:
         z = nz;
     }
     
+    void move_by(float nx, float ny){
+        x += nx;
+        y += ny;
+    }
+    
+    void move_by(float nx, float ny, float nz){
+        x += nx;
+        y += ny;
+        z += nz;
+    }
+    
     Ponto* sum(Ponto* p){
         return new Ponto(this->getX() + p->getX(),this->getY() + p->getY(),this->getZ() + p->getZ());
     }
