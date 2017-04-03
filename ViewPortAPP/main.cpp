@@ -217,9 +217,10 @@ static void rotate_shape(Shape* s, int degrees, Ponto* rot_center = new Ponto(0,
  */
 static void rotate_cam(int degrees) {
     cam->rotateCamera(degrees);
+    /*
     for (int i = 0; i < lista->getSize(); i++) {
         rotate_shape(lista->get(i), degrees, cam->winCenter());
-    }
+    }*/
     gtk_widget_queue_draw(main_window);
 }
 

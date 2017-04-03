@@ -71,11 +71,12 @@ public:
     }
 
     Ponto* winCenter() {
-        return new Ponto(-pos->getX() + (windowmax->getX() + windowmin->getX()) / 2, -pos->getY() + (windowmax->getY() + windowmin->getY()) / 2);
+        return new Ponto(-pos->getX() * 2 + (windowmax->getX() + windowmin->getX()) / 2, -pos->getY() * 2 + (windowmax->getY() + windowmin->getY()) / 2);
     }
 
     void rotateCamera(int degrees) {
-        rot = degrees;
+        rot += degrees;
+        cout<<"CameraRotation:" << rot<<endl;
     }
 
     int getRot() {
@@ -121,8 +122,8 @@ public:
     void Zoom(bool in) {
         if (in) {
             zoom += 0.1f;
-            if (zoom > 3) {
-                zoom = 3;
+            if (zoom > 2) {
+                zoom = 2;
                 return;
             }
             windowmin->move_by(width / 10, height / 10);
