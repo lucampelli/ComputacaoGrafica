@@ -28,6 +28,7 @@ private:
     Matriz* t = NULL;
     Matriz* w = new Matriz(3,3);
     Ponto* camPos;
+    Ponto* wmin, *wmax, *vpmin, *vpmax;
     
     
     Transform(){
@@ -45,23 +46,15 @@ public:
         return t;
     }
     
-    void calculate_viewport_transform(Ponto* vpmin, Ponto* vpmax, Ponto* wmin, Ponto* wmax, float zoom, Ponto* pos){ //to be substituted
-        //it has movemnet and scale
-        m11 = (vpmax->getX() - vpmin->getX()) / (wmax->getX() - wmin->getX());
-        m22 = (vpmax->getY() - vpmin->getY()) / (wmax->getY() - wmin->getY());
-        m13 = -wmin->getX() * (m11) + vpmin->getX();
-        m23 = -wmin->getY() * (m22) + vpmin->getY();
-        
+    void calculate_viewport_transform(Ponto* vpmin, Ponto* vpmax, Ponto* wmin, Ponto* wmax, Ponto* pos){
+
         camPos = pos;
         
-        dc->set(0,0,zoom);
-        dc->set(1,1,zoom);
-        dc->set(2,2,1);
+        this->vpmin = vpmin;
+        this->vpmax = vpmax;
+        this->wmin = wmin;
+        this->wmax = wmax;
         
-        idc->set(0,0,1/zoom);
-        idc->set(1,1,1/zoom);
-        idc->set(2,2,1);
-
     }
     
     Matriz* set_2D_rotation_matrix(int degrees){
@@ -123,23 +116,35 @@ public:
     }
     
     Ponto* dT(Ponto* p){
-        setT(set_2D_move_matrix(-camPos->getX(), -camPos->getY()));
-        concatenate_matrix(dc);
-        concatenate_matrix(set_2D_move_matrix(camPos->getX(), camPos->getY()));
-        return transform(p);
-        /*
-        xvp = ((p->getX() - wmin->getX())/(wmax->getX() -wmin->getX())) * (vmax->getX() - vmin->getX());
-        yvp = (1 - ((p->getY() - wmin->getY())/(wmax->getY() -wmin->getY()))) * (vmax->getY() - vmin->getY());
+        //setT(set_2D_move_matrix(-camPos->getX(), -camPos->getY()));
+        //concatenate_matrix(dc);
+        //concatenate_matrix(set_2D_move_matrix(camPos->getX(), camPos->getY()));
+        //return transform(p);
+        
+        float xvp, yvp;
+        
+        xvp = ((p->getX() - wmin->getX())/(wmax->getX() -wmin->getX())) * (vpmax->getX() - vpmin->getX());
+        yvp = (1 - ((p->getY() - wmin->getY())/(wmax->getY() -wmin->getY()))) * (vpmax->getY() - vpmin->getY());
         return new Ponto(xvp,yvp);
-        */
+        
         //return new Ponto(p->getX() * m11 + m13 , p->getY() * m22 + m23 );
     }
     
-    Ponto* cT(Ponto* p){
+    Ponto* cT(Ponto* p, float zoom){
+        /*
         setT(set_2D_move_matrix(-camPos->getX(), -camPos->getY()));
         concatenate_matrix(idc);
         concatenate_matrix(set_2D_move_matrix(camPos->getX(), camPos->getY()));
-        return transform(p);
+        */
+        
+        float xw, yw;
+        
+        xw = ((p->getX() / (vpmax->getX() - vpmin->getX())) * (wmax->getX() - wmin->getX())) + (wmin->getX());
+        yw = ((1 - (p->getY()/ (vpmax->getY() - vpmin->getY()))) * (wmax->getY() - wmin->getY())) + wmin->getY();
+        
+        cout<< xw << ", " << yw << endl;
+        
+        return (new Ponto(xw / zoom,yw / zoom));
         //return new Ponto((p->getX()- m13 ) / m11, (p->getY() - m23 ) / m22 );
     }
     

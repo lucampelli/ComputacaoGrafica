@@ -209,7 +209,7 @@ static void rotate_shape(Shape* s, int degrees, Ponto* rot_center = new Ponto(0,
     } else {
         s->applyT();
     }
-    //cout<<rot_center->getX()<<", " << rot_center->getY()<< ", " << s->findCenter()->getX() << ", " << s->findCenter()->getY()<<endl;
+    
 }
 
 /*
@@ -247,8 +247,6 @@ static void rotate() {
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE2));
     const char* y1 = gtk_entry_get_text(GTK_ENTRY(CYE2));
 
-    cout << x1 << ", " << y1 << endl;
-    
     if (strlen(x1) == 0) {
         TX = s->findCenter()->getX();
     } else {
@@ -264,9 +262,7 @@ static void rotate() {
     } else {
         rotation = atoi(gtk_entry_get_text(GTK_ENTRY(entryA)));
     }
-
-    cout << TX << ", " << TY << endl;
-
+    
     rotate_shape(s, rotation, new Ponto(TX, TY));
     gtk_widget_queue_draw(main_window);
     
@@ -504,69 +500,6 @@ static void transform_shape() {
 
 }
 
-/*
-static void transform_shape(){
-    
-    GtkBuilder  *gtkBuilder;
-    GtkWidget *entryX, *entryY;
-    GtkWidget *button_move;
-    GtkWidget *button_expand, *button_decrease;
-    GtkWidget *button_antirotate, *button_rotate;
-    GtkWidget *combobox_translate, *combobox_scale, *combobox_rotation;
-    
-    transform_choice = 0;
-
-    //gtkBuilder = gtk_builder_new();
-    gtkBuilder = gtk_builder_new_from_file("ViewportApp1.glade");
-    
-    
-    trans_window = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "transform_window") );
-    entryX = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "entry_X") );
-    entryY = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "entry_Y") );
-    button_move = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_trans") );
-    button_expand = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_plus") );
-    button_decrease = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_minus") );
-    button_antirotate = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_antiRot") );
-    button_rotate = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "button_Rot") );
-    //combobox_translate = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select") );
-    //combobox_scale = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select2") );
-    //combobox_rotation = GTK_WIDGET( gtk_builder_get_object( GTK_BUILDER(gtkBuilder), "combobox_select3") );
-    
-    combobox_translate = gtk_combo_box_text_new();
-    combobox_scale = gtk_combo_box_text_new();
-    combobox_rotation = gtk_combo_box_text_new();
-    
-    gtk_window_set_position(GTK_WINDOW(trans_window),GTK_WIN_POS_CENTER);
-
-    
-    for (int i = 0; i < lista->getSize(); i++) {
-        const gchar* c = lista->get(i)->getName().c_str();
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_translate), c);
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_scale), c);
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_rotation), c);
-    }
-
-    gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_translate),0);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_scale),0);
-    gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_rotation),0);
-    
-        
-    /*
-    g_signal_connect(button_move, "clicked", G_CALLBACK(moveShape), NULL);
-    g_signal_connect(button_expand, "clicked", G_CALLBACK(scaleShape), NULL);
-    g_signal_connect(button_decrease, "clicked", G_CALLBACK(scaleShape), NULL);
-    g_signal_connect(button_antirotate, "clicked", G_CALLBACK(rotateShape), NULL);
-    g_signal_connect(button_rotate, "clicked", G_CALLBACK(rotateShape), NULL);
-     
-    
-    g_signal_connect(combobox_translate,"changed",G_CALLBACK(on_changed_trans),NULL);
-    g_signal_connect(combobox_rotation,"changed",G_CALLBACK(on_changed_trans),NULL);
-    g_signal_connect(combobox_scale,"changed",G_CALLBACK(on_changed_trans),NULL);
-    
-    gtk_widget_show_all(trans_window);
-
-}
- */
 static void build_shape() {
 
     if (shape_choice == 0) {
@@ -591,7 +524,7 @@ static void build_shape() {
             float sizex = polP->get(1)->getX() - polP->get(0)->getX();
             float sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Retangulo* r = new Retangulo(polP->getHead()->getX() - camPos->getX(),
-                    polP->getHead()->getY() - camPos->getY(),
+                    polP->getHead()->getY() + camPos->getY(),
                     sizex, sizey);
             rectangles_created++;
             string new_name = "Retângulo " + std::to_string(rectangles_created);
@@ -609,7 +542,7 @@ static void build_shape() {
             float sizex = polP->get(1)->getX() - polP->get(0)->getX();
             float sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Quadrado* q = new Quadrado(polP->getHead()->getX() - camPos->getX(),
-                    polP->getHead()->getY() - camPos->getY(),
+                    polP->getHead()->getY() + camPos->getY(),
                     sizex > sizey ? sizex : sizey); //poligon points list = good
             squares_created++;
             string new_name = "Quadrado " + std::to_string(squares_created);
@@ -625,7 +558,7 @@ static void build_shape() {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
-            Poligono* p = new Poligono(-camPos->getX(), -camPos->getY(), polP);
+            Poligono* p = new Poligono(-camPos->getX(), camPos->getY(), polP);
             polygons_created++;
             string new_name = "Polígono " + std::to_string(polygons_created);
             p->setName(new_name);
@@ -660,25 +593,25 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
 
 void cameraMoveD() {
 
-    cam->moveCamera(0, -10);
+    cam->moveCamera(0, -30);
     gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveU() {
 
-    cam->moveCamera(0, 10);
+    cam->moveCamera(0, 30);
     gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveR() {
 
-    cam->moveCamera(-10, 0);
+    cam->moveCamera(-30, 0);
     gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveL() {
 
-    cam->moveCamera(10, 0);
+    cam->moveCamera(30, 0);
     gtk_widget_queue_draw(main_window);
 }
 

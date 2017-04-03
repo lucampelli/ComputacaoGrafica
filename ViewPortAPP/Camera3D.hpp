@@ -71,12 +71,11 @@ public:
     }
 
     Ponto* winCenter() {
-        return new Ponto(-pos->getX() * 2 + (windowmax->getX() + windowmin->getX()) / 2, -pos->getY() * 2 + (windowmax->getY() + windowmin->getY()) / 2);
+        return new Ponto(-pos->getX() + (windowmax->getX() + windowmin->getX()) / 2, -pos->getY() + (windowmax->getY() + windowmin->getY()) / 2);
     }
 
     void rotateCamera(int degrees) {
         rot += degrees;
-        cout<<"CameraRotation:" << rot<<endl;
     }
 
     int getRot() {
@@ -85,11 +84,10 @@ public:
 
     void moveCamera(float xAmount, float yAmount) {
         pos->move_by(xAmount,yAmount);
-        windowmin->move_by(xAmount,yAmount);
-        windowmax->move_by(xAmount,yAmount);
-        ogmin->move_by(xAmount,yAmount);
-        ogmax->move_by(xAmount,yAmount);
-        //cout << ogmin->getX() << " , " << ogmin->getY() << endl;
+        windowmin->move_by(-xAmount,yAmount);
+        windowmax->move_by(-xAmount,yAmount);
+        ogmin->move_by(-xAmount,yAmount);
+        ogmax->move_by(-xAmount,yAmount);
 
     }
 
@@ -106,8 +104,8 @@ public:
     }
 
     Ponto* clickTransform(Ponto* p) {
-        calculate_matrix();
-        return transform->cT(p);
+        //calculate_matrix();
+        return transform->cT(p, zoom);
     }
 
     float getZoom() {
@@ -115,15 +113,15 @@ public:
     }
 
     void calculate_matrix() {
-        transform->calculate_viewport_transform(viewport->min(), viewport->max(), windowmin, windowmax, zoom, winCenter());
+        transform->calculate_viewport_transform(viewport->min(), viewport->max(), windowmin, windowmax, winCenter());
 
     }
 
     void Zoom(bool in) {
         if (in) {
             zoom += 0.1f;
-            if (zoom > 2) {
-                zoom = 2;
+            if (zoom > 1.5f) {
+                zoom = 1.5f;
                 return;
             }
             windowmin->move_by(width / 10, height / 10);
@@ -139,23 +137,7 @@ public:
             windowmin->move_by(-width/10,-height/10);
             windowmax->move_by(width/10,height/10);
         }
-
-        cout<<windowmin->getX()<< " , " << windowmin->getY()<<endl;
-        cout<<windowmax->getX()<< " , " << windowmax->getY()<<endl;
-        
-        /*
-        float medx = width /2;
-        float medy = height /2;
-        float zx = medx * zoom;
-        float zy = medy * zoom;
-        windowmin->move_to((ogmin->getX() - zx + medx) , (ogmin->getY() - zy + medy));
-        windowmax->move_to((ogmax->getX() + zx - medx), (ogmax->getY() + zy - medy));
-         */
-
-
-
-
-        calculate_matrix();
+        //calculate_matrix();
     }
 
     void Zoom(float value) {
