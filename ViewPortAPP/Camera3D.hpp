@@ -43,10 +43,10 @@ public:
         height = 600;
         width = 600;
 
-        windowmin = new Ponto();
-        ogmin = new Ponto();
-        windowmax = new Ponto(600, 600);
-        ogmax = new Ponto(600, 600);
+        windowmin = new Ponto(-1,-1);
+        ogmin = new Ponto(-1,-1);
+        windowmax = new Ponto(1, 1);
+        ogmax = new Ponto(1, 1);
 
         viewport = Viewport::getInstance();
         transform = Transform::getInstance();
@@ -157,7 +157,7 @@ public:
             Shape* s = shapes->get(i);
             ListaEnc<Ponto*>* nPontos = new ListaEnc<Ponto*>();
             for (int j = 0; j < s->getPontos()->getSize(); j++) {
-                nPontos->adiciona(transform->transform(new Ponto(s->getPontos()->get(j)->getX() / 1, s->getPontos()->get(j)->getY() / 1)));
+                nPontos->adiciona(transform->transform(new Ponto((s->getPontos()->get(j)->getX() - (width/2))/width/2 , (s->getPontos()->get(j)->getY() - (width/2))/width/2 )));
             }
             Shape* n = new Shape(nPontos);
             normShapes->adiciona(n);
