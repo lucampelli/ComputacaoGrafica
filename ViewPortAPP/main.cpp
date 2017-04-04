@@ -228,12 +228,12 @@ static void rotate_cam(int degrees) {
  roda a camera em 10 graus
  */
 static void cam_cw() {
-    rotate_cam(-10);
+    rotate_cam(10);
     
 }
 
 static void cam_ccw() {
-    rotate_cam(10);
+    rotate_cam(-10);
     
 }
 

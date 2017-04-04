@@ -124,7 +124,9 @@ public:
     }
 
     void move(float Dx, float Dy){
-        pos->move_to(pos->getX() + Dx, pos->getY() + Dy);
+        for(int i = 0; i < pontos->getSize(); i++){
+            pontos->get(i)->move_by(Dx,Dy);
+        }
     }
     
     void applyT(){  //e este para rotacionar ao redor de um ponto qualquer

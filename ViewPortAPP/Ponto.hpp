@@ -66,6 +66,10 @@ public:
     Ponto* sum(Ponto* p){
         return new Ponto(this->getX() + p->getX(),this->getY() + p->getY(),this->getZ() + p->getZ());
     }
+    
+    Ponto* mult(Ponto* p){
+        return new Ponto(this->getX() * p->getX(),this->getY() * p->getY(),this->getZ() * p->getZ());
+    }
 
 };
 

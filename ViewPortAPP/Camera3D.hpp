@@ -105,7 +105,7 @@ public:
 
     Ponto* clickTransform(Ponto* p) {
         //calculate_matrix();
-        return transform->cT(p, zoom);
+        return transform->cT(p, zoom, rot);
     }
 
     float getZoom() {

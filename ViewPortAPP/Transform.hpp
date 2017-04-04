@@ -130,7 +130,7 @@ public:
         //return new Ponto(p->getX() * m11 + m13 , p->getY() * m22 + m23 );
     }
     
-    Ponto* cT(Ponto* p, float zoom){
+    Ponto* cT(Ponto* p, float zoom, float rot){
         /*
         setT(set_2D_move_matrix(-camPos->getX(), -camPos->getY()));
         concatenate_matrix(idc);
@@ -142,9 +142,11 @@ public:
         xw = ((p->getX() / (vpmax->getX() - vpmin->getX())) * (wmax->getX() - wmin->getX())) + (wmin->getX());
         yw = ((1 - (p->getY()/ (vpmax->getY() - vpmin->getY()))) * (wmax->getY() - wmin->getY())) + wmin->getY();
         
-        cout<< xw << ", " << yw << endl;
+        setT(set_2D_rotation_matrix(rot));
         
-        return (new Ponto(xw,yw));
+        Ponto* r = new Ponto(xw,yw);
+        
+        return (transform(r));
         //return new Ponto((p->getX()- m13 ) / m11, (p->getY() - m23 ) / m22 );
     }
     
