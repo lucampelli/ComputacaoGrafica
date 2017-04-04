@@ -159,6 +159,7 @@ public:
             
             cairo_stroke(cr);
         }
+        
 
     }
 

@@ -593,25 +593,25 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
 
 void cameraMoveD() {
 
-    cam->moveCamera(0, -30);
+    cam->moveCamera(0, -1);
     gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveU() {
 
-    cam->moveCamera(0, 30);
+    cam->moveCamera(0, 1);
     gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveR() {
 
-    cam->moveCamera(-30, 0);
+    cam->moveCamera(-1, 0);
     gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveL() {
 
-    cam->moveCamera(30, 0);
+    cam->moveCamera(1, 0);
     gtk_widget_queue_draw(main_window);
 }
 

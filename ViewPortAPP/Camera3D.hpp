@@ -23,8 +23,8 @@ private:
     float width;
     float height;
     float depth;
-    Ponto* ogmin;
-    Ponto* ogmax;
+    Ponto* scnmin;
+    Ponto* scnmax;
     Ponto* windowmin;
     Ponto* windowmax;
 
@@ -40,13 +40,13 @@ private:
 public:
 
     Camera3D() {
-        height = 600;
-        width = 600;
+        height = 2;
+        width = 2;
 
         windowmin = new Ponto(-1,-1);
-        ogmin = new Ponto(-1,-1);
-        windowmax = new Ponto(1, 1);
-        ogmax = new Ponto(1, 1);
+        scnmin = new Ponto(-1,-1);
+        windowmax = new Ponto(1,1);
+        scnmax = new Ponto(1,1);
 
         viewport = Viewport::getInstance();
         transform = Transform::getInstance();
@@ -82,12 +82,12 @@ public:
         return rot;
     }
 
-    void moveCamera(float xAmount, float yAmount) {
-        pos->move_by(xAmount,yAmount);
+    void moveCamera(float xAmount, float yAmount) {        
+        
         windowmin->move_by(-xAmount,yAmount);
         windowmax->move_by(-xAmount,yAmount);
-        ogmin->move_by(-xAmount,yAmount);
-        ogmax->move_by(-xAmount,yAmount);
+        scnmin->move_by(-xAmount,yAmount);
+        scnmax->move_by(-xAmount,yAmount);
 
     }
 
@@ -157,7 +157,7 @@ public:
             Shape* s = shapes->get(i);
             ListaEnc<Ponto*>* nPontos = new ListaEnc<Ponto*>();
             for (int j = 0; j < s->getPontos()->getSize(); j++) {
-                nPontos->adiciona(transform->transform(new Ponto((s->getPontos()->get(j)->getX() - (width/2))/width/2 , (s->getPontos()->get(j)->getY() - (width/2))/width/2 )));
+                nPontos->adiciona(transform->transform(new Ponto((s->getPontos()->get(j)->getX()) , (s->getPontos()->get(j)->getY()))));
             }
             Shape* n = new Shape(nPontos);
             normShapes->adiciona(n);

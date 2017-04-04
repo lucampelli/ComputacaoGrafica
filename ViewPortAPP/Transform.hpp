@@ -144,7 +144,7 @@ public:
         
         cout<< xw << ", " << yw << endl;
         
-        return (new Ponto(xw / zoom,yw / zoom));
+        return (new Ponto(xw,yw));
         //return new Ponto((p->getX()- m13 ) / m11, (p->getY() - m23 ) / m22 );
     }
     
