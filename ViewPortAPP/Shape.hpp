@@ -138,6 +138,14 @@ public:
         }
     }
     
+    ListaEnc<Ponto*>* clipCS(ListaEnc<Ponto*>* ini){
+        
+    }
+    
+    ListaEnc<Ponto*>* clipLB(ListaEnc<Ponto*>* ini){
+        
+    }
+    
     void draw(cairo_t* cr, Ponto* camPos) {
         
         Ponto* center = findCenter();
@@ -180,6 +188,11 @@ public:
         Ponto* p[] = {new Ponto(x,y), new Ponto(x+width,y),new Ponto(x+width,y+height),new Ponto(x,y+height)};
         this->addPoints(4,p);
     }
+};
+
+class Point : public Retangulo{
+public:
+    Point(float x, float y) : Retangulo(x,y,0.005f,0.005f){}
 };
 
 class Quadrado : public Retangulo{

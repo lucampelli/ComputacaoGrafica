@@ -39,6 +39,7 @@ int shape_choice = 0;
 int delete_choice = 0;
 int transform_choice = 0;
 int clicks = 0;
+int points_created = 0;
 int rectangles_created = 0;
 int squares_created = 0;
 int polygons_created = 0;
@@ -343,14 +344,14 @@ static void move() {
     if (strlen(x1) == 0) {
         TX = 0;
     } else {
-        TX = atoi(x1);
+        TX = atof(x1);
     }
     if (strlen(y1) == 0) {
         TY = 0;
     } else {
-        TY = atoi(y1);
+        TY = atof(y1);
     }
-    move_shape(s, TX, TY);
+    move_shape(s, TX/10, TY/10);
     gtk_widget_queue_draw(main_window);
 }
 /*
@@ -501,10 +502,7 @@ static void transform_shape() {
 }
 
 static void build_shape() {
-
-    if (shape_choice == 0) {
-        return;
-    }
+    
     if (!clicking) {
         clicking = true;
         gtk_widget_set_sensitive(combo_box_shape, FALSE);
@@ -513,6 +511,19 @@ static void build_shape() {
         }
         polP = new ListaEnc<Ponto*>();
         return;
+    }
+    
+    if (shape_choice == 0) {
+        if (clicking) {
+            clicking = false;
+            gtk_widget_set_sensitive(combo_box_shape, TRUE);
+            gtk_widget_set_sensitive(buttonAdd, TRUE);
+            Point* p = new Point(polP->getHead()->getX(), polP->getHead()->getY());
+            points_created++;
+            string new_name = "Ponto " + std::to_string(points_created);
+            p->setName(new_name);
+            lista->adiciona(p);
+        }
     }
 
     if (shape_choice == 1) {
@@ -584,7 +595,12 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
     if (shape_choice == 1 || shape_choice == 2) {
         if (polP->getSize() == 2) {
             build_shape();
+            return TRUE;
         }
+    }
+    
+    if(shape_choice == 0){
+        build_shape();
     }
 
     return TRUE;
@@ -593,25 +609,25 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
 
 void cameraMoveD() {
 
-    cam->moveCamera(0, -1);
+    cam->moveCamera(0, -0.1f);
     gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveU() {
 
-    cam->moveCamera(0, 1);
+    cam->moveCamera(0, 0.1f);
     gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveR() {
 
-    cam->moveCamera(-1, 0);
+    cam->moveCamera(-0.1f, 0);
     gtk_widget_queue_draw(main_window);
 }
 
 void cameraMoveL() {
 
-    cam->moveCamera(1, 0);
+    cam->moveCamera(0.1f, 0);
     gtk_widget_queue_draw(main_window);
 }
 
@@ -655,7 +671,7 @@ int main(int argc, char** argv) {
 
     //ComboBox
     combo_box_shape = gtk_combo_box_text_new();
-    const char* shapes[] = {"Selecione Forma", "Retangulo", "Quadrado", "Poligono"};
+    const char* shapes[] = {"Ponto", "Retangulo", "Quadrado", "Poligono"};
 
     for (int i = 0; i < G_N_ELEMENTS(shapes); i++) {
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box_shape), shapes[i]);

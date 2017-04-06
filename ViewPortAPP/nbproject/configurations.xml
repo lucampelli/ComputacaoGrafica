@@ -6,6 +6,7 @@
                    projectFiles="true">
       <itemPath>Camera.hpp</itemPath>
       <itemPath>Camera3D.hpp</itemPath>
+      <itemPath>ClipPlane.hpp</itemPath>
       <itemPath>Elemento.hpp</itemPath>
       <itemPath>ListaEnc.hpp</itemPath>
       <itemPath>Matriz.hpp</itemPath>
@@ -61,6 +62,8 @@
       </item>
       <item path="Camera3D.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="ClipPlane.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Elemento.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ListaEnc.hpp" ex="false" tool="3" flavor2="0">
@@ -101,6 +104,8 @@
       <item path="Camera.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Camera3D.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ClipPlane.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Elemento.hpp" ex="false" tool="3" flavor2="0">
       </item>

@@ -13,6 +13,7 @@
 
 #include "Ponto.hpp"
 #include "Viewport.hpp"
+#include "ClipPlane.hpp"
 #include "Shape.hpp"
 
 #ifndef CAMERA2_HPP

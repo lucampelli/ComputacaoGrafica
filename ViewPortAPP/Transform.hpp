@@ -112,6 +112,8 @@ public:
         
         Matriz* r = m1->multiply(t);
         Ponto* t = new Ponto(r->get(0,0), r->get(0,1), r->get(0,2));
+        
+        
         return t;
     }
     
@@ -122,6 +124,7 @@ public:
         //return transform(p);
         
         float xvp, yvp;
+        
         
         xvp = ((p->getX() - wmin->getX())/(wmax->getX() -wmin->getX())) * (vpmax->getX() - vpmin->getX());
         yvp = (1 - ((p->getY() - wmin->getY())/(wmax->getY() -wmin->getY()))) * (vpmax->getY() - vpmin->getY());
