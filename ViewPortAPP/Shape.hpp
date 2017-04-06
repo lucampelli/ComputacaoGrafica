@@ -11,7 +11,6 @@
  * Created on 9 de Março de 2017, 16:57
  */
 
-#include "Ponto.hpp"
 #include "ListaEnc.hpp"
 #include "gtk/gtk.h"
 #include "Transform.hpp"
@@ -138,11 +137,68 @@ public:
         }
     }
     
-    ListaEnc<Ponto*>* clipCS(ListaEnc<Ponto*>* ini){
-        
+    bool pointClip(Ponto* p){
+        ListaEnc<Ponto*>* l = transform->getWindowStuff();
+        Ponto* wmin = l->get(0);
+        Ponto* wmax = l->get(1);
+        if(p->getX() < wmin->getX()){
+            return true;
+        }
+        if(p->getX() > wmax->getX()){
+            return true;
+        }
+        if(p->getY() < wmin->getY()){
+            return true;
+        }
+        if(p->getY() > wmax->getY()){
+            return true;
+        }
+        return false;
     }
     
-    ListaEnc<Ponto*>* clipLB(ListaEnc<Ponto*>* ini){
+    void findRC(Ponto* p){
+        ListaEnc<Ponto*>* l = transform->getWindowStuff();
+        Ponto* wmin = l->get(0);
+        Ponto* wmax = l->get(1);
+        float rc[4] = {0,0,0,0};
+        
+        if(p->getX() < wmin->getX()){
+            rc[0] = rc[0] && 0;
+            rc[1] = rc[1] && 0;
+            rc[2] = rc[2] && 0;
+            rc[3] = rc[3] && 1;
+        }
+        if(p->getX() > wmax->getX()){
+            rc[0] = rc[0] && 0;
+            rc[1] = rc[1] && 0;
+            rc[2] = rc[2] && 1;
+            rc[3] = rc[3] && 0;
+        }
+        if(p->getY() < wmin->getY()){
+            rc[0] = rc[0] && 0;
+            rc[1] = rc[1] && 1;
+            rc[2] = rc[2] && 0;
+            rc[3] = rc[3] && 0;
+        }
+        if(p->getY() > wmax->getY()){
+            rc[0] = rc[0] && 1;
+            rc[1] = rc[1] && 0;
+            rc[2] = rc[2] && 0;
+            rc[3] = rc[3] && 0;
+        }
+        p->setRC(rc);
+    }
+    
+    ListaEnc<Ponto*>* clipCS(ListaEnc<Ponto*>* ps){
+        for(int i = 0; i < ps->getSize(); i++){
+            Ponto* p = ps->get(i);
+            
+            
+            
+        }
+    }
+    
+    ListaEnc<Ponto*>* clipLB(ListaEnc<Ponto*>* ps){
         
     }
     

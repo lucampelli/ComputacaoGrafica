@@ -18,6 +18,7 @@ class Ponto{
     
 private:
     float x,y,z,w;
+    float RC[4];
 
 public:
     Ponto() : x(0),y(0),z(0),w(0){}
@@ -39,6 +40,14 @@ public:
     
     float getW(){
         return w;
+    }
+    
+    float* getRC(){
+        return RC;
+    }
+    
+    float setRC(float rc[4]){
+        RC = rc;
     }
     
     void move_to(float nx, float ny){

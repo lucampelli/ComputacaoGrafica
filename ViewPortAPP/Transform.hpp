@@ -16,6 +16,7 @@
 
 #include "Ponto.hpp"
 #include "Matriz.hpp"
+#include "ListaEnc.hpp"
 #include <math.h>
 
 
@@ -98,6 +99,13 @@ public:
     
     void setT(Matriz* m){
         t = m;
+    }
+    
+    ListaEnc<Ponto*>* getWindowStuff(){
+        ListaEnc<Ponto*>* l = new ListaEnc<Ponto*>();
+        l->adiciona(wmin);
+        l->adiciona(wmax);
+        return l;
     }
     
     void concatenate_matrix(Matriz* m){
