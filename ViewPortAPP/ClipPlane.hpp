@@ -20,8 +20,28 @@ class ClipPlane{
     Ponto* clipMin = new Ponto(-0.9f,-0.9f);
     Ponto* clipMax = new Ponto( 0.9f, 0.9f);
     
+public:
     
+    static ClipPlane* getInstance(){
+        static ClipPlane* clip;
+        if(!clip){
+            clip = new ClipPlane();
+        }
+        return clip;
+    }
     
+    Ponto* getMin(){
+        return clipMin;
+    }
+    
+    Ponto* getMax(){
+        return clipMax;
+    }
+    
+    void move(float x, float y){
+        clipMin->move_by(x,y);
+        clipMax->move_by(x,y);
+    }
     
 };
 

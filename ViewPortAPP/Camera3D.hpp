@@ -35,6 +35,7 @@ private:
     Ponto* pos;
     Viewport* viewport;
     Transform* transform;
+    ClipPlane* clip;
     int rot = 0;
     float zoom = 1.0f;
 
@@ -51,6 +52,7 @@ public:
 
         viewport = Viewport::getInstance();
         transform = Transform::getInstance();
+        clip = ClipPlane::getInstance();
         pos = new Ponto();
         calculate_matrix();
     }
@@ -69,6 +71,14 @@ public:
             camera = new Camera3D();
         }
         return camera;
+    }
+    
+    Ponto* getClipMin(){
+        return clip->getMin();
+    }
+    
+    Ponto* getClipMax(){
+        return clip->getMax();
     }
 
     Ponto* winCenter() {
@@ -89,6 +99,7 @@ public:
         windowmax->move_by(-xAmount,yAmount);
         scnmin->move_by(-xAmount,yAmount);
         scnmax->move_by(-xAmount,yAmount);
+        clip->move(-xAmount,yAmount);
 
     }
 

@@ -33,6 +33,7 @@ static GtkWidget *buttonAdd;
 static GtkWidget *CXE1, *CXE2, *CYE1, *CYE2;
 static GtkWidget *entryX, *entryY, *entryS, *entryA;
 
+Shape* clipShape;
 ListaEnc<Shape*> * lista;
 ListaEnc<Shape*> * normLista;
 int shape_choice = 0;
@@ -79,13 +80,20 @@ static gboolean create_surface(GtkWidget *widget, GdkEventConfigure *event, gpoi
 static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     cairo_set_source_surface(cr, surface, 0, 0);
     cairo_paint(cr);
-
-    string print = "";
     
+    clipShape = new Retangulo(cam->getClipMin()->getX(), cam->getClipMin()->getY(), 1.8f,1.8f);
+    cout<<"ClipMin: " << cam->getClipMin()->getX()<< ", " << cam->getClipMin()->getY()<<endl;
+    cout<<"ClipMax: " << cam->getClipMax()->getX()<< ", " << cam->getClipMax()->getY()<<endl;
+    
+    
+    string print = "";
+    clipShape->clipCS(cam->getClipMin(), cam->getClipMax());
+    clipShape->draw(cr,camPos);
     cam->SCN();
     for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());
         print.append("\n");
+        normLista->get(i)->clipCS(cam->getClipMin(), cam->getClipMax());
         normLista->get(i)->draw(cr, camPos);
         
     }
@@ -610,6 +618,7 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
 void cameraMoveD() {
 
     cam->moveCamera(0, -0.1f);
+    
     gtk_widget_queue_draw(main_window);
 }
 

@@ -14,11 +14,71 @@
 #ifndef PONTO_HPP
 #define PONTO_HPP
 
+class RegionCode{
+private:
+    bool RC[4] = {false, false, false, false};
+    
+public:
+    RegionCode(){}
+    
+    RegionCode(bool b0, bool b1, bool b2, bool b3){
+        RC[0] = b0;
+        RC[1] = b1;
+        RC[2] = b2;
+        RC[3] = b3;
+    }
+    
+    bool get(int index){
+        return RC[index];
+    }
+    
+    void set(bool bit, int index){
+        RC[index] = bit;
+    }
+    
+    void set(RegionCode nc){
+        RC[0] = nc[0];
+        RC[1] = nc[1];
+        RC[2] = nc[2];
+        RC[3] = nc[3];
+    }
+    
+    bool operator [](int x){
+        return get(x);
+    }
+    
+    bool operator ==(RegionCode rc){
+        return (RC[0] == rc[0]) && (RC[1] == rc[1]) && (RC[2] == rc[2]) && (RC[3] == rc[3]);
+    }
+    
+    void operator = (RegionCode nc){
+        RC[0] = nc[0];
+        RC[1] = nc[1];
+        RC[2] = nc[2];
+        RC[3] = nc[3];
+    }
+    
+    
+    bool operator != (RegionCode rc){
+        return (RC[0] != rc[0]) || (RC[1] != rc[1]) || (RC[2] != rc[2]) || (RC[3] != rc[3]);
+    }
+    
+    RegionCode operator && (RegionCode rc){
+        RegionCode temp;
+        temp.set(RC[0] && rc[0], 0);
+        temp.set(RC[1] && rc[1], 1);
+        temp.set(RC[2] && rc[2], 2);
+        temp.set(RC[3] && rc[3], 3);
+        return temp;
+    }
+    
+};
+
 class Ponto{
     
 private:
     float x,y,z,w;
-    float RC[4];
+    RegionCode RC = RegionCode();
 
 public:
     Ponto() : x(0),y(0),z(0),w(0){}
@@ -42,11 +102,11 @@ public:
         return w;
     }
     
-    float* getRC(){
+    RegionCode getRC(){
         return RC;
     }
     
-    float setRC(float rc[4]){
+    float setRC(RegionCode rc){
         RC = rc;
     }
     

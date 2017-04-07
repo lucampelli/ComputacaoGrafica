@@ -168,6 +168,16 @@ public:
     bool menor(T dado1, T dado2){
         return dado1 < dado2;
     }
+    
+    bool exists(T dado){
+        Elemento<T>* temp = head;
+        for(int i = 1; i < size; i++){
+            if(dado == temp->getInfo()){
+                return true;
+            }
+            temp = temp->getProximo();
+        }
+    }
 
     void destroiLista();
 
