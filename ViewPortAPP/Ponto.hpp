@@ -77,28 +77,28 @@ public:
 class Ponto{
     
 private:
-    float x,y,z,w;
+    double x,y,z,w;
     RegionCode RC = RegionCode();
 
 public:
     Ponto() : x(0),y(0),z(0),w(0){}
     
-    Ponto(float nx, float ny) : x(nx), y(ny),z(1),w(1){}
-    Ponto(float nx, float ny,float nz) : x(nx), y(ny),z(nz),w(1){}
+    Ponto(double nx, double ny) : x(nx), y(ny),z(1),w(1){}
+    Ponto(double nx, double ny,double nz) : x(nx), y(ny),z(nz),w(1){}
     
-    float getX(){
+    double getX(){
         return x;
     }
     
-    float getY(){
+    double getY(){
         return y;
     }
     
-    float getZ(){
+    double getZ(){
         return z;
     }
     
-    float getW(){
+    double getW(){
         return w;
     }
     
@@ -106,27 +106,27 @@ public:
         return RC;
     }
     
-    float setRC(RegionCode rc){
+    double setRC(RegionCode rc){
         RC = rc;
     }
     
-    void move_to(float nx, float ny){
+    void move_to(double nx, double ny){
         x = nx;
         y = ny;
     }
     
-    void move_to(float nx, float ny, float nz){
+    void move_to(double nx, double ny, double nz){
         x = nx;
         y = ny;
         z = nz;
     }
     
-    void move_by(float nx, float ny){
+    void move_by(double nx, double ny){
         x += nx;
         y += ny;
     }
     
-    void move_by(float nx, float ny, float nz){
+    void move_by(double nx, double ny, double nz){
         x += nx;
         y += ny;
         z += nz;

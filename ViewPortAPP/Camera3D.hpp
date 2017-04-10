@@ -21,9 +21,9 @@
 
 class Camera3D {
 private:
-    float width;
-    float height;
-    float depth;
+    double width;
+    double height;
+    double depth;
     Ponto* scnmin;
     Ponto* scnmax;
     Ponto* windowmin;
@@ -37,7 +37,7 @@ private:
     Transform* transform;
     ClipPlane* clip;
     int rot = 0;
-    float zoom = 1.0f;
+    double zoom = 1.0f;
 
 public:
 
@@ -93,7 +93,7 @@ public:
         return rot;
     }
 
-    void moveCamera(float xAmount, float yAmount) {        
+    void moveCamera(double xAmount, double yAmount) {        
         
         windowmin->move_by(-xAmount,yAmount);
         windowmax->move_by(-xAmount,yAmount);
@@ -120,7 +120,7 @@ public:
         return transform->cT(p, zoom, rot);
     }
 
-    float getZoom() {
+    double getZoom() {
         return zoom;
     }
 
@@ -152,7 +152,7 @@ public:
         //calculate_matrix();
     }
 
-    void Zoom(float value) {
+    void Zoom(double value) {
         zoom = value / 100;
     }
 

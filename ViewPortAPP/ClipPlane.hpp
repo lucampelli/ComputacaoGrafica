@@ -38,7 +38,7 @@ public:
         return clipMax;
     }
     
-    void move(float x, float y){
+    void move(double x, double y){
         clipMin->move_by(x,y);
         clipMax->move_by(x,y);
     }

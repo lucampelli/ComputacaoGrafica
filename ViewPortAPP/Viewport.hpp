@@ -18,8 +18,8 @@
 
 class Viewport {
 private:
-    float width;
-    float height;
+    double width;
+    double height;
     Ponto* ogmin;
     Ponto* ogmax;
     Ponto* viewportmin;
@@ -32,7 +32,7 @@ private:
         ogmax = new Ponto(600,600);
     }
 
-    Viewport(float width, float height) : width(width), height(height) {
+    Viewport(double width, double height) : width(width), height(height) {
         viewportmin = new Ponto();
         ogmin = new Ponto();
         viewportmax = new Ponto(width, height);
@@ -49,7 +49,7 @@ public:
         return p;
     }
     
-    static Viewport* getInstance(float w, float h){
+    static Viewport* getInstance(double w, double h){
         static Viewport* p;
         if(!p){
             p = new Viewport(w,h);

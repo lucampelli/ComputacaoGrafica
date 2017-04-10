@@ -28,8 +28,8 @@ private:
     ListaEnc<Ponto*>* clipPs = new ListaEnc<Ponto*>();
     int vertices;
     int rotation2D = 0;
-    float scaleX = 1;
-    float scaleY = 1;
+    double scaleX = 1;
+    double scaleY = 1;
     bool fillShape = false;
     string name;
 
@@ -41,7 +41,7 @@ public:
 
     }
 
-    Shape(float x, float y) : vertices(0) {
+    Shape(double x, double y) : vertices(0) {
         pos = new Ponto(x, y);
         pontos = new ListaEnc<Ponto*>();
 
@@ -62,7 +62,7 @@ public:
 
     }
 
-    Shape(float x, float y, ListaEnc<Ponto*>* points) {
+    Shape(double x, double y, ListaEnc<Ponto*>* points) {
         pos = new Ponto(x, y);
         pontos = points;
         vertices = points->getSize();
@@ -103,8 +103,8 @@ public:
     }
 
     Ponto* findCenter() {
-        float x = 0;
-        float y = 0;
+        double x = 0;
+        double y = 0;
         for (int i = 0; i < vertices; i++) {
             x += pontos->get(i)->getX();
             y += pontos->get(i)->getY();
@@ -121,13 +121,13 @@ public:
         applyT();
     }
 
-    void setScale(float X, float Y) {
+    void setScale(double X, double Y) {
         scaleX = X;
         scaleY = Y;
         applyT();
     }
 
-    void move(float Dx, float Dy) {
+    void move(double Dx, double Dy) {
         for (int i = 0; i < pontos->getSize(); i++) {
             pontos->get(i)->move_by(Dx, Dy);
         }
@@ -200,8 +200,8 @@ public:
 
 
             if (((p1->getRC() && p2->getRC()) == RegionCode()) && p1->getRC() != p2->getRC()) { //Parcialmente fora
-                float m = (p1->getY() - p2->getY()) / ((p1->getX() - p2->getX()) + 0.000001f);
-                float Ye, Yd, Xf, Xt;
+                double m = (p1->getY() - p2->getY()) / ((p1->getX() - p2->getX()) + 0.000001f);
+                double Ye, Yd, Xf, Xt;
                 Ponto* es, *di, *ci, *ba;
 
                 if(p1->getRC() == RegionCode()){
@@ -301,7 +301,7 @@ public:
 class Retangulo : public Shape {
 public:
 
-    Retangulo(float x, float y, float width, float height) {
+    Retangulo(double x, double y, double width, double height) {
         Ponto * p[] = {new Ponto(x, y), new Ponto(x + width, y), new Ponto(x + width, y + height), new Ponto(x, y + height)};
         this->addPoints(4, p);
     }
@@ -310,21 +310,21 @@ public:
 class Point : public Retangulo {
 public:
 
-    Point(float x, float y) : Retangulo(x, y, 0.005f, 0.005f) {
+    Point(double x, double y) : Retangulo(x, y, 0.005f, 0.005f) {
     }
 };
 
 class Quadrado : public Retangulo {
 public:
 
-    Quadrado(float x, float y, float size) : Retangulo(x, y, size, size) {
+    Quadrado(double x, double y, double size) : Retangulo(x, y, size, size) {
     }
 };
 
 class Poligono : public Shape {
 public:
 
-    Poligono(float x, float y, ListaEnc<Ponto*>* p) {
+    Poligono(double x, double y, ListaEnc<Ponto*>* p) {
         for (int i = 0; i < p->getSize(); i++) {
             p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y);
         }

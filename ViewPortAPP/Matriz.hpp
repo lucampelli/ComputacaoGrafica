@@ -22,7 +22,7 @@ class Matriz {
 private:
     int num_lin, num_col;
     //Os valores da matriz são armazeados linearmente em um único vetor
-    std::vector<float> valores;
+    std::vector<double> valores;
 
 
 public:
@@ -37,11 +37,11 @@ public:
      é calculado pelo número de 'linhas cheias' no vetor mais o número
      da coluna desejada. O valor é subtraido em 1 pois o vector conta
      as posições a partir de 0.*/
-    float get(int l, int c) {
+    double get(int l, int c) {
         return valores[(l) * num_col + c];
     }
 
-    float set(int l, int c, float dado) {
+    double set(int l, int c, double dado) {
         valores[(l) * num_col + c] = dado;
     }
 

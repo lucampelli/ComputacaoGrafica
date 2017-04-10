@@ -99,6 +99,9 @@ public:
         for(int i = 0; i < s; i++){
             retiraDoInicio();
         }
+        
+        size = 0;
+        head = NULL;
     }
 
     int posicao(const T& dado) const;
@@ -140,6 +143,7 @@ public:
 
     //fim
     void adiciona(const T& dado){
+        if(dado)
         adicionaNaPosicao(dado,size);
     }
 

@@ -23,7 +23,7 @@
 class Transform{
     
 private:
-    float m11,m13,m22,m23;
+    double m11,m13,m22,m23;
     Matriz* dc = new Matriz(3,3);
     Matriz* idc = new Matriz(3,3);
     Matriz* t = NULL;
@@ -60,7 +60,7 @@ public:
     
     Matriz* set_2D_rotation_matrix(int degrees){
         Matriz* m = new Matriz(3,3);
-        float rad = (degrees * M_PI)/180;        
+        double rad = (degrees * M_PI)/180;        
         m->set(0,0,cosf(rad));
         m->set(0,1,-sinf(rad));
         m->set(1,0,sinf(rad));
@@ -70,16 +70,16 @@ public:
     }
     
     Ponto* rotationT2D(int degrees, Ponto* p, Ponto* c){
-        float rad = (degrees * M_PI)/180;
+        double rad = (degrees * M_PI)/180;
         //test purposes only
-        float x = p->getX() - c->getX();
-        float y = p->getY() - c->getY();
+        double x = p->getX() - c->getX();
+        double y = p->getY() - c->getY();
         Ponto* r = new Ponto(x * cosf(rad) - y * sinf(rad), x * sinf(rad) + y* cosf(rad));
         r->move_to(r->getX() + c->getX(), r->getY() + c->getY());
         return r;
     }
     
-    Matriz* set_2D_move_matrix(float Dx, float Dy){
+    Matriz* set_2D_move_matrix(double Dx, double Dy){
         Matriz* m = new Matriz(3,3);
         m->set(0,0,1);
         m->set(1,1,1);
@@ -89,7 +89,7 @@ public:
         return m;
     }
     
-    Matriz* set_2D_scale_matrix(float scaleX,float scaleY){
+    Matriz* set_2D_scale_matrix(double scaleX,double scaleY){
         Matriz* m = new Matriz(3,3);
         m->set(0,0,scaleX);
         m->set(1,1,scaleY);
@@ -131,7 +131,7 @@ public:
         //concatenate_matrix(set_2D_move_matrix(camPos->getX(), camPos->getY()));
         //return transform(p);
         
-        float xvp, yvp;
+        double xvp, yvp;
         
         
         xvp = ((p->getX() - wmin->getX())/(wmax->getX() -wmin->getX())) * (vpmax->getX() - vpmin->getX());
@@ -141,14 +141,14 @@ public:
         //return new Ponto(p->getX() * m11 + m13 , p->getY() * m22 + m23 );
     }
     
-    Ponto* cT(Ponto* p, float zoom, float rot){
+    Ponto* cT(Ponto* p, double zoom, double rot){
         /*
         setT(set_2D_move_matrix(-camPos->getX(), -camPos->getY()));
         concatenate_matrix(idc);
         concatenate_matrix(set_2D_move_matrix(camPos->getX(), camPos->getY()));
         */
         
-        float xw, yw;
+        double xw, yw;
         
         xw = ((p->getX() / (vpmax->getX() - vpmin->getX())) * (wmax->getX() - wmin->getX())) + (wmin->getX());
         yw = ((1 - (p->getY()/ (vpmax->getY() - vpmin->getY()))) * (wmax->getY() - wmin->getY())) + wmin->getY();

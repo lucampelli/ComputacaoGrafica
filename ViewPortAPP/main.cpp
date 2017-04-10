@@ -33,7 +33,7 @@ static GtkWidget *buttonAdd;
 static GtkWidget *CXE1, *CXE2, *CYE1, *CYE2;
 static GtkWidget *entryX, *entryY, *entryS, *entryA;
 
-Shape* clipShape;
+//Shape* clipShape;
 ListaEnc<Shape*> * lista;
 ListaEnc<Shape*> * normLista;
 int shape_choice = 0;
@@ -44,11 +44,11 @@ int points_created = 0;
 int rectangles_created = 0;
 int squares_created = 0;
 int polygons_created = 0;
-float TX = 0;
-float TY = 0;
+double TX = 0;
+double TY = 0;
 int rotation = 0;
-float SX = 1;
-float SY = 1;
+double SX = 1;
+double SY = 1;
 bool clicking = false;
 ListaEnc<Ponto*> * polP;
 Camera3D* cam = Camera3D::getInstance();
@@ -80,22 +80,16 @@ static gboolean create_surface(GtkWidget *widget, GdkEventConfigure *event, gpoi
 static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     cairo_set_source_surface(cr, surface, 0, 0);
     cairo_paint(cr);
-    
-    clipShape = new Retangulo(cam->getClipMin()->getX(), cam->getClipMin()->getY(), 1.8f,1.8f);
-    cout<<"ClipMin: " << cam->getClipMin()->getX()<< ", " << cam->getClipMin()->getY()<<endl;
-    cout<<"ClipMax: " << cam->getClipMax()->getX()<< ", " << cam->getClipMax()->getY()<<endl;
-    
-    
+
     string print = "";
-    clipShape->clipCS(cam->getClipMin(), cam->getClipMax());
-    clipShape->draw(cr,camPos);
+    
     cam->SCN();
     for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());
         print.append("\n");
         normLista->get(i)->clipCS(cam->getClipMin(), cam->getClipMax());
         normLista->get(i)->draw(cr, camPos);
-        
+
     }
 
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(shapeField));
@@ -188,14 +182,14 @@ static void zoomOut() {
     gtk_widget_queue_draw(main_window);
 }
 
-static void move_shape(Shape* s, float Dx, float Dy) {
+static void move_shape(Shape* s, double Dx, double Dy) {
     Transform* t = Transform::getInstance();
     t->setT(t->set_2D_move_matrix(Dx, Dy));
 
     s->move(Dx, Dy);
 }
 
-static void scale_shape(Shape* s, float scaleX, float scaleY, Ponto* scale_center = new Ponto(0, 0)) {
+static void scale_shape(Shape* s, double scaleX, double scaleY, Ponto* scale_center = new Ponto(0, 0)) {
     Transform* t = Transform::getInstance();
     t->setT(t->set_2D_move_matrix(-scale_center->getX(), -scale_center->getY()));
     t->concatenate_matrix(t->set_2D_scale_matrix(scaleX, scaleY));
@@ -218,7 +212,7 @@ static void rotate_shape(Shape* s, int degrees, Ponto* rot_center = new Ponto(0,
     } else {
         s->applyT();
     }
-    
+
 }
 
 /*
@@ -238,20 +232,19 @@ static void rotate_cam(int degrees) {
  */
 static void cam_cw() {
     rotate_cam(10);
-    
+
 }
 
 static void cam_ccw() {
     rotate_cam(-10);
-    
-}
 
+}
 
 /*
  Arruma as variáveis para rodar uma forma
  */
 
-static void rotate() {    
+static void rotate() {
     Shape* s = lista->get(transform_choice);
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE2));
     const char* y1 = gtk_entry_get_text(GTK_ENTRY(CYE2));
@@ -271,12 +264,11 @@ static void rotate() {
     } else {
         rotation = atoi(gtk_entry_get_text(GTK_ENTRY(entryA)));
     }
-    
+
     rotate_shape(s, rotation, new Ponto(TX, TY));
     gtk_widget_queue_draw(main_window);
-    
-}
 
+}
 
 /*
  Arruma as variáveis para aumentar uma forma
@@ -305,14 +297,14 @@ static void scale() {
         SY = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
     }
 
-    scale_shape(s, SX, SY, new Ponto(TX, TY ));
+    scale_shape(s, SX, SY, new Ponto(TX, TY));
     gtk_widget_queue_draw(main_window);
 }
 
 /*
  Arruma as variáveis para reduzir uma forma
  */
-static void unscale(){
+static void unscale() {
     Shape* s = lista->get(transform_choice);
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE1));
     const char* y1 = gtk_entry_get_text(GTK_ENTRY(CYE1));
@@ -336,10 +328,9 @@ static void unscale(){
         SY = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
     }
 
-    scale_shape(s, 1/SX, 1/SY, new Ponto(TX, TY));
+    scale_shape(s, 1 / SX, 1 / SY, new Ponto(TX, TY));
     gtk_widget_queue_draw(main_window);
 }
-
 
 /*
  Arruma as variáveis para mover uma forma
@@ -359,9 +350,10 @@ static void move() {
     } else {
         TY = atof(y1);
     }
-    move_shape(s, TX/10, TY/10);
+    move_shape(s, TX / 10, TY / 10);
     gtk_widget_queue_draw(main_window);
 }
+
 /*
  Abre a caixa de dialogo de popup
  */
@@ -497,20 +489,20 @@ static void transform_shape() {
     g_signal_connect(combobox_rotation, "changed", G_CALLBACK(on_changed_trans), NULL);
     g_signal_connect(combobox_scale, "changed", G_CALLBACK(on_changed_trans), NULL);
 
-    if(lista->getSize() == 0){
-        
+    if (lista->getSize() == 0) {
+
         gtk_widget_set_sensitive(button_move, FALSE);
         gtk_widget_set_sensitive(button_expand, FALSE);
         gtk_widget_set_sensitive(button_reduce, FALSE);
         gtk_widget_set_sensitive(button_rotate, FALSE);
     }
-    
+
     gtk_widget_show_all(trans_window);
 
 }
 
 static void build_shape() {
-    
+
     if (!clicking) {
         clicking = true;
         gtk_widget_set_sensitive(combo_box_shape, FALSE);
@@ -520,7 +512,7 @@ static void build_shape() {
         polP = new ListaEnc<Ponto*>();
         return;
     }
-    
+
     if (shape_choice == 0) {
         if (clicking) {
             clicking = false;
@@ -540,8 +532,8 @@ static void build_shape() {
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
             gtk_widget_set_sensitive(buttonAdd, TRUE);
-            float sizex = polP->get(1)->getX() - polP->get(0)->getX();
-            float sizey = polP->get(1)->getY() - polP->get(0)->getY();
+            double sizex = polP->get(1)->getX() - polP->get(0)->getX();
+            double sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Retangulo* r = new Retangulo(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() + camPos->getY(),
                     sizex, sizey);
@@ -558,8 +550,8 @@ static void build_shape() {
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
             gtk_widget_set_sensitive(buttonAdd, TRUE);
-            float sizex = polP->get(1)->getX() - polP->get(0)->getX();
-            float sizey = polP->get(1)->getY() - polP->get(0)->getY();
+            double sizex = polP->get(1)->getX() - polP->get(0)->getX();
+            double sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Quadrado* q = new Quadrado(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() + camPos->getY(),
                     sizex > sizey ? sizex : sizey); //poligon points list = good
@@ -595,7 +587,7 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
     g_print("Event box clicked at coordinates %f : %f\n",
             event->x, event->y);
 
-    polP->adiciona(cam->clickTransform(new Ponto((float) event->x, (float) event->y))); //good
+    polP->adiciona(cam->clickTransform(new Ponto((double) event->x, (double) event->y))); //good
     // Returning TRUE means we handled the event, so the signal
     // emission should be stopped (don’t call any further callbacks
     // that may be connected). Return FALSE to continue invoking callbacks.
@@ -606,8 +598,8 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
             return TRUE;
         }
     }
-    
-    if(shape_choice == 0){
+
+    if (shape_choice == 0) {
         build_shape();
     }
 
@@ -618,7 +610,7 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
 void cameraMoveD() {
 
     cam->moveCamera(0, -0.1f);
-    
+
     gtk_widget_queue_draw(main_window);
 }
 
@@ -750,7 +742,7 @@ int main(int argc, char** argv) {
     gtk_container_add(GTK_CONTAINER(hboxRot), buttonRotccw);
     gtk_container_add(GTK_CONTAINER(hboxRot), camRLabel);
     gtk_container_add(GTK_CONTAINER(hboxRot), buttonRotcw);
-    
+
 
     gtk_widget_set_size_request(event_box, 600, 600);
     gtk_widget_set_size_request(da, 600, 600);
