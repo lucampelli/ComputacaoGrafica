@@ -57,7 +57,6 @@ public:
         T info = retirar->getInfo();
         size--;
         delete retirar;
-        cout<<size<<endl;
         return info;
 
     }
@@ -181,6 +180,7 @@ public:
             }
             temp = temp->getProximo();
         }
+        return false;
     }
 
     void destroiLista();

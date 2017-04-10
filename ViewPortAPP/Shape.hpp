@@ -204,10 +204,12 @@ public:
                 double Ye, Yd, Xf, Xt;
                 Ponto* es, *di, *ci, *ba;
 
-                if(p1->getRC() == RegionCode()){
-                    clipPs->adiciona(p1);
+                if (p1->getRC() == RegionCode()) {
+                    if (!clipPs->exists(p1)) {
+                        clipPs->adiciona(p1);
+                    }
                 }
-                
+
                 if (p1->getRC()[3] || p2->getRC()[3]) {
                     Ye = m * (clipMin->getX() - p1->getX()) + p1->getY();
                     if (Ye >= clipMin->getY() && Ye <= clipMax->getY()) {
@@ -239,17 +241,73 @@ public:
                     }
                     clipPs->adiciona(ci);
                 }
-                
-                if(p2->getRC() == RegionCode()){
-                    if(!clipPs->exists(p2)){
+
+                if (p2->getRC() == RegionCode()) {
+                    if (!clipPs->exists(p2)) {
                         clipPs->adiciona(p2);
                     }
-                    
+                }               
+                
+                if(p2->getRC()[3] && p2->getRC()[1]){
+                    Ponto* n = new Ponto(clipMin->getX(), clipMin->getY());
+                    if (!clipPs->exists(n)) {
+                        clipPs->adiciona(n);
+                    }
+                }
+                if(p2->getRC()[3] && p2->getRC()[0]){
+                    Ponto* n = new Ponto(clipMin->getX(), clipMax->getY());
+                    if (!clipPs->exists(n)) {
+                        clipPs->adiciona(n);
+                    }
+                }
+                if(p2->getRC()[2] && p2->getRC()[1]){
+                    Ponto* n = new Ponto(clipMax->getX(), clipMin->getY());
+                    if (!clipPs->exists(n)) {
+                        clipPs->adiciona(n);
+                    }
+                }
+                if(p2->getRC()[2] && p2->getRC()[0]){
+                    Ponto* n = new Ponto(clipMax->getX(), clipMax->getY());
+                    if (!clipPs->exists(n)) {
+                        clipPs->adiciona(n);
+                    }
+                }
+                
+            }
+            
+            
+            if((p1->getRC() && p2->getRC()) != RegionCode()){ // totalmente fora
+                if(p2->getRC()[3] && p2->getRC()[1]){
+                    Ponto* n = new Ponto(clipMin->getX(), clipMin->getY());
+                    if (!clipPs->exists(n)) {
+                        clipPs->adiciona(n);
+                    }
+                }
+                if(p2->getRC()[3] && p2->getRC()[0]){
+                    Ponto* n = new Ponto(clipMin->getX(), clipMax->getY());
+                    if (!clipPs->exists(n)) {
+                        clipPs->adiciona(n);
+                    }
+                }
+                if(p2->getRC()[2] && p2->getRC()[1]){
+                    Ponto* n = new Ponto(clipMax->getX(), clipMin->getY());
+                    if (!clipPs->exists(n)) {
+                        clipPs->adiciona(n);
+                    }
+                }
+                if(p2->getRC()[2] && p2->getRC()[0]){
+                    Ponto* n = new Ponto(clipMax->getX(), clipMax->getY());
+                    if (!clipPs->exists(n)) {
+                        clipPs->adiciona(n);
+                    }
                 }
             }
+            
 
             if (p1->getRC() == p2->getRC() && p1->getRC() == RegionCode()) { //totalmente dentro
-                clipPs->adiciona(p1);
+                if (!clipPs->exists(p1)) {
+                    clipPs->adiciona(p1);
+                }
             }
         }
 
