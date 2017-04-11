@@ -313,8 +313,43 @@ public:
 
     }
 
-    ListaEnc<Ponto*>* clipLB() {
-
+    ListaEnc<Ponto*>* clipLB(Ponto* clipMin, Ponto* clipMax) {
+        
+        clipPs->clean();                
+        Ponto* pmin;
+        Ponto* pmax;
+        
+        float p1 = - (pontos->get(pontos->getSize())->getX() - pontos->getHead()->getX());
+        float p2 = -p1;
+        float p3 = - (pontos->get(pontos->getSize())->getY() - pontos->getHead()->getY());
+        float p4 = -p3;
+        float q1 = pontos->getHead()->getX() - clipMin->getX();
+        float q2 = clipMax->getX() - pontos->getHead()->getX();
+        float q3 = pontos->getHead()->getY() - clipMin->getY();
+        float q4 = clipMax->getY() - pontos->getHead()->getY();
+        
+        float r1 = q1/p1;
+        float r3 = q3/p3;
+        float u1 = max(0.0, max(r1, r3));
+        float r2 = q2/p2;
+        float r4 = q4/p4;
+        float u2 = min(1.0, min(r2, r4));
+        
+        if(u1 != 0){
+            pmin = new Ponto(clipMin->getX() , pontos->getHead()->getY() + u1*p4);
+        } else {
+            pmin = pontos->getHead();
+        }
+        
+        if(u2 != 1){
+            pmax = new Ponto(pontos->getHead()->getX() + u2*p2, clipMax->getY());
+        } else {
+            pmax = pontos->get(pontos->getSize());
+        }
+    }
+    
+    template <Shape> ListaEnc<Ponto*>* clip(Ponto* clipMin, Ponto* clipMax){
+        
     }
 
     void draw(cairo_t* cr, Ponto* camPos) {
@@ -354,6 +389,10 @@ public:
         }
     }
 
+};
+
+class Reta : public Shape{
+    
 };
 
 class Retangulo : public Shape {
