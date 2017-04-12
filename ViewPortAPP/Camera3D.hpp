@@ -116,7 +116,6 @@ public:
     }
 
     Ponto* clickTransform(Ponto* p) {
-        //calculate_matrix();
         return transform->cT(p, zoom, rot);
     }
 
@@ -126,7 +125,6 @@ public:
 
     void calculate_matrix() {
         transform->calculate_viewport_transform(viewport->min(), viewport->max(), windowmin, windowmax, winCenter());
-
     }
 
     void Zoom(bool in) {
@@ -149,7 +147,6 @@ public:
             windowmin->move_by(-width/10,-height/10);
             windowmax->move_by(width/10,height/10);
         }
-        //calculate_matrix();
     }
 
     void Zoom(double value) {

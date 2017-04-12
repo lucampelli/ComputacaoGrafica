@@ -259,7 +259,7 @@ public:
         Ponto* pmin;
         Ponto* pmax;
 
-        float p1 = -(pf->getX() - pi->getX()); //Só mudei os nomes, acho que vc meio que não viu que algumas vez em vez de get(), vc colocou getSize()... de boa
+        float p1 = -(pf->getX() - pi->getX());
         float p2 = -p1;
         float p3 = -(pf->getY() - pi->getY());
         float p4 = -p3;
@@ -276,14 +276,14 @@ public:
         float u2 = min(1.0f, min(r2, r4));
 
         if (u1 != 0) {
-            pmin = new Ponto(clipMin->getX(), pontos->getHead()->getY() + u1 * p4); //precisa dar uma olhada aqui... não sei se é assim mesmo...
-        } else { // tipo o u1 são os valores negativos
+            pmin = new Ponto(clipMin->getX(), pontos->getHead()->getY() + u1 * p4);
+        } else {
             pmin = pi;
         }
 
         if (u2 != 1) {
             pmax = new Ponto(pontos->getHead()->getX() + u2*p2, clipMax->getY());
-        } else { //e o u2 são os positivos... acho
+        } else {
             pmax = pontos->get(pontos->getSize());
         }
     }

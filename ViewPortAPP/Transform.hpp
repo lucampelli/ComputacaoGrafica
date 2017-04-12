@@ -121,32 +121,19 @@ public:
         Matriz* r = m1->multiply(t);
         Ponto* t = new Ponto(r->get(0,0), r->get(0,1), r->get(0,2));
         
-        
         return t;
     }
     
     Ponto* dT(Ponto* p){
-        //setT(set_2D_move_matrix(-camPos->getX(), -camPos->getY()));
-        //concatenate_matrix(dc);
-        //concatenate_matrix(set_2D_move_matrix(camPos->getX(), camPos->getY()));
-        //return transform(p);
         
         double xvp, yvp;
-        
-        
         xvp = ((p->getX() - wmin->getX())/(wmax->getX() -wmin->getX())) * (vpmax->getX() - vpmin->getX());
         yvp = (1 - ((p->getY() - wmin->getY())/(wmax->getY() -wmin->getY()))) * (vpmax->getY() - vpmin->getY());
         return new Ponto(xvp,yvp);
         
-        //return new Ponto(p->getX() * m11 + m13 , p->getY() * m22 + m23 );
     }
     
     Ponto* cT(Ponto* p, double zoom, double rot){
-        /*
-        setT(set_2D_move_matrix(-camPos->getX(), -camPos->getY()));
-        concatenate_matrix(idc);
-        concatenate_matrix(set_2D_move_matrix(camPos->getX(), camPos->getY()));
-        */
         
         double xw, yw;
         
@@ -157,10 +144,8 @@ public:
         
         Ponto* r = new Ponto(xw,yw);
         
-        return (transform(r));
-        //return new Ponto((p->getX()- m13 ) / m11, (p->getY() - m23 ) / m22 );
+        return (transform(r));;
     }
-    
     
 };
 
