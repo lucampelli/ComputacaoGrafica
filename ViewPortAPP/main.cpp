@@ -44,6 +44,7 @@ int points_created = 0;
 int rectangles_created = 0;
 int squares_created = 0;
 int polygons_created = 0;
+int lines_created = 0;
 double TX = 0;
 double TY = 0;
 int rotation = 0;
@@ -87,7 +88,7 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
     for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());
         print.append("\n");
-        normLista->get(i)->clipCS(cam->getClipMin(), cam->getClipMax());
+        normLista->get(i)->clip(cam->getClipMin(), cam->getClipMax());
         normLista->get(i)->draw(cr, camPos);
 
     }
@@ -506,7 +507,7 @@ static void build_shape() {
     if (!clicking) {
         clicking = true;
         gtk_widget_set_sensitive(combo_box_shape, FALSE);
-        if (shape_choice != 3) {
+        if (shape_choice != 4) {
             gtk_widget_set_sensitive(buttonAdd, FALSE);
         }
         polP = new ListaEnc<Ponto*>();
@@ -525,8 +526,21 @@ static void build_shape() {
             lista->adiciona(p);
         }
     }
-
+    
     if (shape_choice == 1) {
+        if (clicking) {
+            clicking = false;
+            gtk_widget_set_sensitive(combo_box_shape, TRUE);
+            gtk_widget_set_sensitive(buttonAdd, TRUE);
+            Reta* p = new Reta(polP->get(0), polP->get(1));
+            lines_created++;
+            string new_name = "Reta " + std::to_string(lines_created);
+            p->setName(new_name);
+            lista->adiciona(p);
+        }
+    }
+
+    if (shape_choice == 2) {
         //Retangulo
         if (clicking) {
             clicking = false;
@@ -544,7 +558,7 @@ static void build_shape() {
         }
 
     }
-    if (shape_choice == 2) {
+    if (shape_choice == 3) {
         //Quadrado
         if (clicking) {
             clicking = false;
@@ -563,7 +577,7 @@ static void build_shape() {
 
     }
 
-    if (shape_choice == 3) {
+    if (shape_choice == 4) {
         //Polígono
         if (clicking) {
 
@@ -592,7 +606,7 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
     // emission should be stopped (don’t call any further callbacks
     // that may be connected). Return FALSE to continue invoking callbacks.
 
-    if (shape_choice == 1 || shape_choice == 2) {
+    if (shape_choice == 1 || shape_choice == 2 || shape_choice == 3) {
         if (polP->getSize() == 2) {
             build_shape();
             return TRUE;
@@ -672,7 +686,7 @@ int main(int argc, char** argv) {
 
     //ComboBox
     combo_box_shape = gtk_combo_box_text_new();
-    const char* shapes[] = {"Ponto", "Retangulo", "Quadrado", "Poligono"};
+    const char* shapes[] = {"Ponto", "Reta","Retangulo", "Quadrado", "Poligono"};
 
     for (int i = 0; i < G_N_ELEMENTS(shapes); i++) {
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box_shape), shapes[i]);

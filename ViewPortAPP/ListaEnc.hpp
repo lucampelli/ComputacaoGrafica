@@ -175,7 +175,7 @@ public:
     bool exists(T dado){
         Elemento<T>* temp = head;
         for(int i = 1; i < size; i++){
-            if(dado == temp->getInfo()){
+            if(igual(dado, temp->getInfo())){
                 return true;
             }
             temp = temp->getProximo();

@@ -172,6 +172,9 @@ public:
                 nPontos->adiciona(transform->transform(new Ponto((s->getPontos()->get(j)->getX()) , (s->getPontos()->get(j)->getY()))));
             }
             Shape* n = new Shape(nPontos);
+            n->setFill(s->getFill());
+            n->setLine(s->getLine());
+            n->setType(s->getType());
             normShapes->adiciona(n);
         }
 
