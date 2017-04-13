@@ -301,8 +301,16 @@ public:
 
             if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
                 clipCS(clipMin, clipMax, anterior, atual);
-                cout << "dentro -> fora" << endl;
-
+            }
+            
+            if(anterior->getRC() != RegionCode()){
+                if(atual->getRC() != RegionCode()){
+                    if(atual->getRC() != anterior->getRC()){
+                        if((atual->getRC() && anterior->getRC()) == RegionCode()){
+                            clipCS(clipMin, clipMax, anterior, atual);
+                        }
+                    }
+                }
             }
 
 

@@ -72,6 +72,15 @@ public:
         return temp;
     }
     
+    RegionCode operator || (RegionCode rc){
+        RegionCode temp;
+        temp.set(RC[0] || rc[0], 0);
+        temp.set(RC[1] || rc[1], 1);
+        temp.set(RC[2] || rc[2], 2);
+        temp.set(RC[3] || rc[3], 3);
+        return temp;
+    }
+    
 };
 
 class Ponto{
