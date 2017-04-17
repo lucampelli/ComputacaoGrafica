@@ -249,7 +249,7 @@ public:
                 clipPs->adiciona(p2);
             }
         }
-        
+
 
 
     }
@@ -302,11 +302,11 @@ public:
             if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
                 clipCS(clipMin, clipMax, anterior, atual);
             }
-            
-            if(anterior->getRC() != RegionCode()){
-                if(atual->getRC() != RegionCode()){
-                    if(atual->getRC() != anterior->getRC()){
-                        if((atual->getRC() && anterior->getRC()) == RegionCode()){
+
+            if (anterior->getRC() != RegionCode()) {
+                if (atual->getRC() != RegionCode()) {
+                    if (atual->getRC() != anterior->getRC()) {
+                        if ((atual->getRC() && anterior->getRC()) == RegionCode()) {
                             clipCS(clipMin, clipMax, anterior, atual);
                         }
                     }
@@ -316,7 +316,6 @@ public:
 
             if ((anterior->getRC() != RegionCode()) && (atual->getRC() == RegionCode())) {
                 clipCS(clipMin, clipMax, anterior, atual);
-                cout << "fora -> dentro" << endl;
 
             } else if (atual->getRC() == RegionCode()) {
                 clipPs->adiciona(atual);
@@ -463,8 +462,75 @@ public:
         this->setPointsList(p);
         this->setType(4);
     }
+};
 
+class Curva : public Shape {
+public:
 
+    void Bezier(Ponto* p1, Ponto* p2, Ponto* p3, Ponto* p4, float passo, ListaEnc<Ponto*>* outPontos) {
+        Matriz* T = new Matriz(1, 4);
+        Matriz* GBx = new Matriz(4, 1);
+        Matriz* GBy = new Matriz(4, 1);
+        GBx->set(0,0,p1->getX());
+        GBx->set(1,0,p2->getX());
+        GBx->set(2,0,p3->getX());
+        GBx->set(3,0,p4->getX());
+        GBy->set(0,0,p1->getY());
+        GBy->set(1,0,p2->getY());
+        GBy->set(2,0,p3->getY());
+        GBy->set(3,0,p4->getY());
+
+        for (float i = passo; i < 1; i += passo) {
+            T->set(0, 0, i * i * i);
+            T->set(0, 1, i * i);
+            T->set(0, 2, i);
+            T->set(0, 3, 1);
+            
+            T->print();
+            
+            
+            Matriz* TMB = T->multiply(MB);
+            
+            outPontos->adiciona(new Ponto(TMB->multiply(GBx)->get(0,0), T->multiply(GBy)->get(0,0)));            
+        }
+
+    }
+
+    Curva(float x, float y, ListaEnc<Ponto*>* p) {
+        ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
+        MB->set(0,0,-1);
+        MB->set(0,1,3);
+        MB->set(0,2,-3);
+        MB->set(0,3,1);
+        MB->set(1,0,3);
+        MB->set(1,1,-6);
+        MB->set(1,2,3);
+        MB->set(2,0,-3);
+        MB->set(2,1,3);
+        MB->set(3,0,1);
+        
+        temp->adiciona(p->getHead());
+        
+        for (int i = 0; i < p->getSize(); i++) {
+            p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y);
+        }
+        
+        
+        for(int i = 0; i < p->getSize() - 3; i += 3){
+            Bezier(p->get(i),p->get(i+1),p->get(i+2),p->get(i+3), 0.2f , temp );
+        }
+        
+        temp->adiciona(p->get(p->getSize() -1));
+        
+        this->setPointsList(temp);
+        this->setType(5);
+        this->setLine(true);
+        
+
+    }
+
+private:
+    Matriz *MB = new Matriz(4, 4);
 };
 
 #endif /* SHAPE_HPP */

@@ -44,6 +44,7 @@ int points_created = 0;
 int rectangles_created = 0;
 int squares_created = 0;
 int polygons_created = 0;
+int bezier_created = 0;
 int lines_created = 0;
 double TX = 0;
 double TY = 0;
@@ -507,7 +508,7 @@ static void build_shape() {
     if (!clicking) {
         clicking = true;
         gtk_widget_set_sensitive(combo_box_shape, FALSE);
-        if (shape_choice != 4) {
+        if (shape_choice != 4 && shape_choice != 5) {
             gtk_widget_set_sensitive(buttonAdd, FALSE);
         }
         polP = new ListaEnc<Ponto*>();
@@ -588,6 +589,20 @@ static void build_shape() {
             string new_name = "Polígono " + std::to_string(polygons_created);
             p->setName(new_name);
             lista->adiciona(p);
+        }
+    }
+    
+    if (shape_choice == 5) {
+        //Polígono
+        if (clicking) {
+
+            clicking = false;
+            gtk_widget_set_sensitive(combo_box_shape, TRUE);
+            Curva* c = new Curva(-camPos->getX(), camPos->getY(), polP);
+            bezier_created++;
+            string new_name = "Bezier " + std::to_string(bezier_created);
+            c->setName(new_name);
+            lista->adiciona(c);
         }
     }
     gtk_widget_queue_draw(main_window);
@@ -686,7 +701,7 @@ int main(int argc, char** argv) {
 
     //ComboBox
     combo_box_shape = gtk_combo_box_text_new();
-    const char* shapes[] = {"Ponto", "Reta","Retangulo", "Quadrado", "Poligono"};
+    const char* shapes[] = {"Ponto", "Reta","Retangulo", "Quadrado", "Poligono", "Bezier"};
 
     for (int i = 0; i < G_N_ELEMENTS(shapes); i++) {
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box_shape), shapes[i]);
