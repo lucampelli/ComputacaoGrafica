@@ -514,6 +514,10 @@ static void build_shape() {
         polP = new ListaEnc<Ponto*>();
         return;
     }
+    
+    if(polP->getSize() == 0){
+        return;
+    }
 
     if (shape_choice == 0) {
         if (clicking) {
