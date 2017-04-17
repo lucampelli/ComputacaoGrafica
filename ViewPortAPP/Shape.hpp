@@ -330,6 +330,46 @@ public:
 
 
     }
+    
+    void curveClip(Ponto* clipMin, Ponto* clipMax){
+        for (int i = 0; i < pontos->getSize(); i++) {
+            Ponto* p = pontos->get(i);
+            findRC(p, clipMin, clipMax);
+        }
+        Ponto* atual = pontos->get(0);
+        Ponto* anterior = pontos->get(0);
+
+        for (int i = 1; i <= pontos->getSize(); i++) {
+
+            if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
+                clipCS(clipMin, clipMax, anterior, atual);
+            }
+
+            if (anterior->getRC() != RegionCode()) {
+                if (atual->getRC() != RegionCode()) {
+                    if (atual->getRC() != anterior->getRC()) {
+                        if ((atual->getRC() && anterior->getRC()) == RegionCode()) {
+                            clipCS(clipMin, clipMax, anterior, atual);
+                        }
+                    }
+                }
+            }
+
+
+            if ((anterior->getRC() != RegionCode()) && (atual->getRC() == RegionCode())) {
+                clipCS(clipMin, clipMax, anterior, atual);
+
+            } else if (atual->getRC() == RegionCode()) {
+                clipPs->adiciona(atual);
+            }
+
+            if (i < pontos->getSize()) {
+                anterior = pontos->get(i - 1);
+                atual = pontos->get(i);
+            }
+
+        }
+    }
 
     void clip(Ponto* clipMin, Ponto* clipMax) {
 
@@ -343,8 +383,10 @@ public:
         } else
             if (type == 1) {
             clipCS(clipMin, clipMax, pontos->getHead(), pontos->get(1));
-        } else {
+        } else if(type != 5) {
             polClip(clipMin, clipMax);
+        } else {
+            curveClip(clipMin, clipMax);
         }
         cout << endl;
 
@@ -480,18 +522,17 @@ public:
         GBy->set(2,0,p3->getY());
         GBy->set(3,0,p4->getY());
 
-        for (float i = passo; i < 1; i += passo) {
+        for (float i = 0; i <= 1; i += passo) {
             T->set(0, 0, i * i * i);
             T->set(0, 1, i * i);
             T->set(0, 2, i);
-            T->set(0, 3, 1);
-            
-            T->print();
-            
+            T->set(0, 3, 1);            
             
             Matriz* TMB = T->multiply(MB);
             
-            outPontos->adiciona(new Ponto(TMB->multiply(GBx)->get(0,0), T->multiply(GBy)->get(0,0)));            
+            cout<< TMB->multiply(GBx)->get(0,0)<<" : " << TMB->multiply(GBy)->get(0,0)<<endl;
+            
+            outPontos->adiciona(new Ponto(TMB->multiply(GBx)->get(0,0), TMB->multiply(GBy)->get(0,0)));            
         }
 
     }
@@ -509,18 +550,32 @@ public:
         MB->set(2,1,3);
         MB->set(3,0,1);
         
-        temp->adiciona(p->getHead());
+        //temp->adiciona(p->getHead());
         
         for (int i = 0; i < p->getSize(); i++) {
             p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y);
         }
         
-        
-        for(int i = 0; i < p->getSize() - 3; i += 3){
-            Bezier(p->get(i),p->get(i+1),p->get(i+2),p->get(i+3), 0.2f , temp );
+        if(p->getSize() < 4){
+            for(int i = 0; i < 4-p->getSize(); i++){
+                p->adiciona(p->get(p->getSize()-1));
+            }
         }
         
-        temp->adiciona(p->get(p->getSize() -1));
+        if(p->getSize() != 4 + (3 * (p->getSize() / 4))){
+            for(int i = p->getSize(); i < 4 + (3 * ((int)p->getSize() / 4)); i++){
+                p->adiciona(p->get(p->getSize()-1));
+            }
+        }
+        
+        for(int i = 0; i < p->getSize() - 3; i += 3){
+            Bezier(p->get(i),p->get(i+1),p->get(i+2),p->get(i+3), 0.05f , temp );
+        }
+        
+        //temp->adiciona(p->get(p->getSize() -1));
+        for(int i = 0; i < temp->getSize(); i++){
+            cout<< temp->get(i)->getX() << ", " << temp->get(i)->getY() <<endl; 
+        }
         
         this->setPointsList(temp);
         this->setType(5);
