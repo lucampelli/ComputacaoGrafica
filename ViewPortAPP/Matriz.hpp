@@ -60,19 +60,30 @@ public:
         for (int i = 0; i < num_lin; ++i)
             for (int j = 0; j < m->col(); ++j)
                 for (int k = 0; k < num_col; ++k) {
-                    m3->set(i,j, m3->get(i,j) + (this->get(i,k) * m->get(k,j)));
+                    m3->set(i, j, m3->get(i, j) + (this->get(i, k) * m->get(k, j)));
                 }
 
         return m3;
 
     }
-    
-    void print(){
-        for(int i = 0; i < num_lin; i++){
-            for(int j = 0; j < num_col; j++){
-                cout<<get(i,j)<<" ";
+
+    Matriz* multiply(double esc) {
+        Matriz* m3 = new Matriz(num_lin, num_col);
+
+        for (int i = 0; i < num_lin; ++i)
+            for (int j = 0; j < num_col; ++j) {
+                m3->set(i, j, this->get(i, j) * esc);
             }
-            cout<<endl;
+
+        return m3;
+    }
+
+    void print() {
+        for (int i = 0; i < num_lin; i++) {
+            for (int j = 0; j < num_col; j++) {
+                cout << get(i, j) << " ";
+            }
+            cout << endl;
         }
     }
 

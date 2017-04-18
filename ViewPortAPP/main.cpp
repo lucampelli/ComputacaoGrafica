@@ -30,6 +30,8 @@ static GtkWidget *combo_box_shape;
 static GtkWidget *zoomField;
 static GtkWidget *buttonAdd;
 
+static GtkWidget *fillBox;
+
 static GtkWidget *CXE1, *CXE2, *CYE1, *CYE2;
 static GtkWidget *entryX, *entryY, *entryS, *entryA;
 
@@ -45,6 +47,7 @@ int rectangles_created = 0;
 int squares_created = 0;
 int polygons_created = 0;
 int bezier_created = 0;
+int spline_created = 0;
 int lines_created = 0;
 double TX = 0;
 double TY = 0;
@@ -508,7 +511,7 @@ static void build_shape() {
     if (!clicking) {
         clicking = true;
         gtk_widget_set_sensitive(combo_box_shape, FALSE);
-        if (shape_choice != 4 && shape_choice != 5) {
+        if (shape_choice != 4 && shape_choice != 5 && shape_choice != 6) {
             gtk_widget_set_sensitive(buttonAdd, FALSE);
         }
         polP = new ListaEnc<Ponto*>();
@@ -528,6 +531,7 @@ static void build_shape() {
             points_created++;
             string new_name = "Ponto " + std::to_string(points_created);
             p->setName(new_name);
+            p->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(p);
         }
     }
@@ -541,6 +545,7 @@ static void build_shape() {
             lines_created++;
             string new_name = "Reta " + std::to_string(lines_created);
             p->setName(new_name);
+            p->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(p);
         }
     }
@@ -559,6 +564,7 @@ static void build_shape() {
             rectangles_created++;
             string new_name = "Retângulo " + std::to_string(rectangles_created);
             r->setName(new_name);
+            r->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(r);
         }
 
@@ -577,6 +583,7 @@ static void build_shape() {
             squares_created++;
             string new_name = "Quadrado " + std::to_string(squares_created);
             q->setName(new_name);
+            q->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(q);
         }
 
@@ -592,6 +599,7 @@ static void build_shape() {
             polygons_created++;
             string new_name = "Polígono " + std::to_string(polygons_created);
             p->setName(new_name);
+            p->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(p);
         }
     }
@@ -602,10 +610,26 @@ static void build_shape() {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
-            Curva* c = new Curva(-camPos->getX(), camPos->getY(), polP);
+            CurvaBezier* c = new CurvaBezier(-camPos->getX(), camPos->getY(), polP);
             bezier_created++;
             string new_name = "Bezier " + std::to_string(bezier_created);
             c->setName(new_name);
+            c->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
+            lista->adiciona(c);
+        }
+    }
+    
+    if (shape_choice == 6) {
+        //Polígono
+        if (clicking) {
+
+            clicking = false;
+            gtk_widget_set_sensitive(combo_box_shape, TRUE);
+            B_Spline* c = new B_Spline(-camPos->getX(), camPos->getY(), polP);
+            bezier_created++;
+            string new_name = "B_Spline" + std::to_string(spline_created);
+            c->setName(new_name);
+            c->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(c);
         }
     }
@@ -705,7 +729,7 @@ int main(int argc, char** argv) {
 
     //ComboBox
     combo_box_shape = gtk_combo_box_text_new();
-    const char* shapes[] = {"Ponto", "Reta","Retangulo", "Quadrado", "Poligono", "Bezier"};
+    const char* shapes[] = {"Ponto", "Reta","Retangulo", "Quadrado", "Poligono", "Bezier", "B-Spline"};
 
     for (int i = 0; i < G_N_ELEMENTS(shapes); i++) {
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box_shape), shapes[i]);
@@ -726,6 +750,7 @@ int main(int argc, char** argv) {
 
     //Buttons
     buttonAdd = gtk_button_new_with_label("Adicionar Forma");
+    fillBox = gtk_check_button_new_with_label("Preencher");
     buttonUp = gtk_button_new_with_label("▲");
     buttonDown = gtk_button_new_with_label("▼");
     buttonRight = gtk_button_new_with_label("►");
@@ -749,6 +774,7 @@ int main(int argc, char** argv) {
     gtk_container_add(GTK_CONTAINER(vbox1), shapeField);
     gtk_container_add(GTK_CONTAINER(vbox1), combo_box_shape);
     gtk_container_add(GTK_CONTAINER(vbox1), buttonAdd);
+    gtk_container_add(GTK_CONTAINER(vbox1), fillBox);
     gtk_container_add(GTK_CONTAINER(vbox1), delete_button);
     gtk_container_add(GTK_CONTAINER(vbox1), buttonUp);
     gtk_container_add(GTK_CONTAINER(vbox1), hboxlr);

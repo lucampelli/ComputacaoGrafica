@@ -330,8 +330,8 @@ public:
 
 
     }
-    
-    void curveClip(Ponto* clipMin, Ponto* clipMax){
+
+    void curveClip(Ponto* clipMin, Ponto* clipMax) {
         for (int i = 0; i < pontos->getSize(); i++) {
             Ponto* p = pontos->get(i);
             findRC(p, clipMin, clipMax);
@@ -383,7 +383,7 @@ public:
         } else
             if (type == 1) {
             clipCS(clipMin, clipMax, pontos->getHead(), pontos->get(1));
-        } else if(type != 5) {
+        } else if (type != 5) {
             polClip(clipMin, clipMax);
         } else {
             curveClip(clipMin, clipMax);
@@ -414,9 +414,13 @@ public:
                 atual = transform->dT(atual);
                 cairo_line_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
             }
-            cairo_stroke(cr);
+
+
+
             if (fillShape) {
                 cairo_fill(cr);
+            } else {
+                cairo_stroke(cr);
             }
         }
 
@@ -481,7 +485,7 @@ public:
 class Point : public Retangulo {
 public:
 
-    Point(double x, double y) : Retangulo(x, y, 0.005f, 0.005f) {
+    Point(double x, double y, double z = 1) : Retangulo(x, y, 0.005f, 0.005f) {
         this->setType(0);
     }
 };
@@ -506,86 +510,178 @@ public:
     }
 };
 
-class Curva : public Shape {
+class CurvaBezier : public Shape {
 public:
 
     void Bezier(Ponto* p1, Ponto* p2, Ponto* p3, Ponto* p4, float passo, ListaEnc<Ponto*>* outPontos) {
         Matriz* T = new Matriz(1, 4);
         Matriz* GBx = new Matriz(4, 1);
         Matriz* GBy = new Matriz(4, 1);
-        GBx->set(0,0,p1->getX());
-        GBx->set(1,0,p2->getX());
-        GBx->set(2,0,p3->getX());
-        GBx->set(3,0,p4->getX());
-        GBy->set(0,0,p1->getY());
-        GBy->set(1,0,p2->getY());
-        GBy->set(2,0,p3->getY());
-        GBy->set(3,0,p4->getY());
+        GBx->set(0, 0, p1->getX());
+        GBx->set(1, 0, p2->getX());
+        GBx->set(2, 0, p3->getX());
+        GBx->set(3, 0, p4->getX());
+        GBy->set(0, 0, p1->getY());
+        GBy->set(1, 0, p2->getY());
+        GBy->set(2, 0, p3->getY());
+        GBy->set(3, 0, p4->getY());
 
         for (float i = 0; i <= 1; i += passo) {
             T->set(0, 0, i * i * i);
             T->set(0, 1, i * i);
             T->set(0, 2, i);
-            T->set(0, 3, 1);            
-            
+            T->set(0, 3, 1);
+
             Matriz* TMB = T->multiply(MB);
-            
-            cout<< TMB->multiply(GBx)->get(0,0)<<" : " << TMB->multiply(GBy)->get(0,0)<<endl;
-            
-            outPontos->adiciona(new Ponto(TMB->multiply(GBx)->get(0,0), TMB->multiply(GBy)->get(0,0)));            
+
+            cout << TMB->multiply(GBx)->get(0, 0) << " : " << TMB->multiply(GBy)->get(0, 0) << endl;
+
+            outPontos->adiciona(new Ponto(TMB->multiply(GBx)->get(0, 0), TMB->multiply(GBy)->get(0, 0)));
         }
 
     }
 
-    Curva(float x, float y, ListaEnc<Ponto*>* p) {
+    CurvaBezier(float x, float y, ListaEnc<Ponto*>* p) {
         ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
-        MB->set(0,0,-1);
-        MB->set(0,1,3);
-        MB->set(0,2,-3);
-        MB->set(0,3,1);
-        MB->set(1,0,3);
-        MB->set(1,1,-6);
-        MB->set(1,2,3);
-        MB->set(2,0,-3);
-        MB->set(2,1,3);
-        MB->set(3,0,1);
-        
+        MB->set(0, 0, -1);
+        MB->set(0, 1, 3);
+        MB->set(0, 2, -3);
+        MB->set(0, 3, 1);
+        MB->set(1, 0, 3);
+        MB->set(1, 1, -6);
+        MB->set(1, 2, 3);
+        MB->set(2, 0, -3);
+        MB->set(2, 1, 3);
+        MB->set(3, 0, 1);
+
         //temp->adiciona(p->getHead());
-        
+
         for (int i = 0; i < p->getSize(); i++) {
             p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y);
         }
-        
-        if(p->getSize() < 4){
-            for(int i = 0; i < 4-p->getSize(); i++){
-                p->adiciona(p->get(p->getSize()-1));
+
+        if (p->getSize() < 4) {
+            for (int i = 0; i < 4 - p->getSize(); i++) {
+                p->adiciona(p->get(p->getSize() - 1));
             }
         }
-        
-        if(p->getSize() != 4 + (3 * (p->getSize() / 4))){
-            for(int i = p->getSize(); i < 4 + (3 * ((int)p->getSize() / 4)); i++){
-                p->adiciona(p->get(p->getSize()-1));
+
+        if (p->getSize() != 4 + (3 * (p->getSize() / 4))) {
+            for (int i = p->getSize(); i < 4 + (3 * ((int) p->getSize() / 4)); i++) {
+                p->adiciona(p->get(p->getSize() - 1));
             }
         }
-        
-        for(int i = 0; i < p->getSize() - 3; i += 3){
-            Bezier(p->get(i),p->get(i+1),p->get(i+2),p->get(i+3), 0.05f , temp );
+
+        for (int i = 0; i < p->getSize() - 3; i += 3) {
+            Bezier(p->get(i), p->get(i + 1), p->get(i + 2), p->get(i + 3), 0.05f, temp);
         }
-        
-        //temp->adiciona(p->get(p->getSize() -1));
-        for(int i = 0; i < temp->getSize(); i++){
-            cout<< temp->get(i)->getX() << ", " << temp->get(i)->getY() <<endl; 
-        }
-        
+
         this->setPointsList(temp);
         this->setType(5);
         this->setLine(true);
-        
+
 
     }
 
 private:
     Matriz *MB = new Matriz(4, 4);
+};
+
+class B_Spline : public Shape {
+
+public:
+    void BSpline(int n, double x1, double x2, double x3, double x4, double y1, double y2, double y3, double y4, ListaEnc<Ponto*>* outPontos) {
+        
+        outPontos->adiciona(new Ponto(x1,y1));
+        
+        for(int i = 0; i < n; i++){
+            x1 += x2;
+            x2 += x3;
+            x3 += x4;
+            y1 += y2;
+            y2 += y3;
+            y3 += y4;
+            outPontos->adiciona(new Ponto(x1,y1));
+            
+        }
+
+    }
+
+    B_Spline(float x, float y, ListaEnc<Ponto*>* p) {
+        ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
+        float passo = 0.2f;
+
+        MBS->set(0, 0, -1);
+        MBS->set(0, 1, 3);
+        MBS->set(0, 2, -3);
+        MBS->set(0, 3, 1);
+        MBS->set(1, 0, 3);
+        MBS->set(1, 1, -6);
+        MBS->set(1, 2, 3);
+        MBS->set(2, 0, -3);
+        MBS->set(2, 2, 3);
+        MBS->set(3, 0, 1);
+        MBS->set(3, 1, 4);
+        MBS->set(3, 2, 1);
+        
+        MBS = MBS->multiply(1.0/6.0);
+
+        Matriz* E = new Matriz(4, 4);
+        E->set(0, 3, 1);
+        E->set(1, 0, passo * passo * passo);
+        E->set(1, 1, passo * passo);
+        E->set(1, 2, passo);
+        E->set(2, 0, 6 * (passo * passo * passo));
+        E->set(2, 1, 2 * (passo * passo));
+        E->set(3, 0, 6 * (passo * passo * passo));
+
+        //temp->adiciona(p->getHead());
+
+        for (int i = 0; i < p->getSize(); i++) {
+            p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y);
+        }
+
+        if (p->getSize() < 4) {
+            for (int i = 0; i < 4 - p->getSize(); i++) {
+                p->adiciona(p->get(p->getSize() - 1));
+            }
+        }
+
+        for (int i = 3; i < p->getSize(); i++) {
+            Matriz* GBSx = new Matriz(4, 1);
+            Matriz* GBSy = new Matriz(4, 1);
+            GBSx->set(0, 0, p->get(i-3)->getX());
+            GBSx->set(1, 0, p->get(i-2)->getX());
+            GBSx->set(2, 0, p->get(i-1)->getX());
+            GBSx->set(3, 0, p->get(i)->getX());
+            GBSy->set(0, 0, p->get(i-3)->getY());
+            GBSy->set(1, 0, p->get(i-2)->getY());
+            GBSy->set(2, 0, p->get(i-1)->getY());
+            GBSy->set(3, 0, p->get(i)->getY());
+            
+           
+            
+            Matriz* Cx = MBS->multiply(GBSx);            
+            Matriz* Cy = MBS->multiply(GBSy);
+            
+            Cx = E->multiply(Cx);
+            Cy = E->multiply(Cy);
+            
+            BSpline(1/passo, Cx->get(0,0), Cx->get(1,0), Cx->get(2,0), Cx->get(3,0), Cy->get(0,0), Cy->get(1,0), Cy->get(2,0), Cy->get(3,0), temp);
+
+        }
+
+        this->setPointsList(temp);
+        this->setType(5);
+        this->setLine(true);
+    }
+
+
+private:
+    Matriz* MBS = new Matriz(4,4);
+
+
+
 };
 
 #endif /* SHAPE_HPP */
