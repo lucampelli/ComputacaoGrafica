@@ -22,7 +22,7 @@ using namespace std;
 
 class Shape {
 private:
-    Transform* transform = Transform::getInstance();
+
     Ponto* pos;
     ListaEnc<Ponto*>* pontos;
     ListaEnc<Ponto*>* clipPs = new ListaEnc<Ponto*>();
@@ -33,6 +33,7 @@ private:
     string name;
 
 protected:
+    Transform* transform = Transform::getInstance();
     bool fillShape = false;
     bool line = false;
     int type = 0;
@@ -414,14 +415,15 @@ public:
                 atual = transform->dT(atual);
                 cairo_line_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
             }
-
-
-
-            if (fillShape) {
+            ;
+            if (fillShape && !line) {
+                cairo_stroke_preserve(cr);
                 cairo_fill(cr);
             } else {
                 cairo_stroke(cr);
             }
+
+
         }
 
 
@@ -475,9 +477,19 @@ public:
 class Retangulo : public Shape {
 public:
 
-    Retangulo(double x, double y, double width, double height) {
+    Retangulo(double x, double y, double width, double height, int camRot) {
         Ponto * p[] = {new Ponto(x, y), new Ponto(x + width, y), new Ponto(x + width, y + height), new Ponto(x, y + height)};
         this->addPoints(4, p);
+        transform->setT(transform->set_2D_move_matrix(-findCenter()->getX(), -findCenter()->getY()));
+        transform->concatenate_matrix(transform->set_2D_rotation_matrix(2 * camRot));
+        transform->concatenate_matrix(transform->set_2D_move_matrix(findCenter()->getX(), findCenter()->getY()));
+        Ponto * q[] = {new Ponto(x, y), transform->transform(new Ponto(x + width, y)), new Ponto(x + width, y + height), transform->transform(new Ponto(x, y + height))};
+        ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
+        temp->adiciona(q[0]);
+        temp->adiciona(q[1]);
+        temp->adiciona(q[2]);
+        temp->adiciona(q[3]);
+        this->setPointsList(temp);
         this->setType(2);
     }
 };
@@ -485,7 +497,7 @@ public:
 class Point : public Retangulo {
 public:
 
-    Point(double x, double y, double z = 1) : Retangulo(x, y, 0.005f, 0.005f) {
+    Point(double x, double y, double z = 1) : Retangulo(x, y, 0.005f, 0.005f, 0) {
         this->setType(0);
     }
 };
@@ -493,7 +505,7 @@ public:
 class Quadrado : public Retangulo {
 public:
 
-    Quadrado(double x, double y, double size) : Retangulo(x, y, size, -size) {
+    Quadrado(double x, double y, double size, int camRot) : Retangulo(x, y, size, -size, camRot) {
         this->setType(3);
     }
 };
@@ -586,21 +598,21 @@ private:
 };
 
 class B_Spline : public Shape {
-
 public:
+
     void BSpline(int n, double x1, double x2, double x3, double x4, double y1, double y2, double y3, double y4, ListaEnc<Ponto*>* outPontos) {
-        
-        outPontos->adiciona(new Ponto(x1,y1));
-        
-        for(int i = 0; i < n; i++){
+
+        outPontos->adiciona(new Ponto(x1, y1));
+
+        for (int i = 0; i < n; i++) {
             x1 += x2;
             x2 += x3;
             x3 += x4;
             y1 += y2;
             y2 += y3;
             y3 += y4;
-            outPontos->adiciona(new Ponto(x1,y1));
-            
+            outPontos->adiciona(new Ponto(x1, y1));
+
         }
 
     }
@@ -621,8 +633,8 @@ public:
         MBS->set(3, 0, 1);
         MBS->set(3, 1, 4);
         MBS->set(3, 2, 1);
-        
-        MBS = MBS->multiply(1.0/6.0);
+
+        MBS = MBS->multiply(1.0 / 6.0);
 
         Matriz* E = new Matriz(4, 4);
         E->set(0, 3, 1);
@@ -648,24 +660,24 @@ public:
         for (int i = 3; i < p->getSize(); i++) {
             Matriz* GBSx = new Matriz(4, 1);
             Matriz* GBSy = new Matriz(4, 1);
-            GBSx->set(0, 0, p->get(i-3)->getX());
-            GBSx->set(1, 0, p->get(i-2)->getX());
-            GBSx->set(2, 0, p->get(i-1)->getX());
+            GBSx->set(0, 0, p->get(i - 3)->getX());
+            GBSx->set(1, 0, p->get(i - 2)->getX());
+            GBSx->set(2, 0, p->get(i - 1)->getX());
             GBSx->set(3, 0, p->get(i)->getX());
-            GBSy->set(0, 0, p->get(i-3)->getY());
-            GBSy->set(1, 0, p->get(i-2)->getY());
-            GBSy->set(2, 0, p->get(i-1)->getY());
+            GBSy->set(0, 0, p->get(i - 3)->getY());
+            GBSy->set(1, 0, p->get(i - 2)->getY());
+            GBSy->set(2, 0, p->get(i - 1)->getY());
             GBSy->set(3, 0, p->get(i)->getY());
-            
-           
-            
-            Matriz* Cx = MBS->multiply(GBSx);            
+
+
+
+            Matriz* Cx = MBS->multiply(GBSx);
             Matriz* Cy = MBS->multiply(GBSy);
-            
+
             Cx = E->multiply(Cx);
             Cy = E->multiply(Cy);
-            
-            BSpline(1/passo, Cx->get(0,0), Cx->get(1,0), Cx->get(2,0), Cx->get(3,0), Cy->get(0,0), Cy->get(1,0), Cy->get(2,0), Cy->get(3,0), temp);
+
+            BSpline(1 / passo, Cx->get(0, 0), Cx->get(1, 0), Cx->get(2, 0), Cx->get(3, 0), Cy->get(0, 0), Cy->get(1, 0), Cy->get(2, 0), Cy->get(3, 0), temp);
 
         }
 
@@ -676,7 +688,7 @@ public:
 
 
 private:
-    Matriz* MBS = new Matriz(4,4);
+    Matriz* MBS = new Matriz(4, 4);
 
 
 

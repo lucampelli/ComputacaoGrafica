@@ -560,7 +560,7 @@ static void build_shape() {
             double sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Retangulo* r = new Retangulo(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() + camPos->getY(),
-                    sizex, sizey);
+                    sizex, sizey, cam->getRot());
             rectangles_created++;
             string new_name = "Retângulo " + std::to_string(rectangles_created);
             r->setName(new_name);
@@ -579,7 +579,7 @@ static void build_shape() {
             double sizey = polP->get(1)->getY() - polP->get(0)->getY();
             Quadrado* q = new Quadrado(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() + camPos->getY(),
-                    sizex > sizey ? sizex : sizey); //poligon points list = good
+                    sizex > sizey ? sizex : sizey, cam->getRot()); //poligon points list = good
             squares_created++;
             string new_name = "Quadrado " + std::to_string(squares_created);
             q->setName(new_name);
