@@ -493,7 +493,7 @@ public:
 class Quadrado : public Retangulo {
 public:
 
-    Quadrado(double x, double y, double size) : Retangulo(x, y, size, size) {
+    Quadrado(double x, double y, double size) : Retangulo(x, y, size, -size) {
         this->setType(3);
     }
 };
@@ -533,8 +533,6 @@ public:
             T->set(0, 3, 1);
 
             Matriz* TMB = T->multiply(MB);
-
-            cout << TMB->multiply(GBx)->get(0, 0) << " : " << TMB->multiply(GBy)->get(0, 0) << endl;
 
             outPontos->adiciona(new Ponto(TMB->multiply(GBx)->get(0, 0), TMB->multiply(GBy)->get(0, 0)));
         }
