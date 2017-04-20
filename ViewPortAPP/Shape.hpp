@@ -210,6 +210,14 @@ public:
                 }
             }
 
+            if (p1->getRC()[0] || p2->getRC()[0]) {
+                Xt = p1->getX() + (1 / m) * (clipMax->getY() - p1->getY());
+                if (Xt >= clipMin->getX() && Xt <= clipMax->getX()) {
+                    ci = new Ponto(Xt, clipMax->getY());
+                    clipPs->adiciona(ci);
+                }
+            }
+            
             if (p1->getRC()[2] || p2->getRC()[2]) {
                 Yd = m * (clipMax->getX() - p1->getX()) + p1->getY();
                 if (Yd >= clipMin->getY() && Yd <= clipMax->getY()) {
@@ -217,20 +225,13 @@ public:
                     clipPs->adiciona(di);
                 }
             }
-
+            
+            
             if (p1->getRC()[1] || p2->getRC()[1]) {
                 Xf = p1->getX() + (1 / m) * (clipMin->getY() - p1->getY());
                 if (Xf >= clipMin->getX() && Xf <= clipMax->getX()) {
                     ba = new Ponto(Xf, clipMin->getY());
                     clipPs->adiciona(ba);
-                }
-            }
-
-            if (p1->getRC()[0] || p2->getRC()[0]) {
-                Xt = p1->getX() + (1 / m) * (clipMax->getY() - p1->getY());
-                if (Xt >= clipMin->getX() && Xt <= clipMax->getX()) {
-                    ci = new Ponto(Xt, clipMax->getY());
-                    clipPs->adiciona(ci);
                 }
             }
 
