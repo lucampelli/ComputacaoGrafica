@@ -12,6 +12,7 @@
       <itemPath>Matriz.hpp</itemPath>
       <itemPath>Ponto.hpp</itemPath>
       <itemPath>Shape.hpp</itemPath>
+      <itemPath>/home/luca/Desktop/ComputacaoGrafica/ViewPortAPP/Shape3D.hpp</itemPath>
       <itemPath>Transform.hpp</itemPath>
       <itemPath>Viewport.hpp</itemPath>
     </logicalFolder>
@@ -58,6 +59,11 @@
           <commandLine>`pkg-config --libs gtk+-3.0`</commandLine>
         </linkerTool>
       </compileType>
+      <item path="/home/luca/Desktop/ComputacaoGrafica/ViewPortAPP/Shape3D.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="Camera.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Camera3D.hpp" ex="false" tool="3" flavor2="0">
@@ -101,6 +107,11 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="/home/luca/Desktop/ComputacaoGrafica/ViewPortAPP/Shape3D.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="Camera.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Camera3D.hpp" ex="false" tool="3" flavor2="0">

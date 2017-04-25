@@ -97,6 +97,62 @@ public:
         return m;
     }
     
+    Matriz* set_3Dx_rotation_matrix(int degrees){
+        Matriz* m = new Matriz(3,3);
+        double rad = (degrees * M_PI)/180;        
+        m->set(0,0,cosf(rad));
+        m->set(0,1,-sinf(rad));
+        m->set(1,0,sinf(rad));
+        m->set(1,1,cosf(rad));
+        m->set(2,2,1);
+        return m;
+    }
+    
+    Matriz* set_3Dy_rotation_matrix(int degrees){
+        Matriz* m = new Matriz(3,3);
+        double rad = (degrees * M_PI)/180;        
+        m->set(0,0,cosf(rad));
+        m->set(0,1,-sinf(rad));
+        m->set(1,0,sinf(rad));
+        m->set(1,1,cosf(rad));
+        m->set(2,2,1);
+        return m;
+    }
+    
+    Matriz* set_3Dz_rotation_matrix(int degrees){
+        Matriz* m = new Matriz(3,3);
+        double rad = (degrees * M_PI)/180;        
+        m->set(0,0,cosf(rad));
+        m->set(0,1,-sinf(rad));
+        m->set(1,0,sinf(rad));
+        m->set(1,1,cosf(rad));
+        m->set(2,2,1);
+        return m;
+    }
+    
+    Matriz* set_3D_move_matrix(double Dx, double Dy, double Dz){
+        Matriz* m = new Matriz(4,4);
+        m->set(0,0,1);
+        m->set(1,1,1);
+        m->set(2,2,1);
+        m->set(3,0,Dx);
+        m->set(3,1,Dy);
+        m->set(3,2,Dz);
+        m->set(3,3,1);
+        return m;
+    }
+    
+    Matriz* set_3D_scale_matrix(double scaleX,double scaleY, double scaleZ){
+        Matriz* m = new Matriz(4,4);
+        m->set(0,0,scaleX);
+        m->set(1,1,scaleY);
+        m->set(2,2,scaleZ);
+        m->set(3,3,1);
+        return m;
+    }
+    
+    
+    
     void setT(Matriz* m){
         t = m;
     }

@@ -148,6 +148,10 @@ public:
     Ponto* mult(Ponto* p){
         return new Ponto(this->getX() * p->getX(),this->getY() * p->getY(),this->getZ() * p->getZ());
     }
+    
+    Ponto* div(double f){
+        return new Ponto(this->getX() / f,this->getY() / f,this->getZ() / f);
+    }
 
 };
 
