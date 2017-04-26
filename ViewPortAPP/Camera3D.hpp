@@ -14,10 +14,10 @@
 #include "Ponto.hpp"
 #include "Viewport.hpp"
 #include "ClipPlane.hpp"
-#include "Shape.hpp"
+#include "Shape3D.hpp"
 
-#ifndef CAMERA2_HPP
-#define CAMERA2_HPP
+#ifndef CAMERA3D_HPP
+#define CAMERA3D_HPP
 
 class Camera3D {
 private:
@@ -28,15 +28,20 @@ private:
     Ponto* scnmax;
     Ponto* windowmin;
     Ponto* windowmax;
+    Ponto* vUp = new Ponto(0,1,0);
+    Ponto* zVect = new Ponto(0,0,1);
 
-    ListaEnc<Shape*> * shapes = new ListaEnc<Shape*>();
-    ListaEnc<Shape*> * normShapes = new ListaEnc<Shape*>();
+    ListaEnc<Shape3D*> * shapes = new ListaEnc<Shape3D*>();
+    ListaEnc<Shape3D*> * shapes2D = new ListaEnc<Shape3D*>();
+    ListaEnc<Shape3D*> * normShapes = new ListaEnc<Shape3D*>();
 
     Ponto* pos;
     Viewport* viewport;
     Transform* transform;
     ClipPlane* clip;
-    int rot = 0;
+    int rotX = 0;
+    int rotY = 0;
+    int rotZ = 0;
     double zoom = 1.0f;
 
 public:
@@ -57,11 +62,11 @@ public:
         calculate_matrix();
     }
 
-    ListaEnc<Shape*>* getShapeList() {
+    ListaEnc<Shape3D*>* getShapeList() {
         return shapes;
     }
 
-    ListaEnc<Shape*>* getNormList() {
+    ListaEnc<Shape3D*>* getNormList() {
         return normShapes;
     }
 
@@ -86,11 +91,11 @@ public:
     }
 
     void rotateCamera(int degrees) {
-        rot += degrees;
+        rotZ += degrees;
     }
 
     int getRot() {
-        return rot;
+        return rotZ;
     }
 
     void moveCamera(double xAmount, double yAmount) {        
@@ -116,7 +121,7 @@ public:
     }
 
     Ponto* clickTransform(Ponto* p) {
-        return transform->cT(p, zoom, rot);
+        return transform->cT(p, zoom, rotZ);
     }
 
     double getZoom() {
@@ -152,23 +157,39 @@ public:
     void Zoom(double value) {
         zoom = value / 100;
     }
+    
+    void SwitchDimension(){
+        Ponto* originalZVect = new Ponto(zVect->getX(), zVect->getY(), zVect->getZ());
+        
+        
+        
+    }
 
     void SCN() {
 
         transform->setT(transform->set_2D_move_matrix(-winCenter()->getX(), -winCenter()->getY()));
-        transform->concatenate_matrix(transform->set_2D_rotation_matrix(-rot));
+        transform->concatenate_matrix(transform->set_2D_rotation_matrix(-rotZ));
         transform->concatenate_matrix(transform->set_2D_scale_matrix(zoom, zoom));
         transform->concatenate_matrix(transform->set_2D_move_matrix(winCenter()->getX(), winCenter()->getY()));
 
         normShapes->clean();
         
         for (int i = 0; i < shapes->getSize(); i++) {
-            Shape* s = shapes->get(i);
-            ListaEnc<Ponto*>* nPontos = new ListaEnc<Ponto*>();
-            for (int j = 0; j < s->getPontos()->getSize(); j++) {
-                nPontos->adiciona(transform->transform(new Ponto((s->getPontos()->get(j)->getX()) , (s->getPontos()->get(j)->getY()))));
+            Shape3D* s = shapes->get(i);
+            Shape3D* n = new Shape3D();
+            
+            for (int j = 0; j < s->getTris()->getSize(); j++) {
+                Surface* surf = s->getTris()->get(j);
+                Surface* temp = new Surface();
+                
+                for(int k = 0; k < surf->size(); k++){
+                    Aresta* a = surf->get(k);
+                    temp->set(k, new Aresta( transform->transform(new Ponto((a->p1->getX()) , (a->p1->getY()))),
+                            transform->transform(new Ponto((a->p2->getX()) , (a->p2->getY())))));
+                }
+
+                n->addTris(temp);
             }
-            Shape* n = new Shape(nPontos);
             n->setFill(s->getFill());
             n->setLine(s->getLine());
             n->setType(s->getType());
@@ -179,5 +200,5 @@ public:
 
 };
 
-#endif /* CAMERA2_HPP */
+#endif /* CAMERA3D_HPP */
 

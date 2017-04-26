@@ -14,7 +14,7 @@
 #include "ListaEnc.hpp"
 #include "gtk/gtk.h"
 #include "Ponto.hpp"
-//#include "Transform.hpp"
+#include "Transform.hpp"
 #include <iostream>
 #ifndef SHAPE3D_HPP
 #define SHAPE3D_HPP
@@ -55,11 +55,21 @@ struct Surface {
     Aresta* a2;
     Aresta* a3;
 
-    Surface(Aresta* a1, Aresta* a2, Aresta* a3) : a1(a1), a2(a2), a3(a3) {
+    Surface(Aresta* a1 = NULL, Aresta* a2 = NULL, Aresta* a3 = NULL) : a1(a1), a2(a2), a3(a3) {
+    }
+
+    Surface(Ponto* p1, Ponto* p2, Ponto* p3) {
+        a1 = new Aresta(p1, p2);
+        a2 = new Aresta(p2, p3);
+        a3 = new Aresta(p3, p1);
     }
 
     Ponto* getCenter() {
-        return (a1->p1->sum(a2->p1->sum(a3->p1)))->div(3.0);
+        Ponto* c = new Ponto();
+        for (int i = 0; i < size(); i++) {
+            c->sum(get(i)->p1);
+        }
+        return c->div(size());
     }
 
     Aresta* get(int i) {
@@ -71,6 +81,16 @@ struct Surface {
             return a3;
         } else {
             return NULL;
+        }
+    }
+
+    void set(int i, Aresta* dado) {
+        if (i == 0) {
+            a1 = dado;
+        } else if (i == 1) {
+            a2 = dado;
+        } else if (i == 2) {
+            a3 = dado;
         }
     }
 
@@ -137,10 +157,10 @@ public:
     }
 
     void addTris(Ponto* p1, Ponto* p2, Ponto* p3) {
-        Surface* surf = new Surface(new Aresta(p1, p2), new Aresta(p2, p3), new Aresta(p3, p1));
+        Surface* surf = new Surface(p1, p2, p3);
         tris->adiciona(surf);
     }
-    
+
     void addTris(Surface* s) {
         tris->adiciona(s);
     }
@@ -170,7 +190,7 @@ public:
         rotationX = degrees;
         applyT();
     }
-    
+
     void setRotY(int degrees) { //usar este método para rotacionar a figura pelo centro.
         rotationY = degrees;
         applyT();
@@ -180,7 +200,6 @@ public:
         rotationZ = degrees;
         applyT();
     }
-
 
     void setScale(double X, double Y, double Z) {
         scaleX = X;
@@ -236,12 +255,13 @@ public:
         p->setRC(rc);
     }
 
-    void clipCS(Ponto* clipMin, Ponto* clipMax, Ponto* p1, Ponto* p2) {
+    Aresta* clipCS(Ponto* clipMin, Ponto* clipMax, Ponto* p1, Ponto* p2) {
 
-        for (int i = 0; i < tris->getSize(); i++) {
-            Ponto* p = tris->get(i);
-            findRC(p, clipMin, clipMax);
-        }
+
+        findRC(p1, clipMin, clipMax);
+        findRC(p2, clipMin, clipMax);
+
+        ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
 
 
         if (((p1->getRC() && p2->getRC()) == RegionCode()) && p1->getRC() != p2->getRC()) { //Parcialmente fora
@@ -250,16 +270,18 @@ public:
             Ponto* es, *di, *ci, *ba;
 
             if (p1->getRC() == RegionCode()) {
-                if (!clipTris->exists(p1)) {
-                    clipTris->adiciona(p1);
+                if (!temp->exists(p1)) {
+                    temp->adiciona(p1);
                 }
             }
 
-            if (p1->getRC()[3] || p2->getRC()[3]) {
-                Ye = m * (clipMin->getX() - p1->getX()) + p1->getY();
-                if (Ye >= clipMin->getY() && Ye <= clipMax->getY()) {
-                    es = new Ponto(clipMin->getX(), Ye);
-                    clipTris->adiciona(es);
+            if (!p1->getRC()[1]) {
+                if (p1->getRC()[3] || p2->getRC()[3]) {
+                    Ye = m * (clipMin->getX() - p1->getX()) + p1->getY();
+                    if (Ye >= clipMin->getY() && Ye <= clipMax->getY()) {
+                        es = new Ponto(clipMin->getX(), Ye);
+                        temp->adiciona(es);
+                    }
                 }
             }
 
@@ -267,7 +289,7 @@ public:
                 Xt = p1->getX() + (1 / m) * (clipMax->getY() - p1->getY());
                 if (Xt >= clipMin->getX() && Xt <= clipMax->getX()) {
                     ci = new Ponto(Xt, clipMax->getY());
-                    clipTris->adiciona(ci);
+                    temp->adiciona(ci);
                 }
             }
 
@@ -275,7 +297,7 @@ public:
                 Yd = m * (clipMax->getX() - p1->getX()) + p1->getY();
                 if (Yd >= clipMin->getY() && Yd <= clipMax->getY()) {
                     di = new Ponto(clipMax->getX(), Yd);
-                    clipTris->adiciona(di);
+                    temp->adiciona(di);
                 }
             }
 
@@ -284,145 +306,134 @@ public:
                 Xf = p1->getX() + (1 / m) * (clipMin->getY() - p1->getY());
                 if (Xf >= clipMin->getX() && Xf <= clipMax->getX()) {
                     ba = new Ponto(Xf, clipMin->getY());
-                    clipTris->adiciona(ba);
+                    temp->adiciona(ba);
+                }
+            }
+
+            if (p1->getRC()[1]) {
+                if (p1->getRC()[3] || p2->getRC()[3]) {
+                    Ye = m * (clipMin->getX() - p1->getX()) + p1->getY();
+                    if (Ye >= clipMin->getY() && Ye <= clipMax->getY()) {
+                        es = new Ponto(clipMin->getX(), Ye);
+                        temp->adiciona(es);
+                    }
                 }
             }
 
             if (p2->getRC() == RegionCode()) {
-                if (!clipTris->exists(p2)) {
-                    clipTris->adiciona(p2);
+                if (!temp->exists(p2)) {
+                    temp->adiciona(p2);
                 }
             }
 
         }
 
         if (p1->getRC() == p2->getRC() && p1->getRC() == RegionCode()) { //totalmente dentro
-            if (!clipTris->exists(p1)) {
-                clipTris->adiciona(p1);
+            if (!temp->exists(p1)) {
+                temp->adiciona(p1);
             }
-            if (!clipTris->exists(p2)) {
-                clipTris->adiciona(p2);
+            if (!temp->exists(p2)) {
+                temp->adiciona(p2);
             }
         }
-
-
-
-    }
-
-    ListaEnc<Ponto*>* clipLB(Ponto* pi, Ponto* pf, Ponto* clipMin, Ponto* clipMax) {
-
-        Ponto* pmin;
-        Ponto* pmax;
-
-        float p1 = -(pf->getX() - pi->getX());
-        float p2 = -p1;
-        float p3 = -(pf->getY() - pi->getY());
-        float p4 = -p3;
-        float q1 = pi->getX() - clipMin->getX();
-        float q2 = clipMax->getX() - pi->getX();
-        float q3 = pi->getY() - clipMin->getY();
-        float q4 = clipMax->getY() - pi->getY();
-
-        float r1 = q1 / p1;
-        float r3 = q3 / p3;
-        float u1 = max(0.0f, max(r1, r3));
-        float r2 = q2 / p2;
-        float r4 = q4 / p4;
-        float u2 = min(1.0f, min(r2, r4));
-
-        if (u1 != 0) {
-            pmin = new Ponto(clipMin->getX(), tris->getHead()->getY() + u1 * p4);
+        
+        
+        if (temp->getSize() == 2) {
+            return new Aresta(temp->getHead(), temp->get(1));
+        } else if(temp->getSize() == 1){
+            return new Aresta(temp->getHead(), NULL);
         } else {
-            pmin = pi;
+            return NULL;
         }
 
-        if (u2 != 1) {
-            pmax = new Ponto(tris->getHead()->getX() + u2*p2, clipMax->getY());
-        } else {
-            pmax = tris->get(tris->getSize());
-        }
+
     }
 
     void polClip(Ponto* clipMin, Ponto* clipMax) {
 
         for (int i = 0; i < tris->getSize(); i++) {
-            Ponto* p = tris->get(i);
-            findRC(p, clipMin, clipMax);
-        }
-        Ponto* atual = tris->get(0);
-        Ponto* anterior = tris->get(tris->getSize() - 1);
-
-        for (int i = 1; i <= tris->getSize(); i++) {
-
-            if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
-                clipCS(clipMin, clipMax, anterior, atual);
+            for (int j = 0; j < tris->get(i)->size(); j++) {
+                findRC(tris->get(i)->get(j)->p1, clipMin, clipMax);
+                findRC(tris->get(i)->get(j)->p2, clipMin, clipMax);
             }
+        }
 
-            if (anterior->getRC() != RegionCode()) {
-                if (atual->getRC() != RegionCode()) {
-                    if (atual->getRC() != anterior->getRC()) {
-                        if ((atual->getRC() && anterior->getRC()) == RegionCode()) {
-                            clipCS(clipMin, clipMax, anterior, atual);
+
+        for (int i = 0; i < tris->getSize(); i++) {
+            Surface* sAtual = tris->get(i);
+            Surface* clips = new Surface();
+
+            for (int j = 0; j < sAtual->size(); j++) {
+                Aresta* a = sAtual->get(j);
+                Ponto* anterior = a->p1;
+                Ponto* atual = a->p2;
+
+                if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
+                    clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                }
+
+                if (anterior->getRC() != RegionCode()) {
+                    if (atual->getRC() != RegionCode()) {
+                        if (atual->getRC() != anterior->getRC()) {
+                            if ((atual->getRC() && anterior->getRC()) == RegionCode()) {
+                                clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                            }
                         }
                     }
                 }
+
+
+                if ((anterior->getRC() != RegionCode()) && (atual->getRC() == RegionCode())) {
+                    clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+
+                }
             }
-
-
-            if ((anterior->getRC() != RegionCode()) && (atual->getRC() == RegionCode())) {
-                clipCS(clipMin, clipMax, anterior, atual);
-
-            } else if (atual->getRC() == RegionCode()) {
-                clipTris->adiciona(atual);
-            }
-
-            if (i < tris->getSize()) {
-                anterior = tris->get(i - 1);
-                atual = tris->get(i);
-            }
-
         }
-
 
     }
 
     void curveClip(Ponto* clipMin, Ponto* clipMax) {
+
         for (int i = 0; i < tris->getSize(); i++) {
-            Ponto* p = tris->get(i);
-            findRC(p, clipMin, clipMax);
-        }
-        Ponto* atual = tris->get(0);
-        Ponto* anterior = tris->get(0);
-
-        for (int i = 1; i <= tris->getSize(); i++) {
-
-            if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
-                clipCS(clipMin, clipMax, anterior, atual);
+            for (int j = 0; j < tris->get(i)->size(); j++) {
+                findRC(tris->get(i)->get(j)->p1, clipMin, clipMax);
+                findRC(tris->get(i)->get(j)->p2, clipMin, clipMax);
             }
+        }
 
-            if (anterior->getRC() != RegionCode()) {
-                if (atual->getRC() != RegionCode()) {
-                    if (atual->getRC() != anterior->getRC()) {
-                        if ((atual->getRC() && anterior->getRC()) == RegionCode()) {
-                            clipCS(clipMin, clipMax, anterior, atual);
+
+
+        for (int i = 0; i < tris->getSize(); i++) {
+
+            Surface* sAtual = tris->get(i);
+            Surface* clips = new Surface();
+
+            for (int j = 0; j < sAtual->size(); j++) {
+
+                Aresta* aAtual = sAtual->get(j);
+                Ponto* atual = aAtual->p2;
+                Ponto* anterior = aAtual->p1;
+
+
+                if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
+                    clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                }
+
+                if (anterior->getRC() != RegionCode()) {
+                    if (atual->getRC() != RegionCode()) {
+                        if (atual->getRC() != anterior->getRC()) {
+                            if ((atual->getRC() && anterior->getRC()) == RegionCode()) {
+                                clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                            }
                         }
                     }
                 }
+
+
+                if ((anterior->getRC() != RegionCode()) && (atual->getRC() == RegionCode())) {
+                    clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                }
             }
-
-
-            if ((anterior->getRC() != RegionCode()) && (atual->getRC() == RegionCode())) {
-                clipCS(clipMin, clipMax, anterior, atual);
-
-            } else if (atual->getRC() == RegionCode()) {
-                clipTris->adiciona(atual);
-            }
-
-            if (i < tris->getSize()) {
-                anterior = tris->get(i - 1);
-                atual = tris->get(i);
-            }
-
         }
     }
 
@@ -436,7 +447,7 @@ public:
             }
         } else
             if (type == 1) {
-            clipCS(clipMin, clipMax, tris->getHead()->a1->p1, tris->getHead()->a1->p2);
+            clipTris->adiciona(new Surface(clipCS(clipMin, clipMax, tris->getHead()->a1->p1, tris->getHead()->a1->p2), NULL, NULL));
         } else if (type != 5) {
             polClip(clipMin, clipMax);
         } else {
@@ -458,10 +469,11 @@ public:
             for (int i = 0; i < clipTris->getSize(); i++) {
                 Surface* sAtual = clipTris->get(i);
 
-                cairo_move_to(cr, sAtual->get(i)->p1->getX() + pos->getX() + camPos->getX(), sAtual->get(i)->p1->getY() + pos->getY() + camPos->getY());
-
                 for (int j = 0; j < sAtual->size(); j++) {
                     Aresta* aAtual = sAtual->get(j);
+                    atual = aAtual->p1;
+                    atual = transform->dT(atual);
+                    cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
 
                     for (int k = 0; k < aAtual->size(); k++) {
                         atual = aAtual->get(k);
@@ -491,11 +503,11 @@ public:
     void printPontos() {
         cout << tris->getSize() << endl;
         for (int i = 0; i < tris->getSize(); i++) {
-            for(int j = 0; j < tris->get(i)->size(); j++){
-                for(int k = 0; k < tris->get(i)->get(j)->size(); k++){
-                    cout<< tris->get(i)->get(j)->get(k)->getX() << " : ";
-                    cout<< tris->get(i)->get(j)->get(k)->getY() << " : ";
-                    cout<< tris->get(i)->get(j)->get(k)->getZ() << endl;
+            for (int j = 0; j < tris->get(i)->size(); j++) {
+                for (int k = 0; k < tris->get(i)->get(j)->size(); k++) {
+                    cout << tris->get(i)->get(j)->get(k)->getX() << " : ";
+                    cout << tris->get(i)->get(j)->get(k)->getY() << " : ";
+                    cout << tris->get(i)->get(j)->get(k)->getZ() << endl;
                 }
             }
         }
@@ -532,7 +544,7 @@ class Reta3D : public Shape3D {
 public:
 
     Reta3D(Ponto* p1, Ponto* p2) {
-        Surface* s = new Surface(new Aresta(p1,p2), NULL, NULL);
+        Surface* s = new Surface(new Aresta(p1, p2), NULL, NULL);
         this->addTris(s);
         this->setType(1);
         this->setLine();
@@ -543,19 +555,17 @@ class Retangulo3D : public Shape3D {
 public:
 
     Retangulo3D(double x, double y, double z, double width, double height) {
-        Ponto * p[] = {new Ponto(x, y,z), new Ponto(x + width, y,z), new Ponto(x + width, y + height,z), new Ponto(x, y + height,z)};
-        this->addTris(new Surface(p[0], p[1],p[2]));
-        this->addTris(new Surface(p[0], p[2],p[3]));
+        Ponto * p[] = {new Ponto(x, y, z), new Ponto(x + width, y, z), new Ponto(x + width, y + height, z), new Ponto(x, y + height, z)};
+        this->addTris(new Surface(p[0], p[1], p[2]));
+        this->addTris(new Surface(p[0], p[2], p[3]));
         this->setType(2);
     }
 };
 
-
-
 class Point3D : public Retangulo3D {
 public:
 
-    Point3D(double x, double y, double z = 1) : Retangulo(x, y, 0.005f, 0.005f) {
+    Point3D(double x, double y, double z = 1) : Retangulo3D(x, y, z, 0.005f, 0.005f) {
         this->setType(0);
     }
 };
@@ -563,7 +573,7 @@ public:
 class Quadrado3D : public Retangulo3D {
 public:
 
-    Quadrado3D(double x, double y, double z, double size) : Retangulo(x, y, z, size, -size) {
+    Quadrado3D(double x, double y, double z, double size) : Retangulo3D(x, y, z, size, -size) {
         this->setType(3);
     }
 };
@@ -575,12 +585,12 @@ public:
         for (int i = 0; i < p->getSize(); i++) {
             p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y, p->get(i)->getZ() + z);
         }
-        
-        for(int i = 0; i < p->getSize() -1; i++){
-            Surface* s = new Surface(new Aresta(p->get(i), p->get(i+1)));
+
+        for (int i = 0; i < p->getSize() - 1; i++) {
+            Surface* s = new Surface(new Aresta(p->get(i), p->get(i + 1)));
             this->addTris(s);
         }
-        Surface* s = new Surface(new Aresta(p->get(p->getSize()-1), p->get(0)));
+        Surface* s = new Surface(new Aresta(p->get(p->getSize() - 1), p->get(0)));
         this->addTris(s);
         this->setType(4);
     }
@@ -650,13 +660,13 @@ public:
             Bezier(p->get(i), p->get(i + 1), p->get(i + 2), p->get(i + 3), 0.05f, temp);
         }
 
-        for(int i = 0; i < temp->getSize() -1; i++){
-            Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i+1)));
+        for (int i = 0; i < temp->getSize() - 1; i++) {
+            Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
             this->addTris(s);
         }
-        Surface* s = new Surface(new Aresta(temp->get(temp->getSize()-1), temp->get(0)));
+        Surface* s = new Surface(new Aresta(temp->get(temp->getSize() - 1), temp->get(0)));
         this->addTris(s);
-        
+
         this->setType(5);
         this->setLine(true);
 
@@ -670,9 +680,9 @@ private:
 class B_Spline3D : public Shape3D {
 public:
 
-    void BSpline(int n, double x1, double x2, double x3, double x4, double y1, double y2, double y3, double y4, ListaEnc<Ponto*>* outPontos) {
+    void BSpline(int n, double x1, double x2, double x3, double x4, double y1, double y2, double y3, double y4, double z1, double z2, double z3, double z4, ListaEnc<Ponto*>* outPontos) {
 
-        outPontos->adiciona(new Ponto(x1, y1));
+        outPontos->adiciona(new Ponto(x1, y1, z1));
 
         for (int i = 0; i < n; i++) {
             x1 += x2;
@@ -681,13 +691,17 @@ public:
             y1 += y2;
             y2 += y3;
             y3 += y4;
-            outPontos->adiciona(new Ponto(x1, y1));
+            z1 += z2;
+            z2 += z3;
+            z3 += z4;
+
+            outPontos->adiciona(new Ponto(x1, y1, z1));
 
         }
 
     }
 
-    B_Spline3D(float x, float y, ListaEnc<Ponto*>* p) {
+    B_Spline3D(float x, float y, float z, ListaEnc<Ponto*>* p) {
         ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
         float passo = 0.2f;
 
@@ -718,7 +732,7 @@ public:
         //temp->adiciona(p->getHead());
 
         for (int i = 0; i < p->getSize(); i++) {
-            p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y);
+            p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y, p->get(i)->getZ() + z);
         }
 
         if (p->getSize() < 4) {
@@ -730,34 +744,43 @@ public:
         for (int i = 3; i < p->getSize(); i++) {
             Matriz* GBSx = new Matriz(4, 1);
             Matriz* GBSy = new Matriz(4, 1);
+            Matriz* GBSz = new Matriz(4, 1);
             GBSx->set(0, 0, p->get(i - 3)->getX());
             GBSx->set(1, 0, p->get(i - 2)->getX());
             GBSx->set(2, 0, p->get(i - 1)->getX());
             GBSx->set(3, 0, p->get(i)->getX());
+
             GBSy->set(0, 0, p->get(i - 3)->getY());
             GBSy->set(1, 0, p->get(i - 2)->getY());
             GBSy->set(2, 0, p->get(i - 1)->getY());
             GBSy->set(3, 0, p->get(i)->getY());
 
+            GBSz->set(0, 0, p->get(i - 3)->getZ());
+            GBSz->set(1, 0, p->get(i - 2)->getZ());
+            GBSz->set(2, 0, p->get(i - 1)->getZ());
+            GBSz->set(3, 0, p->get(i)->getZ());
+
 
 
             Matriz* Cx = MBS->multiply(GBSx);
             Matriz* Cy = MBS->multiply(GBSy);
+            Matriz* Cz = MBS->multiply(GBSz);
 
             Cx = E->multiply(Cx);
             Cy = E->multiply(Cy);
+            Cz = E->multiply(Cz);
 
-            BSpline(1 / passo, Cx->get(0, 0), Cx->get(1, 0), Cx->get(2, 0), Cx->get(3, 0), Cy->get(0, 0), Cy->get(1, 0), Cy->get(2, 0), Cy->get(3, 0), temp);
+            BSpline(1 / passo, Cx->get(0, 0), Cx->get(1, 0), Cx->get(2, 0), Cx->get(3, 0), Cy->get(0, 0), Cy->get(1, 0), Cy->get(2, 0), Cy->get(3, 0), Cz->get(0, 0), Cz->get(1, 0), Cz->get(2, 0), Cz->get(3, 0), temp);
 
         }
 
-        for(int i = 0; i < temp->getSize() -1; i++){
-            Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i+1)));
+        for (int i = 0; i < temp->getSize() - 1; i++) {
+            Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
             this->addTris(s);
         }
-        Surface* s = new Surface(new Aresta(temp->get(temp->getSize()-1), temp->get(0)));
+        Surface* s = new Surface(new Aresta(temp->get(temp->getSize() - 1), temp->get(0)));
         this->addTris(s);
-        
+
         this->setType(5);
         this->setLine(true);
     }

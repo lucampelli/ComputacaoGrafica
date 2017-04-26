@@ -32,12 +32,12 @@ static GtkWidget *buttonAdd;
 
 static GtkWidget *fillBox;
 
-static GtkWidget *CXE1, *CXE2, *CYE1, *CYE2;
-static GtkWidget *entryX, *entryY, *entryS, *entryA;
+static GtkWidget *CXE1, *CXE2, *CYE1, *CYE2, *CZE1, *CZE2;
+static GtkWidget *entryX, *entryY, *entryZ, *entryS, *entryAx, *entryAy, *entryAz;
 
 //Shape* clipShape;
-ListaEnc<Shape*> * lista;
-ListaEnc<Shape*> * normLista;
+ListaEnc<Shape3D*> * lista;
+ListaEnc<Shape3D*> * normLista;
 int shape_choice = 0;
 int delete_choice = 0;
 int transform_choice = 0;
@@ -51,9 +51,13 @@ int spline_created = 0;
 int lines_created = 0;
 double TX = 0;
 double TY = 0;
-int rotation = 0;
+double TZ = 0;
+int rotationX = 0;
+int rotationY = 0;
+int rotationZ = 0;
 double SX = 1;
 double SY = 1;
+double SZ = 1;
 bool clicking = false;
 ListaEnc<Ponto*> * polP;
 Camera3D* cam = Camera3D::getInstance();
@@ -87,7 +91,7 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
     cairo_paint(cr);
 
     string print = "";
-    
+    //cam->SwitchDimension();
     cam->SCN();
     for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());
@@ -187,33 +191,35 @@ static void zoomOut() {
     gtk_widget_queue_draw(main_window);
 }
 
-static void move_shape(Shape* s, double Dx, double Dy) {
+static void move_shape(Shape3D* s, double Dx, double Dy, double Dz) {
     Transform* t = Transform::getInstance();
-    t->setT(t->set_2D_move_matrix(Dx, Dy));
+    t->setT3D(t->set_3D_move_matrix(Dx, Dy, Dz));
 
-    s->move(Dx, Dy);
+    s->move(Dx, Dy, Dz);
 }
 
-static void scale_shape(Shape* s, double scaleX, double scaleY, Ponto* scale_center = new Ponto(0, 0)) {
+static void scale_shape(Shape3D* s, double scaleX, double scaleY, double scaleZ, Ponto* scale_center = new Ponto(0, 0, 0)) {
     Transform* t = Transform::getInstance();
-    t->setT(t->set_2D_move_matrix(-scale_center->getX(), -scale_center->getY()));
-    t->concatenate_matrix(t->set_2D_scale_matrix(scaleX, scaleY));
-    t->concatenate_matrix(t->set_2D_move_matrix(scale_center->getX(), scale_center->getY()));
-    if (scale_center->getX() == s->findCenter()->getX() && scale_center->getY() == s->findCenter()->getY()) {
-        s->setScale(scaleX, scaleY);
+    t->setT3D(t->set_3D_move_matrix(-scale_center->getX(), -scale_center->getY(), -scale_center->getZ()));
+    t->concatenate_matrix_3D(t->set_3D_scale_matrix(scaleX, scaleY, scaleZ));
+    t->concatenate_matrix(t->set_3D_move_matrix(scale_center->getX(), scale_center->getY(), scale_center->getZ()));
+    if (scale_center->getX() == s->findCenter()->getX() && scale_center->getY() == s->findCenter()->getY() && scale_center->getZ() == s->findCenter()->getZ()) {
+        s->setScale(scaleX, scaleY, scaleZ);
     } else {
         s->applyT();
     }
 
 }
 
-static void rotate_shape(Shape* s, int degrees, Ponto* rot_center = new Ponto(0, 0)) {
+static void rotate_shape(Shape3D* s, int degreesX, int degreesY, int degreesZ, Ponto* rot_center = new Ponto(0, 0)) {
     Transform* t = Transform::getInstance();
-    t->setT(t->set_2D_move_matrix(-rot_center->getX(), -rot_center->getY()));
-    t->concatenate_matrix(t->set_2D_rotation_matrix(degrees));
-    t->concatenate_matrix(t->set_2D_move_matrix(rot_center->getX(), rot_center->getY()));
-    if (rot_center->getX() == s->findCenter()->getX() && rot_center->getY() == s->findCenter()->getY()) {
-        s->setRot(degrees);
+    //todo
+    
+    if (rot_center->getX() == s->findCenter()->getX() && rot_center->getY() == s->findCenter()->getY() && rot_center->getZ() == s->findCenter()->getZ()) {
+        s->setRotX(degreesX);
+        s->setRotY(degreesY);
+        s->setRotZ(degreesZ);
+        
     } else {
         s->applyT();
     }
@@ -250,9 +256,10 @@ static void cam_ccw() {
  */
 
 static void rotate() {
-    Shape* s = lista->get(transform_choice);
+    Shape3D* s = lista->get(transform_choice);
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE2));
     const char* y1 = gtk_entry_get_text(GTK_ENTRY(CYE2));
+    const char* z1 = gtk_entry_get_text(GTK_ENTRY(CZE2));
 
     if (strlen(x1) == 0) {
         TX = s->findCenter()->getX();
@@ -264,13 +271,29 @@ static void rotate() {
     } else {
         TY = atoi(y1);
     }
-    if (strlen(gtk_entry_get_text(GTK_ENTRY(entryA))) == 0) {
-        rotation = 0;
+    if (strlen(z1) == 0) {
+        TZ = s->findCenter()->getZ();
     } else {
-        rotation = atoi(gtk_entry_get_text(GTK_ENTRY(entryA)));
+        TZ = atoi(z1);
+    }
+    
+    if (strlen(gtk_entry_get_text(GTK_ENTRY(entryAx))) == 0) {
+        rotationX = 0;
+    } else {
+        rotationX = atoi(gtk_entry_get_text(GTK_ENTRY(entryAx)));
+    }
+    if (strlen(gtk_entry_get_text(GTK_ENTRY(entryAy))) == 0) {
+        rotationY = 0;
+    } else {
+        rotationY = atoi(gtk_entry_get_text(GTK_ENTRY(entryAy)));
+    }
+    if (strlen(gtk_entry_get_text(GTK_ENTRY(entryAz))) == 0) {
+        rotationZ = 0;
+    } else {
+        rotationZ = atoi(gtk_entry_get_text(GTK_ENTRY(entryAz)));
     }
 
-    rotate_shape(s, rotation, new Ponto(TX, TY));
+    rotate_shape(s, rotationX, rotationY, rotationZ, new Ponto(TX, TY, TZ));
     gtk_widget_queue_draw(main_window);
 
 }
@@ -279,9 +302,10 @@ static void rotate() {
  Arruma as variáveis para aumentar uma forma
  */
 static void scale() {
-    Shape* s = lista->get(transform_choice);
+    Shape3D* s = lista->get(transform_choice);
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE1));
     const char* y1 = gtk_entry_get_text(GTK_ENTRY(CYE1));
+    const char* z1 = gtk_entry_get_text(GTK_ENTRY(CZE1));
 
     if (strlen(x1) == 0) {
         TX = s->findCenter()->getX();
@@ -293,16 +317,23 @@ static void scale() {
     } else {
         TY = atoi(y1);
     }
+    if (strlen(z1) == 0) {
+        TZ = s->findCenter()->getZ();
+    } else {
+        TZ = atoi(z1);
+    }
 
     if (gtk_entry_get_text(GTK_ENTRY(entryS)) == "") {
         SX = 1;
         SY = 1;
+        SZ = 1;
     } else {
         SX = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
         SY = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
+        SZ = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
     }
 
-    scale_shape(s, SX, SY, new Ponto(TX, TY));
+    scale_shape(s, SX, SY, SZ, new Ponto(TX, TY, TZ));
     gtk_widget_queue_draw(main_window);
 }
 
@@ -310,9 +341,10 @@ static void scale() {
  Arruma as variáveis para reduzir uma forma
  */
 static void unscale() {
-    Shape* s = lista->get(transform_choice);
+    Shape3D* s = lista->get(transform_choice);
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(CXE1));
     const char* y1 = gtk_entry_get_text(GTK_ENTRY(CYE1));
+    const char* z1 = gtk_entry_get_text(GTK_ENTRY(CZE1));
 
     if (strlen(x1) == 0) {
         TX = s->findCenter()->getX();
@@ -324,7 +356,13 @@ static void unscale() {
     } else {
         TY = atoi(y1);
     }
-
+    if (strlen(z1) == 0) {
+        TZ = s->findCenter()->getZ();
+    } else {
+        TZ = atoi(z1);
+    }
+    
+    
     if (gtk_entry_get_text(GTK_ENTRY(entryS)) == "") {
         SX = 1;
         SY = 1;
@@ -333,7 +371,7 @@ static void unscale() {
         SY = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
     }
 
-    scale_shape(s, 1 / SX, 1 / SY, new Ponto(TX, TY));
+    scale_shape(s, 1.0 / SX, 1.0 / SY, 1.0 / SZ, new Ponto(TX, TY, TZ));
     gtk_widget_queue_draw(main_window);
 }
 
@@ -341,9 +379,10 @@ static void unscale() {
  Arruma as variáveis para mover uma forma
  */
 static void move() {
-    Shape* s = lista->get(transform_choice);
+    Shape3D* s = lista->get(transform_choice);
     const char* x1 = gtk_entry_get_text(GTK_ENTRY(entryX));
     const char* y1 = gtk_entry_get_text(GTK_ENTRY(entryY));
+    const char* z1 = gtk_entry_get_text(GTK_ENTRY(entryZ));
 
     if (strlen(x1) == 0) {
         TX = 0;
@@ -355,7 +394,12 @@ static void move() {
     } else {
         TY = atof(y1);
     }
-    move_shape(s, TX / 10, TY / 10);
+    if (strlen(z1) == 0) {
+        TZ = 0;
+    } else {
+        TZ = atof(z1);
+    }
+    move_shape(s, TX / 10, TY / 10, TZ/10);
     gtk_widget_queue_draw(main_window);
 }
 
@@ -373,8 +417,8 @@ static void transform_shape() {
     GtkWidget *vbox1, *vbox2, *vbox3, *note;
     GtkWidget *hbox1, *hbox2, *hbox3, *hbox21, *hbox31, *hbox22;
     GtkWidget *label1, *label2, *label3;
-    GtkWidget *XLabel, *YLabel, *ScaleLabel, *AngleLabel;
-    GtkWidget *CXL1, *CXL2, *CYL1, *CYL2;
+    GtkWidget *XLabel, *YLabel, *ZLabel, *ScaleLabel, *AngleLabel;
+    GtkWidget *CXL1, *CXL2, *CYL1, *CYL2, *CZL1, *CZL2;
 
 
     transform_choice = 0;
@@ -385,15 +429,21 @@ static void transform_shape() {
     trans_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     entryX = gtk_entry_new();
     entryY = gtk_entry_new();
+    entryZ = gtk_entry_new();
     entryS = gtk_entry_new();
-    entryA = gtk_entry_new();
+    entryAx = gtk_entry_new();
+    entryAy = gtk_entry_new();
+    entryAz = gtk_entry_new();
 
     CXL1 = gtk_label_new("X: ");
     CXL2 = gtk_label_new("X: ");
     CYL1 = gtk_label_new("Y: ");
     CYL2 = gtk_label_new("Y: ");
+    CZL1 = gtk_label_new("Z: ");
+    CZL2 = gtk_label_new("Z: ");
     XLabel = gtk_label_new("X: ");
     YLabel = gtk_label_new("Y: ");
+    ZLabel = gtk_label_new("Z: ");
     ScaleLabel = gtk_label_new("Multiplicador: ");
     AngleLabel = gtk_label_new("Angulo: ");
     label1 = gtk_label_new("Mover");
@@ -402,8 +452,10 @@ static void transform_shape() {
 
     CXE1 = gtk_entry_new();
     CYE1 = gtk_entry_new();
+    CZE1 = gtk_entry_new();
     CXE2 = gtk_entry_new();
     CYE2 = gtk_entry_new();
+    CZE2 = gtk_entry_new();
 
     button_move = gtk_button_new_with_label("Mover");
     button_expand = gtk_button_new_with_label("Expandir");
@@ -434,6 +486,8 @@ static void transform_shape() {
     gtk_container_add(GTK_CONTAINER(hbox1), entryX);
     gtk_container_add(GTK_CONTAINER(hbox1), YLabel);
     gtk_container_add(GTK_CONTAINER(hbox1), entryY);
+    gtk_container_add(GTK_CONTAINER(hbox1), ZLabel);
+    gtk_container_add(GTK_CONTAINER(hbox1), entryZ);
     gtk_container_add(GTK_CONTAINER(vbox1), button_move);
 
     gtk_container_add(GTK_CONTAINER(vbox2), combobox_scale);
@@ -444,6 +498,8 @@ static void transform_shape() {
     gtk_container_add(GTK_CONTAINER(hbox21), CXE1);
     gtk_container_add(GTK_CONTAINER(hbox21), CYL1);
     gtk_container_add(GTK_CONTAINER(hbox21), CYE1);
+    gtk_container_add(GTK_CONTAINER(hbox21), CZL1);
+    gtk_container_add(GTK_CONTAINER(hbox21), CZE1);
     gtk_container_add(GTK_CONTAINER(hbox2), ScaleLabel);
     gtk_container_add(GTK_CONTAINER(hbox2), entryS);
     gtk_container_add(GTK_CONTAINER(hbox22), button_expand);
@@ -457,7 +513,11 @@ static void transform_shape() {
     gtk_container_add(GTK_CONTAINER(hbox31), CXE2);
     gtk_container_add(GTK_CONTAINER(hbox31), CYL2);
     gtk_container_add(GTK_CONTAINER(hbox31), CYE2);
-    gtk_container_add(GTK_CONTAINER(hbox3), entryA);
+    gtk_container_add(GTK_CONTAINER(hbox31), CZL2);
+    gtk_container_add(GTK_CONTAINER(hbox31), CZE2);
+    gtk_container_add(GTK_CONTAINER(hbox3), entryAx);
+    gtk_container_add(GTK_CONTAINER(hbox3), entryAy);
+    gtk_container_add(GTK_CONTAINER(hbox3), entryAz);
     gtk_container_add(GTK_CONTAINER(vbox3), button_rotate);
 
     gtk_notebook_append_page(GTK_NOTEBOOK(note), vbox1, label1);
@@ -527,7 +587,7 @@ static void build_shape() {
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
             gtk_widget_set_sensitive(buttonAdd, TRUE);
-            Point* p = new Point(polP->getHead()->getX(), polP->getHead()->getY());
+            Point3D* p = new Point3D(polP->getHead()->getX(), polP->getHead()->getY(),1);
             points_created++;
             string new_name = "Ponto " + std::to_string(points_created);
             p->setName(new_name);
@@ -541,7 +601,7 @@ static void build_shape() {
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
             gtk_widget_set_sensitive(buttonAdd, TRUE);
-            Reta* p = new Reta(polP->get(0), polP->get(1));
+            Reta3D* p = new Reta3D(polP->get(0), polP->get(1));
             lines_created++;
             string new_name = "Reta " + std::to_string(lines_created);
             p->setName(new_name);
@@ -558,9 +618,9 @@ static void build_shape() {
             gtk_widget_set_sensitive(buttonAdd, TRUE);
             double sizex = polP->get(1)->getX() - polP->get(0)->getX();
             double sizey = polP->get(1)->getY() - polP->get(0)->getY();
-            Retangulo* r = new Retangulo(polP->getHead()->getX() - camPos->getX(),
-                    polP->getHead()->getY() + camPos->getY(),
-                    sizex, sizey, cam->getRot());
+            Retangulo3D* r = new Retangulo3D(polP->getHead()->getX() - camPos->getX(),
+                    polP->getHead()->getY() + camPos->getY(), polP->getHead()->getZ() - camPos->getZ(),
+                    sizex, sizey);
             rectangles_created++;
             string new_name = "Retângulo " + std::to_string(rectangles_created);
             r->setName(new_name);
@@ -577,9 +637,9 @@ static void build_shape() {
             gtk_widget_set_sensitive(buttonAdd, TRUE);
             double sizex = polP->get(1)->getX() - polP->get(0)->getX();
             double sizey = polP->get(1)->getY() - polP->get(0)->getY();
-            Quadrado* q = new Quadrado(polP->getHead()->getX() - camPos->getX(),
-                    polP->getHead()->getY() + camPos->getY(),
-                    sizex > sizey ? sizex : sizey, cam->getRot()); //poligon points list = good
+            Quadrado3D* q = new Quadrado3D(polP->getHead()->getX() - camPos->getX(),
+                    polP->getHead()->getY() + camPos->getY(), polP->getHead()->getZ() - camPos->getZ(),
+                    sizex > sizey ? sizex : sizey); //poligon points list = good
             squares_created++;
             string new_name = "Quadrado " + std::to_string(squares_created);
             q->setName(new_name);
@@ -595,7 +655,7 @@ static void build_shape() {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
-            Poligono* p = new Poligono(-camPos->getX(), camPos->getY(), polP);
+            Poligono3D* p = new Poligono3D(-camPos->getX(), camPos->getY(),-camPos->getZ(), polP);
             polygons_created++;
             string new_name = "Polígono " + std::to_string(polygons_created);
             p->setName(new_name);
@@ -610,7 +670,7 @@ static void build_shape() {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
-            CurvaBezier* c = new CurvaBezier(-camPos->getX(), camPos->getY(), polP);
+            CurvaBezier3D* c = new CurvaBezier3D(-camPos->getX(), camPos->getY(), polP);
             bezier_created++;
             string new_name = "Bezier " + std::to_string(bezier_created);
             c->setName(new_name);
@@ -625,9 +685,9 @@ static void build_shape() {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
-            B_Spline* c = new B_Spline(-camPos->getX(), camPos->getY(), polP);
+            B_Spline3D* c = new B_Spline3D(-camPos->getX(), camPos->getY(),-camPos->getZ() , polP);
             bezier_created++;
-            string new_name = "B_Spline" + std::to_string(spline_created);
+            string new_name = "B_Spline " + std::to_string(spline_created);
             c->setName(new_name);
             c->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(c);

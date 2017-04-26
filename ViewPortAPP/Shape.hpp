@@ -13,7 +13,7 @@
 
 #include "ListaEnc.hpp"
 #include "gtk/gtk.h"
-#include "Transform.hpp"
+//#include "Transform.hpp"
 #include <iostream>
 #ifndef SHAPE_HPP
 #define SHAPE_HPP
@@ -138,7 +138,7 @@ public:
     void applyT() { //e este para rotacionar ao redor de um ponto qualquer
         for (int i = 0; i < vertices; i++) {
 
-            Ponto* p = transform->transform(pontos->get(i));
+            Ponto* p = transform->transform3D(pontos->get(i));
             pontos->get(i)->move_to(p->getX(), p->getY());
 
         }

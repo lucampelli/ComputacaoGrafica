@@ -27,6 +27,7 @@ private:
     Matriz* dc = new Matriz(3,3);
     Matriz* idc = new Matriz(3,3);
     Matriz* t = NULL;
+    Matriz* t3D = NULL;
     Matriz* w = new Matriz(3,3);
     Ponto* camPos;
     Ponto* wmin, *wmax, *vpmin, *vpmax;
@@ -98,35 +99,38 @@ public:
     }
     
     Matriz* set_3Dx_rotation_matrix(int degrees){
-        Matriz* m = new Matriz(3,3);
-        double rad = (degrees * M_PI)/180;        
-        m->set(0,0,cosf(rad));
-        m->set(0,1,-sinf(rad));
-        m->set(1,0,sinf(rad));
+        Matriz* m = new Matriz(4,4);
+        double rad = (degrees * M_PI)/180; 
+        m->set(0,0,1);
         m->set(1,1,cosf(rad));
-        m->set(2,2,1);
+        m->set(2,1,-sinf(rad));
+        m->set(1,2,sinf(rad));
+        m->set(2,2,cosf(rad));
+        m->set(3,3,1);
         return m;
     }
     
     Matriz* set_3Dy_rotation_matrix(int degrees){
-        Matriz* m = new Matriz(3,3);
-        double rad = (degrees * M_PI)/180;        
+        Matriz* m = new Matriz(4,4);
+        double rad = (degrees * M_PI)/180;
+        m->set(1,1,1);
         m->set(0,0,cosf(rad));
-        m->set(0,1,-sinf(rad));
-        m->set(1,0,sinf(rad));
-        m->set(1,1,cosf(rad));
-        m->set(2,2,1);
+        m->set(0,2,-sinf(rad));
+        m->set(2,0,sinf(rad));
+        m->set(2,2,cosf(rad));
+        m->set(3,3,1);
         return m;
     }
     
     Matriz* set_3Dz_rotation_matrix(int degrees){
-        Matriz* m = new Matriz(3,3);
+        Matriz* m = new Matriz(4,4);
         double rad = (degrees * M_PI)/180;        
         m->set(0,0,cosf(rad));
         m->set(0,1,-sinf(rad));
         m->set(1,0,sinf(rad));
         m->set(1,1,cosf(rad));
         m->set(2,2,1);
+        m->set(3,3,1);
         return m;
     }
     
@@ -157,6 +161,10 @@ public:
         t = m;
     }
     
+    void setT3D(Matriz* m){
+        t3D = m;
+    }
+    
     ListaEnc<Ponto*>* getWindowStuff(){
         ListaEnc<Ponto*>* l = new ListaEnc<Ponto*>();
         l->adiciona(wmin);
@@ -168,6 +176,10 @@ public:
         t = t->multiply(m);
     }
     
+    void concatenate_matrix_3D(Matriz* m){
+        t3D = t3D->multiply(m);
+    }
+    
     Ponto* transform(Ponto* p){
         Matriz* m1 = new Matriz(1,3);
         m1->set(0,0,p->getX());
@@ -175,6 +187,19 @@ public:
         m1->set(0,2,p->getZ());
         
         Matriz* r = m1->multiply(t);
+        Ponto* t = new Ponto(r->get(0,0), r->get(0,1), r->get(0,2));
+        
+        return t;
+    }
+    
+    Ponto* transform3D(Ponto* p){
+        Matriz* m1 = new Matriz(1,4);
+        m1->set(0,0,p->getX());
+        m1->set(0,1,p->getY());
+        m1->set(0,2,p->getZ());
+        m1->set(0,3,p->getW());
+        
+        Matriz* r = m1->multiply(t3D);
         Ponto* t = new Ponto(r->get(0,0), r->get(0,1), r->get(0,2));
         
         return t;
@@ -200,7 +225,7 @@ public:
         
         Ponto* r = new Ponto(xw,yw);
         
-        return (transform(r));;
+        return (transform(r));
     }
     
 };
