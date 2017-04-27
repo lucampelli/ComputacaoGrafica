@@ -38,6 +38,14 @@ struct Aresta {
         }
     }
 
+    void set(int i, Ponto* p) {
+        if (i == 0) {
+            p1 = p;
+        } else if (i == 1) {
+            p2 = p;
+        }
+    }
+
     int size() {
         int s = 0;
         if (p1) {
@@ -47,6 +55,15 @@ struct Aresta {
             s++;
         }
         return s;
+    }
+
+    bool equals(Aresta* a) {
+        for (int i = 0; i < a->size() < size() ? a->size() : size(); i++) {
+            if (a->get(i) != get(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 };
 
@@ -84,12 +101,12 @@ struct Surface {
         }
     }
 
-    void set(int i, Aresta* dado) {
-        if (i == 0) {
+    void set(Aresta* dado) {
+        if (!a1) {
             a1 = dado;
-        } else if (i == 1) {
+        } else if (!a2) {
             a2 = dado;
-        } else if (i == 2) {
+        } else if (!a3) {
             a3 = dado;
         }
     }
@@ -212,8 +229,20 @@ public:
         pos->move_by(Dx, Dy, Dz);
     }
 
-    void applyT() { //e este para rotacionar ao redor de um ponto qualquer
+    void applyT() { //aplica a transformada na shape
 
+        ListaEnc<Ponto*>* passados = new ListaEnc<Ponto*>();
+
+        for (int i = 0; i < tris->getSize(); i++) {
+            for (int j = 0; j < tris->get(i)->size(); j++) {
+                for (int k = 0; k < tris->get(i)->get(j)->size(); k++) {
+                    if (!passados->exists(tris->get(i)->get(j)->get(k))) {
+                        passados->adiciona(tris->get(i)->get(j)->get(k));
+                        tris->get(i)->get(j)->set(k, transform->transform3D(tris->get(i)->get(j)->get(k)));
+                    }
+                }
+            }
+        }
     }
 
     bool pointClip(Ponto* p, Ponto* clipMin, Ponto* clipMax) {
@@ -336,11 +365,11 @@ public:
                 temp->adiciona(p2);
             }
         }
-        
-        
+
+
         if (temp->getSize() == 2) {
             return new Aresta(temp->getHead(), temp->get(1));
-        } else if(temp->getSize() == 1){
+        } else if (temp->getSize() == 1) {
             return new Aresta(temp->getHead(), NULL);
         } else {
             return NULL;
@@ -353,8 +382,9 @@ public:
 
         for (int i = 0; i < tris->getSize(); i++) {
             for (int j = 0; j < tris->get(i)->size(); j++) {
-                findRC(tris->get(i)->get(j)->p1, clipMin, clipMax);
-                findRC(tris->get(i)->get(j)->p2, clipMin, clipMax);
+                for (int k = 0; k < tris->get(i)->get(j)->size(); k++) {
+                    findRC(tris->get(i)->get(j)->get(k), clipMin, clipMax);
+                }
             }
         }
 
@@ -369,14 +399,14 @@ public:
                 Ponto* atual = a->p2;
 
                 if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
-                    clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                    clips->set(clipCS(clipMin, clipMax, anterior, atual));
                 }
 
                 if (anterior->getRC() != RegionCode()) {
                     if (atual->getRC() != RegionCode()) {
                         if (atual->getRC() != anterior->getRC()) {
                             if ((atual->getRC() && anterior->getRC()) == RegionCode()) {
-                                clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                                clips->set(clipCS(clipMin, clipMax, anterior, atual));
                             }
                         }
                     }
@@ -384,10 +414,16 @@ public:
 
 
                 if ((anterior->getRC() != RegionCode()) && (atual->getRC() == RegionCode())) {
-                    clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                    clips->set(clipCS(clipMin, clipMax, anterior, atual));
 
                 }
+
+                if ((anterior->getRC() == RegionCode()) && (atual->getRC() == RegionCode())) {
+                    clips->set(new Aresta(anterior, atual));
+                }
+
             }
+            clipTris->adiciona(clips);
         }
 
     }
@@ -396,8 +432,9 @@ public:
 
         for (int i = 0; i < tris->getSize(); i++) {
             for (int j = 0; j < tris->get(i)->size(); j++) {
-                findRC(tris->get(i)->get(j)->p1, clipMin, clipMax);
-                findRC(tris->get(i)->get(j)->p2, clipMin, clipMax);
+                for (int k = 0; k < tris->get(i)->get(j)->size(); k++) {
+                    findRC(tris->get(i)->get(j)->get(k), clipMin, clipMax);
+                }
             }
         }
 
@@ -416,14 +453,14 @@ public:
 
 
                 if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
-                    clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                    clips->set( clipCS(clipMin, clipMax, anterior, atual));
                 }
 
                 if (anterior->getRC() != RegionCode()) {
                     if (atual->getRC() != RegionCode()) {
                         if (atual->getRC() != anterior->getRC()) {
                             if ((atual->getRC() && anterior->getRC()) == RegionCode()) {
-                                clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                                clips->set( clipCS(clipMin, clipMax, anterior, atual));
                             }
                         }
                     }
@@ -431,9 +468,13 @@ public:
 
 
                 if ((anterior->getRC() != RegionCode()) && (atual->getRC() == RegionCode())) {
-                    clips->set(j, clipCS(clipMin, clipMax, anterior, atual));
+                    clips->set( clipCS(clipMin, clipMax, anterior, atual));
+                }
+                if ((anterior->getRC() == RegionCode()) && (atual->getRC() == RegionCode())) {
+                    clips->set( new Aresta(anterior, atual));
                 }
             }
+            clipTris->adiciona(clips);
         }
     }
 
@@ -475,11 +516,12 @@ public:
                     atual = transform->dT(atual);
                     cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
 
-                    for (int k = 0; k < aAtual->size(); k++) {
+                    for (int k = 1; k < aAtual->size(); k++) {
                         atual = aAtual->get(k);
                         atual = transform->dT(atual);
                         cairo_line_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY()); //good
                         cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
+
                     }
 
                 }
@@ -501,13 +543,13 @@ public:
     }
 
     void printPontos() {
-        cout << tris->getSize() << endl;
-        for (int i = 0; i < tris->getSize(); i++) {
-            for (int j = 0; j < tris->get(i)->size(); j++) {
-                for (int k = 0; k < tris->get(i)->get(j)->size(); k++) {
-                    cout << tris->get(i)->get(j)->get(k)->getX() << " : ";
-                    cout << tris->get(i)->get(j)->get(k)->getY() << " : ";
-                    cout << tris->get(i)->get(j)->get(k)->getZ() << endl;
+        cout << clipTris->getSize() << endl;
+        for (int i = 0; i < clipTris->getSize(); i++) {
+            for (int j = 0; j < clipTris->get(i)->size(); j++) {
+                for (int k = 0; k < clipTris->get(i)->get(j)->size() - 1; k++) {
+                    cout << clipTris->get(i)->get(j)->get(k)->getX() << " : ";
+                    cout << clipTris->get(i)->get(j)->get(k)->getY() << " : ";
+                    cout << clipTris->get(i)->get(j)->get(k)->getZ() << endl;
                 }
             }
         }
@@ -556,8 +598,10 @@ public:
 
     Retangulo3D(double x, double y, double z, double width, double height) {
         Ponto * p[] = {new Ponto(x, y, z), new Ponto(x + width, y, z), new Ponto(x + width, y + height, z), new Ponto(x, y + height, z)};
-        this->addTris(new Surface(p[0], p[1], p[2]));
-        this->addTris(new Surface(p[0], p[2], p[3]));
+        this->addTris(new Surface(new Aresta(p[0], p[1]), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p[1], p[2]), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p[2], p[3]), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p[3], p[0]), NULL, NULL));
         this->setType(2);
     }
 };
@@ -567,6 +611,18 @@ public:
 
     Point3D(double x, double y, double z = 1) : Retangulo3D(x, y, z, 0.005f, 0.005f) {
         this->setType(0);
+    }
+};
+
+class Triangulo3D : public Shape3D {
+public:
+
+    Triangulo3D() {
+        Ponto* p1 = new Ponto(0.15, 0.15, 1);
+        Ponto* p2 = new Ponto(0.15, 0.3, 1);
+        Ponto* p3 = new Ponto(0.3, 0.15, 1);
+        this->addTris(new Surface(p1, p2, p3));
+        this->setType(3);
     }
 };
 
@@ -664,8 +720,6 @@ public:
             Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
             this->addTris(s);
         }
-        Surface* s = new Surface(new Aresta(temp->get(temp->getSize() - 1), temp->get(0)));
-        this->addTris(s);
 
         this->setType(5);
         this->setLine(true);
@@ -778,8 +832,6 @@ public:
             Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
             this->addTris(s);
         }
-        Surface* s = new Surface(new Aresta(temp->get(temp->getSize() - 1), temp->get(0)));
-        this->addTris(s);
 
         this->setType(5);
         this->setLine(true);

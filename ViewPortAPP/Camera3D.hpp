@@ -158,7 +158,7 @@ public:
         zoom = value / 100;
     }
     
-    void SwitchDimension(){
+    void SwitchDimension(){ //this will have the rotations to print everything on screen right
         Ponto* originalZVect = new Ponto(zVect->getX(), zVect->getY(), zVect->getZ());
         
         
@@ -184,7 +184,7 @@ public:
                 
                 for(int k = 0; k < surf->size(); k++){
                     Aresta* a = surf->get(k);
-                    temp->set(k, new Aresta( transform->transform(new Ponto((a->p1->getX()) , (a->p1->getY()))),
+                    temp->set(new Aresta( transform->transform(new Ponto((a->p1->getX()) , (a->p1->getY()))),
                             transform->transform(new Ponto((a->p2->getX()) , (a->p2->getY())))));
                 }
 

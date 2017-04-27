@@ -195,7 +195,7 @@ static void move_shape(Shape3D* s, double Dx, double Dy, double Dz) {
     Transform* t = Transform::getInstance();
     t->setT3D(t->set_3D_move_matrix(Dx, Dy, Dz));
 
-    s->move(Dx, Dy, Dz);
+    s->applyT();
 }
 
 static void scale_shape(Shape3D* s, double scaleX, double scaleY, double scaleZ, Ponto* scale_center = new Ponto(0, 0, 0)) {
@@ -637,11 +637,12 @@ static void build_shape() {
             gtk_widget_set_sensitive(buttonAdd, TRUE);
             double sizex = polP->get(1)->getX() - polP->get(0)->getX();
             double sizey = polP->get(1)->getY() - polP->get(0)->getY();
-            Quadrado3D* q = new Quadrado3D(polP->getHead()->getX() - camPos->getX(),
+            /*Quadrado3D* q = new Quadrado3D(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() + camPos->getY(), polP->getHead()->getZ() - camPos->getZ(),
-                    sizex > sizey ? sizex : sizey); //poligon points list = good
+                    sizex > sizey ? sizex : sizey); //poligon points list = good */
+            Triangulo3D* q = new Triangulo3D();
             squares_created++;
-            string new_name = "Quadrado " + std::to_string(squares_created);
+            string new_name = "Triangulo " + std::to_string(squares_created);
             q->setName(new_name);
             q->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(q);
