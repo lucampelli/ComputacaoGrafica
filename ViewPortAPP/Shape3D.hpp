@@ -41,7 +41,7 @@ struct Aresta {
     void set(int i, Ponto* p) {
         if (i == 0) {
             p1 = p;
-        } else if (i == 1) {
+        } else if (i ==1) {
             p2 = p;
         }
     }
@@ -84,7 +84,7 @@ struct Surface {
     Ponto* getCenter() {
         Ponto* c = new Ponto();
         for (int i = 0; i < size(); i++) {
-            c->sum(get(i)->p1);
+            c = c->sum(get(i)->p1);
         }
         return c->div(size());
     }
@@ -195,11 +195,10 @@ public:
         Ponto* c = new Ponto();
 
         for (int i = 0; i < tris->getSize(); i++) {
-            c->sum(tris->get(i)->getCenter());
+            c = c->sum(tris->get(i)->getCenter());
         }
-
-        c->div(tris->getSize());
-
+        
+        c = c->div(tris->getSize());
         return c;
     }
 
@@ -234,11 +233,12 @@ public:
         ListaEnc<Ponto*>* passados = new ListaEnc<Ponto*>();
 
         for (int i = 0; i < tris->getSize(); i++) {
+            passados->clean();
             for (int j = 0; j < tris->get(i)->size(); j++) {
                 for (int k = 0; k < tris->get(i)->get(j)->size(); k++) {
                     if (!passados->exists(tris->get(i)->get(j)->get(k))) {
                         passados->adiciona(tris->get(i)->get(j)->get(k));
-                        tris->get(i)->get(j)->set(k, transform->transform3D(tris->get(i)->get(j)->get(k)));
+                        tris->get(i)->get(j)->set(k,transform->transform3D(tris->get(i)->get(j)->get(k)));
                     }
                 }
             }
@@ -453,14 +453,14 @@ public:
 
 
                 if ((anterior->getRC() == RegionCode()) && (atual->getRC() != RegionCode())) {
-                    clips->set( clipCS(clipMin, clipMax, anterior, atual));
+                    clips->set(clipCS(clipMin, clipMax, anterior, atual));
                 }
 
                 if (anterior->getRC() != RegionCode()) {
                     if (atual->getRC() != RegionCode()) {
                         if (atual->getRC() != anterior->getRC()) {
                             if ((atual->getRC() && anterior->getRC()) == RegionCode()) {
-                                clips->set( clipCS(clipMin, clipMax, anterior, atual));
+                                clips->set(clipCS(clipMin, clipMax, anterior, atual));
                             }
                         }
                     }
@@ -468,10 +468,10 @@ public:
 
 
                 if ((anterior->getRC() != RegionCode()) && (atual->getRC() == RegionCode())) {
-                    clips->set( clipCS(clipMin, clipMax, anterior, atual));
+                    clips->set(clipCS(clipMin, clipMax, anterior, atual));
                 }
                 if ((anterior->getRC() == RegionCode()) && (atual->getRC() == RegionCode())) {
-                    clips->set( new Aresta(anterior, atual));
+                    clips->set(new Aresta(anterior, atual));
                 }
             }
             clipTris->adiciona(clips);

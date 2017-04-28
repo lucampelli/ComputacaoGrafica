@@ -202,7 +202,7 @@ static void scale_shape(Shape3D* s, double scaleX, double scaleY, double scaleZ,
     Transform* t = Transform::getInstance();
     t->setT3D(t->set_3D_move_matrix(-scale_center->getX(), -scale_center->getY(), -scale_center->getZ()));
     t->concatenate_matrix_3D(t->set_3D_scale_matrix(scaleX, scaleY, scaleZ));
-    t->concatenate_matrix(t->set_3D_move_matrix(scale_center->getX(), scale_center->getY(), scale_center->getZ()));
+    t->concatenate_matrix_3D(t->set_3D_move_matrix(scale_center->getX(), scale_center->getY(), scale_center->getZ()));
     if (scale_center->getX() == s->findCenter()->getX() && scale_center->getY() == s->findCenter()->getY() && scale_center->getZ() == s->findCenter()->getZ()) {
         s->setScale(scaleX, scaleY, scaleZ);
     } else {
@@ -310,17 +310,17 @@ static void scale() {
     if (strlen(x1) == 0) {
         TX = s->findCenter()->getX();
     } else {
-        TX = atoi(x1);
+        TX = atof(x1);
     }
     if (strlen(y1) == 0) {
         TY = s->findCenter()->getY();
     } else {
-        TY = atoi(y1);
+        TY = atof(y1);
     }
     if (strlen(z1) == 0) {
         TZ = s->findCenter()->getZ();
     } else {
-        TZ = atoi(z1);
+        TZ = atof(z1);
     }
 
     if (gtk_entry_get_text(GTK_ENTRY(entryS)) == "") {
@@ -349,26 +349,28 @@ static void unscale() {
     if (strlen(x1) == 0) {
         TX = s->findCenter()->getX();
     } else {
-        TX = atoi(x1);
+        TX = atof(x1);
     }
     if (strlen(y1) == 0) {
         TY = s->findCenter()->getY();
     } else {
-        TY = atoi(y1);
+        TY = atof(y1);
     }
     if (strlen(z1) == 0) {
         TZ = s->findCenter()->getZ();
     } else {
-        TZ = atoi(z1);
+        TZ = atof(z1);
     }
     
     
     if (gtk_entry_get_text(GTK_ENTRY(entryS)) == "") {
         SX = 1;
         SY = 1;
+        SZ = 1;
     } else {
         SX = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
         SY = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
+        SZ = atof(gtk_entry_get_text(GTK_ENTRY(entryS)));
     }
 
     scale_shape(s, 1.0 / SX, 1.0 / SY, 1.0 / SZ, new Ponto(TX, TY, TZ));
