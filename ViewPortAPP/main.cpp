@@ -251,7 +251,7 @@ static void rotate_camY(int degrees) {
 }
 
 static void rotate_camZ(int degrees) {
-    cam->rotateCamera(degrees);
+    cam->rotateCameraZ(degrees);
     /*
     for (int i = 0; i < lista->getSize(); i++) {
         rotate_shape(lista->get(i), 0, 0, degrees, cam->winCenter());

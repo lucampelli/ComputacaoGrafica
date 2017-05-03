@@ -90,7 +90,7 @@ public:
         return new Ponto(-pos->getX() + (windowmax->getX() + windowmin->getX()) / 2, -pos->getY() + (windowmax->getY() + windowmin->getY()) / 2);
     }
 
-    void rotateCamera(int degrees) {
+    void rotateCameraZ(int degrees) {
         rotZ += degrees;
         
     }
