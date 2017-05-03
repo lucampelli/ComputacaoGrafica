@@ -113,10 +113,7 @@ static void remove() {
 
 static void on_changed(GtkComboBox *widget, gpointer user_data) {
     GtkComboBox *combo_box = widget;
-
-    if (gtk_combo_box_get_active(combo_box) != 0) {
-        shape_choice = gtk_combo_box_get_active(combo_box); //good
-    }
+    shape_choice = gtk_combo_box_get_active(combo_box); //good
 }
 
 static void on_changed_trans(GtkComboBox *widget, gpointer user_data) {
@@ -213,16 +210,22 @@ static void scale_shape(Shape3D* s, double scaleX, double scaleY, double scaleZ,
 
 static void rotate_shape(Shape3D* s, int degreesX, int degreesY, int degreesZ, Ponto* rot_center = new Ponto(0, 0)) {
     Transform* t = Transform::getInstance();
-    //todo
-    
+    t->setT3D(t->set_3D_move_matrix(-rot_center->getX(), -rot_center->getY(), -rot_center->getZ()));
+    t->concatenate_matrix_3D(t->set_3Dx_rotation_matrix(degreesX));
+    t->concatenate_matrix_3D(t->set_3Dy_rotation_matrix(degreesY));
+    t->concatenate_matrix_3D(t->set_3Dz_rotation_matrix(degreesZ));
+    t->concatenate_matrix_3D(t->set_3D_move_matrix(rot_center->getX(), rot_center->getY(), rot_center->getZ()));
+
+
     if (rot_center->getX() == s->findCenter()->getX() && rot_center->getY() == s->findCenter()->getY() && rot_center->getZ() == s->findCenter()->getZ()) {
         s->setRotX(degreesX);
         s->setRotY(degreesY);
         s->setRotZ(degreesZ);
-        
-    } else {
-        s->applyT();
+
     }
+    
+    s->applyT();
+
 
 }
 
@@ -276,7 +279,7 @@ static void rotate() {
     } else {
         TZ = atoi(z1);
     }
-    
+
     if (strlen(gtk_entry_get_text(GTK_ENTRY(entryAx))) == 0) {
         rotationX = 0;
     } else {
@@ -361,8 +364,8 @@ static void unscale() {
     } else {
         TZ = atof(z1);
     }
-    
-    
+
+
     if (gtk_entry_get_text(GTK_ENTRY(entryS)) == "") {
         SX = 1;
         SY = 1;
@@ -401,7 +404,7 @@ static void move() {
     } else {
         TZ = atof(z1);
     }
-    move_shape(s, TX / 10, TY / 10, TZ/10);
+    move_shape(s, TX / 10, TY / 10, TZ / 10);
     gtk_widget_queue_draw(main_window);
 }
 
@@ -579,8 +582,8 @@ static void build_shape() {
         polP = new ListaEnc<Ponto*>();
         return;
     }
-    
-    if(polP->getSize() == 0){
+
+    if (polP->getSize() == 0) {
         return;
     }
 
@@ -589,7 +592,7 @@ static void build_shape() {
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
             gtk_widget_set_sensitive(buttonAdd, TRUE);
-            Point3D* p = new Point3D(polP->getHead()->getX(), polP->getHead()->getY(),1);
+            Point3D* p = new Point3D(polP->getHead()->getX(), polP->getHead()->getY(), 1);
             points_created++;
             string new_name = "Ponto " + std::to_string(points_created);
             p->setName(new_name);
@@ -597,7 +600,7 @@ static void build_shape() {
             lista->adiciona(p);
         }
     }
-    
+
     if (shape_choice == 1) {
         if (clicking) {
             clicking = false;
@@ -639,12 +642,11 @@ static void build_shape() {
             gtk_widget_set_sensitive(buttonAdd, TRUE);
             double sizex = polP->get(1)->getX() - polP->get(0)->getX();
             double sizey = polP->get(1)->getY() - polP->get(0)->getY();
-            /*Quadrado3D* q = new Quadrado3D(polP->getHead()->getX() - camPos->getX(),
+            Quadrado3D* q = new Quadrado3D(polP->getHead()->getX() - camPos->getX(),
                     polP->getHead()->getY() + camPos->getY(), polP->getHead()->getZ() - camPos->getZ(),
-                    sizex > sizey ? sizex : sizey); //poligon points list = good */
-            Triangulo3D* q = new Triangulo3D();
+                    sizex > sizey ? sizex : sizey); //poligon points list = good 
             squares_created++;
-            string new_name = "Triangulo " + std::to_string(squares_created);
+            string new_name = "Quadrado " + std::to_string(squares_created);
             q->setName(new_name);
             q->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(q);
@@ -658,7 +660,7 @@ static void build_shape() {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
-            Poligono3D* p = new Poligono3D(-camPos->getX(), camPos->getY(),-camPos->getZ(), polP);
+            Poligono3D* p = new Poligono3D(-camPos->getX(), camPos->getY(), -camPos->getZ(), polP);
             polygons_created++;
             string new_name = "Polígono " + std::to_string(polygons_created);
             p->setName(new_name);
@@ -666,7 +668,7 @@ static void build_shape() {
             lista->adiciona(p);
         }
     }
-    
+
     if (shape_choice == 5) {
         //Polígono
         if (clicking) {
@@ -681,14 +683,14 @@ static void build_shape() {
             lista->adiciona(c);
         }
     }
-    
+
     if (shape_choice == 6) {
         //Polígono
         if (clicking) {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
-            B_Spline3D* c = new B_Spline3D(-camPos->getX(), camPos->getY(),-camPos->getZ() , polP);
+            B_Spline3D* c = new B_Spline3D(-camPos->getX(), camPos->getY(), -camPos->getZ(), polP);
             bezier_created++;
             string new_name = "B_Spline " + std::to_string(spline_created);
             c->setName(new_name);
@@ -792,7 +794,7 @@ int main(int argc, char** argv) {
 
     //ComboBox
     combo_box_shape = gtk_combo_box_text_new();
-    const char* shapes[] = {"Ponto", "Reta","Retangulo", "Quadrado", "Poligono", "Bezier", "B-Spline"};
+    const char* shapes[] = {"Ponto", "Reta", "Retangulo", "Quadrado", "Poligono", "Bezier", "B-Spline"};
 
     for (int i = 0; i < G_N_ELEMENTS(shapes); i++) {
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box_shape), shapes[i]);

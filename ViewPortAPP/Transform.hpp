@@ -155,7 +155,14 @@ public:
         return m;
     }
     
-    
+    float findAngle(Ponto* x, Ponto* y){
+        float divs = (x->getX() * y->getX() + x->getY() * y->getY() + x->getZ() * y->getZ());
+        float divd1 = sqrtf(x->getX()) + sqrtf(x->getY()) + sqrtf(x->getZ());
+        float divd2 = sqrtf(y->getX()) + sqrtf(y->getY()) + sqrtf(y->getZ());
+        float divd = divd1 * divd2;
+        
+        return acosf(divs/divd);
+    }
     
     void setT(Matriz* m){
         t = m;

@@ -204,17 +204,14 @@ public:
 
     void setRotX(int degrees) { //usar este método para rotacionar a figura pelo centro.
         rotationX = degrees;
-        applyT();
     }
 
     void setRotY(int degrees) { //usar este método para rotacionar a figura pelo centro.
         rotationY = degrees;
-        applyT();
     }
 
     void setRotZ(int degrees) { //usar este método para rotacionar a figura pelo centro.
         rotationZ = degrees;
-        applyT();
     }
 
     void setScale(double X, double Y, double Z) {
