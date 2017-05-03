@@ -491,7 +491,6 @@ public:
         } else {
             curveClip(clipMin, clipMax);
         }
-        cout << endl;
 
     }
 

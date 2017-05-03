@@ -103,8 +103,8 @@ public:
         double rad = (degrees * M_PI)/180; 
         m->set(0,0,1);
         m->set(1,1,cosf(rad));
-        m->set(2,1,-sinf(rad));
-        m->set(1,2,sinf(rad));
+        m->set(2,1,sinf(rad));
+        m->set(1,2,-sinf(rad));
         m->set(2,2,cosf(rad));
         m->set(3,3,1);
         return m;

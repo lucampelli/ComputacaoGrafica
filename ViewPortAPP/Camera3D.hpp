@@ -28,8 +28,8 @@ private:
     Ponto* scnmax;
     Ponto* windowmin;
     Ponto* windowmax;
-    Ponto* vUp = new Ponto(0,1,0);
-    Ponto* zVect = new Ponto(0,0,1);
+    Ponto* vUp = new Ponto(0, 1, 0);
+    Ponto* zVect = new Ponto(0, 0, 1);
 
     ListaEnc<Shape3D*> * shapes = new ListaEnc<Shape3D*>();
     ListaEnc<Shape3D*> * shapes2D = new ListaEnc<Shape3D*>();
@@ -50,10 +50,10 @@ public:
         height = 2;
         width = 2;
 
-        windowmin = new Ponto(-1,-1);
-        scnmin = new Ponto(-1,-1);
-        windowmax = new Ponto(1,1);
-        scnmax = new Ponto(1,1);
+        windowmin = new Ponto(-1, -1);
+        scnmin = new Ponto(-1, -1);
+        windowmax = new Ponto(1, 1);
+        scnmax = new Ponto(1, 1);
 
         viewport = Viewport::getInstance();
         transform = Transform::getInstance();
@@ -77,12 +77,12 @@ public:
         }
         return camera;
     }
-    
-    Ponto* getClipMin(){
+
+    Ponto* getClipMin() {
         return clip->getMin();
     }
-    
-    Ponto* getClipMax(){
+
+    Ponto* getClipMax() {
         return clip->getMax();
     }
 
@@ -92,13 +92,12 @@ public:
 
     void rotateCameraZ(int degrees) {
         rotZ += degrees;
-        
     }
-    
+
     void rotateCameraX(int degrees) {
         rotX += degrees;
     }
-    
+
     void rotateCameraY(int degrees) {
         rotY += degrees;
     }
@@ -107,13 +106,13 @@ public:
         return rotZ;
     }
 
-    void moveCamera(double xAmount, double yAmount) {        
-        
-        windowmin->move_by(-xAmount,yAmount);
-        windowmax->move_by(-xAmount,yAmount);
-        scnmin->move_by(-xAmount,yAmount);
-        scnmax->move_by(-xAmount,yAmount);
-        clip->move(-xAmount,yAmount);
+    void moveCamera(double xAmount, double yAmount) {
+
+        windowmin->move_by(-xAmount, yAmount);
+        windowmax->move_by(-xAmount, yAmount);
+        scnmin->move_by(-xAmount, yAmount);
+        scnmax->move_by(-xAmount, yAmount);
+        clip->move(-xAmount, yAmount);
 
     }
 
@@ -150,28 +149,28 @@ public:
             }
             windowmin->move_by(width / 10, height / 10);
             windowmax->move_by(-width / 10, -height / 10);
-            
+
         } else {
             zoom -= 0.1f;
             if (zoom < 0.1f) {
                 zoom = 0.1f;
                 return;
             }
-            
-            windowmin->move_by(-width/10,-height/10);
-            windowmax->move_by(width/10,height/10);
+
+            windowmin->move_by(-width / 10, -height / 10);
+            windowmax->move_by(width / 10, height / 10);
         }
     }
 
     void Zoom(double value) {
         zoom = value / 100;
     }
-    
-    void SwitchDimension(){ //this will have the rotations to print everything on screen right
+
+    void SwitchDimension() { //this will have the rotations to print everything on screen right
         Ponto* originalZVect = new Ponto(zVect->getX(), zVect->getY(), zVect->getZ());
-        
-        
-        
+
+
+
     }
 
     void SCN() {
@@ -182,19 +181,19 @@ public:
         transform->concatenate_matrix(transform->set_2D_move_matrix(winCenter()->getX(), winCenter()->getY()));
 
         normShapes->clean();
-        
+
         for (int i = 0; i < shapes->getSize(); i++) {
             Shape3D* s = shapes->get(i);
             Shape3D* n = new Shape3D();
-            
+
             for (int j = 0; j < s->getTris()->getSize(); j++) {
                 Surface* surf = s->getTris()->get(j);
                 Surface* temp = new Surface();
-                
-                for(int k = 0; k < surf->size(); k++){
+
+                for (int k = 0; k < surf->size(); k++) {
                     Aresta* a = surf->get(k);
-                    temp->set(new Aresta( transform->transform(new Ponto((a->p1->getX()) , (a->p1->getY()))),
-                            transform->transform(new Ponto((a->p2->getX()) , (a->p2->getY())))));
+                    temp->set(new Aresta(transform->transform(new Ponto((a->p1->getX()), (a->p1->getY()))),
+                            transform->transform(new Ponto((a->p2->getX()), (a->p2->getY())))));
                 }
 
                 n->addTris(temp);

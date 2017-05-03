@@ -90,7 +90,7 @@ private:
     RegionCode RC = RegionCode();
 
 public:
-    Ponto() : x(0),y(0),z(0),w(0){}
+    Ponto() : x(0),y(0),z(0),w(1){}
     
     Ponto(double nx, double ny) : x(nx), y(ny),z(1),w(1){}
     Ponto(double nx, double ny,double nz) : x(nx), y(ny),z(nz),w(1){}
