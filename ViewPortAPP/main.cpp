@@ -223,7 +223,7 @@ static void rotate_shape(Shape3D* s, int degreesX, int degreesY, int degreesZ, P
         s->setRotZ(degreesZ);
 
     }
-    
+
     s->applyT();
 
 
@@ -232,11 +232,29 @@ static void rotate_shape(Shape3D* s, int degreesX, int degreesY, int degreesZ, P
 /*
  Rodar a camera significa girar todas as formas ao redor da posicao da camera
  */
-static void rotate_cam(int degrees) {
+static void rotate_camX(int degrees) {
+    cam->rotateCameraX(degrees);
+    
+    for (int i = 0; i < lista->getSize(); i++) {
+        rotate_shape(lista->get(i), degrees, 0, 0, cam->winCenter());
+    }
+    gtk_widget_queue_draw(main_window);
+}
+
+static void rotate_camY(int degrees) {
+    cam->rotateCameraY(degrees);
+    
+    for (int i = 0; i < lista->getSize(); i++) {
+        rotate_shape(lista->get(i), 0, degrees,0, cam->winCenter());
+    }
+    gtk_widget_queue_draw(main_window);
+}
+
+static void rotate_camZ(int degrees) {
     cam->rotateCamera(degrees);
     /*
     for (int i = 0; i < lista->getSize(); i++) {
-        rotate_shape(lista->get(i), degrees, cam->winCenter());
+        rotate_shape(lista->get(i), 0, 0, degrees, cam->winCenter());
     }*/
     gtk_widget_queue_draw(main_window);
 }
@@ -245,13 +263,27 @@ static void rotate_cam(int degrees) {
  roda a camera em 10 graus
  */
 static void cam_cw() {
-    rotate_cam(10);
-
+    rotate_camZ(10);
 }
 
 static void cam_ccw() {
-    rotate_cam(-10);
+    rotate_camZ(-10);
+}
 
+static void cam_rt() {
+    rotate_camY(10);
+}
+
+static void cam_lf() {
+    rotate_camY(-10);
+}
+
+static void cam_up() {
+    rotate_camX(10);
+}
+
+static void cam_dn() {
+    rotate_camX(-10);
 }
 
 /*
@@ -769,13 +801,17 @@ int main(int argc, char** argv) {
     GtkWidget *buttonRight;
     GtkWidget *buttonRotcw;
     GtkWidget *buttonRotccw;
+    GtkWidget *buttonRotDn;
+    GtkWidget *buttonRotUp;
+    GtkWidget *buttonRotRt;
+    GtkWidget *buttonRotLf;
 
     GtkWidget *buttonZ1;
     GtkWidget *buttonZ2;
     GtkWidget *delete_button;
     GtkWidget *event_box;
 
-    GtkWidget *hbox, *vbox1, *vbox2, *hboxlr, *hboxZ, *vboxZ, *hboxRot;
+    GtkWidget *hbox, *vbox1, *vbox2, *hboxlr, *hboxZ, *vboxZ, *hboxRot, *hboxRot1;
     GtkWidget *camLabel, *camRLabel, *zoomLabel;
 
     GtkWidget *buttonTrans;
@@ -809,6 +845,7 @@ int main(int argc, char** argv) {
     hboxZ = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     vboxZ = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
     hboxRot = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hboxRot1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 
     //Drawing Area
     da = gtk_drawing_area_new();
@@ -819,11 +856,16 @@ int main(int argc, char** argv) {
     buttonUp = gtk_button_new_with_label("▲");
     buttonDown = gtk_button_new_with_label("▼");
     buttonRight = gtk_button_new_with_label("►");
+    buttonLeft = gtk_button_new_with_label("◄");
     camLabel = gtk_label_new("Camera");
     camRLabel = gtk_label_new("Cam \n Rotacao");
-    buttonRotcw = gtk_button_new_with_label("+10");
-    buttonRotccw = gtk_button_new_with_label("-10");
-    buttonLeft = gtk_button_new_with_label("◄");
+    buttonRotcw = gtk_button_new_with_label("+10 )");
+    buttonRotccw = gtk_button_new_with_label("( -10");
+    buttonRotUp = gtk_button_new_with_label("▲ +10");
+    buttonRotDn = gtk_button_new_with_label("▼ -10");
+    buttonRotRt = gtk_button_new_with_label("+10 ►");
+    buttonRotLf = gtk_button_new_with_label("◄ -10");
+
     buttonZ1 = gtk_button_new_with_label("+");
     buttonZ2 = gtk_button_new_with_label("-");
     zoomField = gtk_entry_new();
@@ -863,8 +905,13 @@ int main(int argc, char** argv) {
     gtk_container_add(GTK_CONTAINER(hbox), vbox1);
     gtk_container_add(GTK_CONTAINER(hbox), vbox2);
     gtk_container_add(GTK_CONTAINER(vbox1), hboxRot);
+    gtk_container_add(GTK_CONTAINER(vbox1), hboxRot1);
     gtk_container_add(GTK_CONTAINER(hboxRot), buttonRotccw);
+    gtk_container_add(GTK_CONTAINER(hboxRot1), buttonRotUp);
+    gtk_container_add(GTK_CONTAINER(hboxRot1), buttonRotLf);
     gtk_container_add(GTK_CONTAINER(hboxRot), camRLabel);
+    gtk_container_add(GTK_CONTAINER(hboxRot1), buttonRotRt);
+    gtk_container_add(GTK_CONTAINER(hboxRot1), buttonRotDn);
     gtk_container_add(GTK_CONTAINER(hboxRot), buttonRotcw);
 
 
@@ -892,6 +939,10 @@ int main(int argc, char** argv) {
     g_signal_connect(buttonZ2, "clicked", G_CALLBACK(zoomOut), NULL);
     g_signal_connect(buttonRotccw, "clicked", G_CALLBACK(cam_ccw), NULL);
     g_signal_connect(buttonRotcw, "clicked", G_CALLBACK(cam_cw), NULL);
+    g_signal_connect(buttonRotRt, "clicked", G_CALLBACK(cam_rt), NULL);
+    g_signal_connect(buttonRotLf, "clicked", G_CALLBACK(cam_lf), NULL);
+    g_signal_connect(buttonRotUp, "clicked", G_CALLBACK(cam_up), NULL);
+    g_signal_connect(buttonRotDn, "clicked", G_CALLBACK(cam_dn), NULL);
 
     g_signal_connect(buttonTrans, "clicked", G_CALLBACK(transform_shape), NULL);
 

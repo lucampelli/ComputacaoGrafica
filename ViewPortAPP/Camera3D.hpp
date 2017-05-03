@@ -92,6 +92,15 @@ public:
 
     void rotateCamera(int degrees) {
         rotZ += degrees;
+        
+    }
+    
+    void rotateCameraX(int degrees) {
+        rotX += degrees;
+    }
+    
+    void rotateCameraY(int degrees) {
+        rotY += degrees;
     }
 
     int getRot() {
