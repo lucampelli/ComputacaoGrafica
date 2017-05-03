@@ -30,7 +30,7 @@ static GtkWidget *combo_box_shape;
 static GtkWidget *zoomField;
 static GtkWidget *buttonAdd;
 
-static GtkWidget *fillBox;
+static GtkWidget *fillBox, *ortoSlider;
 
 static GtkWidget *CXE1, *CXE2, *CYE1, *CYE2, *CZE1, *CZE2;
 static GtkWidget *entryX, *entryY, *entryZ, *entryS, *entryAx, *entryAy, *entryAz;
@@ -91,8 +91,8 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
     cairo_paint(cr);
 
     string print = "";
-    //cam->SwitchDimension();
     cam->SCN();
+    cam->perspective(gtk_range_get_value(GTK_RANGE(ortoSlider)));
     for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());
         print.append("\n");
@@ -234,28 +234,16 @@ static void rotate_shape(Shape3D* s, int degreesX, int degreesY, int degreesZ, P
  */
 static void rotate_camX(int degrees) {
     cam->rotateCameraX(degrees);
-    
-    for (int i = 0; i < lista->getSize(); i++) {
-        rotate_shape(lista->get(i), degrees, 0, 0, cam->winCenter());
-    }
     gtk_widget_queue_draw(main_window);
 }
 
 static void rotate_camY(int degrees) {
     cam->rotateCameraY(degrees);
-    
-    for (int i = 0; i < lista->getSize(); i++) {
-        rotate_shape(lista->get(i), 0, degrees,0, cam->winCenter());
-    }
     gtk_widget_queue_draw(main_window);
 }
 
 static void rotate_camZ(int degrees) {
     cam->rotateCameraZ(degrees);
-    /*
-    for (int i = 0; i < lista->getSize(); i++) {
-        rotate_shape(lista->get(i), 0, 0, degrees, cam->winCenter());
-    }*/
     gtk_widget_queue_draw(main_window);
 }
 
@@ -786,6 +774,10 @@ void cameraMoveL() {
     gtk_widget_queue_draw(main_window);
 }
 
+void update_draw(){
+    gtk_widget_queue_draw(main_window);
+}
+
 /*
  * 
  */
@@ -853,6 +845,7 @@ int main(int argc, char** argv) {
     //Buttons
     buttonAdd = gtk_button_new_with_label("Adicionar Forma");
     fillBox = gtk_check_button_new_with_label("Preencher");
+    ortoSlider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,0, 10, 1);
     buttonUp = gtk_button_new_with_label("▲");
     buttonDown = gtk_button_new_with_label("▼");
     buttonRight = gtk_button_new_with_label("►");
@@ -906,6 +899,7 @@ int main(int argc, char** argv) {
     gtk_container_add(GTK_CONTAINER(hbox), vbox2);
     gtk_container_add(GTK_CONTAINER(vbox1), hboxRot);
     gtk_container_add(GTK_CONTAINER(vbox1), hboxRot1);
+    gtk_container_add(GTK_CONTAINER(vbox1), ortoSlider);
     gtk_container_add(GTK_CONTAINER(hboxRot), buttonRotccw);
     gtk_container_add(GTK_CONTAINER(hboxRot1), buttonRotUp);
     gtk_container_add(GTK_CONTAINER(hboxRot1), buttonRotLf);
@@ -943,6 +937,7 @@ int main(int argc, char** argv) {
     g_signal_connect(buttonRotLf, "clicked", G_CALLBACK(cam_lf), NULL);
     g_signal_connect(buttonRotUp, "clicked", G_CALLBACK(cam_up), NULL);
     g_signal_connect(buttonRotDn, "clicked", G_CALLBACK(cam_dn), NULL);
+    g_signal_connect(GTK_RANGE(ortoSlider), "value-changed" , G_CALLBACK(update_draw), NULL);
 
     g_signal_connect(buttonTrans, "clicked", G_CALLBACK(transform_shape), NULL);
 

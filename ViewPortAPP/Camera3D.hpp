@@ -27,8 +27,11 @@ private:
     Ponto* scnmin;
     Ponto* scnmax;
     Ponto* windowmin;
+    Ponto* windowtl;
     Ponto* windowmax;
+    Ponto* windowbr;
     Ponto* vUp = new Ponto(0, 1, 0);
+    Ponto* viewFocus = new Ponto(0, 0, -1);
     Ponto* zVect = new Ponto(0, 0, 1);
 
     ListaEnc<Shape3D*> * shapes = new ListaEnc<Shape3D*>();
@@ -50,10 +53,12 @@ public:
         height = 2;
         width = 2;
 
-        windowmin = new Ponto(-1, -1);
-        scnmin = new Ponto(-1, -1);
-        windowmax = new Ponto(1, 1);
-        scnmax = new Ponto(1, 1);
+        windowmin = new Ponto(-1, -1, 0);
+        windowbr = new Ponto(1, -1, 0);
+        windowtl = new Ponto(-1, 1, 0);
+        scnmin = new Ponto(-1, -1, 0);
+        windowmax = new Ponto(1, 1, 0);
+        scnmax = new Ponto(1, 1, 0);
 
         viewport = Viewport::getInstance();
         transform = Transform::getInstance();
@@ -87,19 +92,45 @@ public:
     }
 
     Ponto* winCenter() {
-        return new Ponto(-pos->getX() + (windowmax->getX() + windowmin->getX()) / 2, -pos->getY() + (windowmax->getY() + windowmin->getY()) / 2);
+        return new Ponto(-pos->getX() + (windowmax->getX() + windowmin->getX()) / 2, -pos->getY() + (windowmax->getY() + windowmin->getY()) / 2, -pos->getZ() + (windowmax->getZ() + windowmin->getZ()) / 2);
     }
 
     void rotateCameraZ(int degrees) {
         rotZ += degrees;
+        transform->setT3D(transform->set_3D_move_matrix(-winCenter()->getX(), -winCenter()->getY(), -winCenter()->getZ()));
+        transform->concatenate_matrix_3D(transform->set_3Dz_rotation_matrix(degrees));
+        transform->concatenate_matrix_3D(transform->set_3D_move_matrix(winCenter()->getX(), winCenter()->getY(), winCenter()->getZ()));
+        zVect = transform->transform3D(zVect);
+        windowmin = transform->transform3D(windowmin);
+        windowtl = transform->transform3D(windowtl);
+        windowbr = transform->transform3D(windowbr);
+        windowmax = transform->transform3D(windowmax);
     }
 
     void rotateCameraX(int degrees) {
         rotX += degrees;
+        transform->setT3D(transform->set_3D_move_matrix(-winCenter()->getX(), -winCenter()->getY(), -winCenter()->getZ()));
+        transform->concatenate_matrix_3D(transform->set_3Dx_rotation_matrix(degrees));
+        transform->concatenate_matrix_3D(transform->set_3D_move_matrix(winCenter()->getX(), winCenter()->getY(), winCenter()->getZ()));
+        zVect = transform->transform3D(zVect);
+        windowmin = transform->transform3D(windowmin);
+        windowtl = transform->transform3D(windowtl);
+        windowbr = transform->transform3D(windowbr);
+        windowmax = transform->transform3D(windowmax);
+
+
     }
 
     void rotateCameraY(int degrees) {
         rotY += degrees;
+        transform->setT3D(transform->set_3D_move_matrix(-winCenter()->getX(), -winCenter()->getY(), -winCenter()->getZ()));
+        transform->concatenate_matrix_3D(transform->set_3Dy_rotation_matrix(degrees));
+        transform->concatenate_matrix_3D(transform->set_3D_move_matrix(winCenter()->getX(), winCenter()->getY(), winCenter()->getZ()));
+        zVect = transform->transform3D(zVect);
+        windowmin = transform->transform3D(windowmin);
+        windowtl = transform->transform3D(windowtl);
+        windowbr = transform->transform3D(windowbr);
+        windowmax = transform->transform3D(windowmax);
     }
 
     int getRot() {
@@ -110,9 +141,13 @@ public:
 
         windowmin->move_by(-xAmount, yAmount);
         windowmax->move_by(-xAmount, yAmount);
+        windowtl->move_by(-xAmount, yAmount);
+        windowbr->move_by(-xAmount, yAmount);
         scnmin->move_by(-xAmount, yAmount);
         scnmax->move_by(-xAmount, yAmount);
-        clip->move(-xAmount, yAmount);
+        if (rotX == 0 && rotY == 0 && rotZ == 0) {
+            clip->move(-xAmount, yAmount);
+        }
 
     }
 
@@ -166,11 +201,31 @@ public:
         zoom = value / 100;
     }
 
-    void SwitchDimension() { //this will have the rotations to print everything on screen right
-        Ponto* originalZVect = new Ponto(zVect->getX(), zVect->getY(), zVect->getZ());
+private:
 
+    void pointPersp(float focus) {
 
+    }
 
+    void ortoPersp() {
+        transform->setT3D(transform->set_3D_move_matrix(-winCenter()->getX(), -winCenter()->getY(), -winCenter()->getZ()));
+        transform->concatenate_matrix_3D(transform->set_3Dx_rotation_matrix(-rotX));
+        transform->concatenate_matrix_3D(transform->set_3Dy_rotation_matrix(-rotY));
+        //transform->setT3D(transform->set_3D_move_matrix(winCenter()->getX(), winCenter()->getY(), winCenter()->getZ()));
+
+        for (int i = 0; i < normShapes->getSize(); i++) {
+            normShapes->get(i)->applyT();
+        }
+    }
+
+public:
+
+    void perspective(float focus) {
+        if (focus == 0) {
+            ortoPersp();
+        } else {
+            pointPersp(focus);
+        }
     }
 
     void SCN() {

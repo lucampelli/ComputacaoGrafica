@@ -494,6 +494,7 @@ public:
 
     }
 
+
     void draw(cairo_t* cr, Ponto* camPos) {
 
         Ponto* center = findCenter();
@@ -509,6 +510,7 @@ public:
                 for (int j = 0; j < sAtual->size(); j++) {
                     Aresta* aAtual = sAtual->get(j);
                     atual = aAtual->p1;
+                    cout<< atual->getX()<< endl;
                     atual = transform->dT(atual);
                     cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
 
@@ -524,7 +526,7 @@ public:
 
             }
 
-
+            cout<< endl;
             if (fillShape && !line) {
                 cairo_stroke_preserve(cr);
                 cairo_fill(cr);
