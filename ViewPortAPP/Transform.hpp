@@ -221,18 +221,20 @@ public:
         
     }
     
-    Ponto* cT(Ponto* p, double zoom, double rot){
+    Ponto* cT(Ponto* r, Ponto* zvect, double rotx, double roty, double rotz){
         
         double xw, yw;
         
+        setT3D(set_3Dx_rotation_matrix(-rotx));
+        concatenate_matrix_3D(set_3Dy_rotation_matrix(roty));
+        concatenate_matrix_3D(set_3Dz_rotation_matrix(rotz));
+        
+        Ponto* p = transform3D(r);
+        
         xw = ((p->getX() / (vpmax->getX() - vpmin->getX())) * (wmax->getX() - wmin->getX())) + (wmin->getX());
         yw = ((1 - (p->getY()/ (vpmax->getY() - vpmin->getY()))) * (wmax->getY() - wmin->getY())) + wmin->getY();
-        
-        setT(set_2D_rotation_matrix(rot));
-        
-        Ponto* r = new Ponto(xw,yw);
-        
-        return (transform(r));
+                
+        return (new Ponto(xw,yw, zvect->getZ()));
     }
     
 };

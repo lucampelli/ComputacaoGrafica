@@ -41,7 +41,7 @@ struct Aresta {
     void set(int i, Ponto* p) {
         if (i == 0) {
             p1 = p;
-        } else if (i ==1) {
+        } else if (i == 1) {
             p2 = p;
         }
     }
@@ -197,7 +197,7 @@ public:
         for (int i = 0; i < tris->getSize(); i++) {
             c = c->sum(tris->get(i)->getCenter());
         }
-        
+
         c = c->div(tris->getSize());
         return c;
     }
@@ -235,7 +235,7 @@ public:
                 for (int k = 0; k < tris->get(i)->get(j)->size(); k++) {
                     if (!passados->exists(tris->get(i)->get(j)->get(k))) {
                         passados->adiciona(tris->get(i)->get(j)->get(k));
-                        tris->get(i)->get(j)->set(k,transform->transform3D(tris->get(i)->get(j)->get(k)));
+                        tris->get(i)->get(j)->set(k, transform->transform3D(tris->get(i)->get(j)->get(k)));
                     }
                 }
             }
@@ -494,7 +494,6 @@ public:
 
     }
 
-
     void draw(cairo_t* cr, Ponto* camPos) {
 
         Ponto* center = findCenter();
@@ -510,7 +509,6 @@ public:
                 for (int j = 0; j < sAtual->size(); j++) {
                     Aresta* aAtual = sAtual->get(j);
                     atual = aAtual->p1;
-                    cout<< atual->getX()<< endl;
                     atual = transform->dT(atual);
                     cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
 
@@ -526,7 +524,6 @@ public:
 
             }
 
-            cout<< endl;
             if (fillShape && !line) {
                 cairo_stroke_preserve(cr);
                 cairo_fill(cr);

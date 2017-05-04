@@ -101,6 +101,7 @@ public:
         transform->concatenate_matrix_3D(transform->set_3Dz_rotation_matrix(degrees));
         transform->concatenate_matrix_3D(transform->set_3D_move_matrix(winCenter()->getX(), winCenter()->getY(), winCenter()->getZ()));
         zVect = transform->transform3D(zVect);
+        viewFocus = transform->transform3D(viewFocus);
         windowmin = transform->transform3D(windowmin);
         windowtl = transform->transform3D(windowtl);
         windowbr = transform->transform3D(windowbr);
@@ -113,6 +114,7 @@ public:
         transform->concatenate_matrix_3D(transform->set_3Dx_rotation_matrix(degrees));
         transform->concatenate_matrix_3D(transform->set_3D_move_matrix(winCenter()->getX(), winCenter()->getY(), winCenter()->getZ()));
         zVect = transform->transform3D(zVect);
+        viewFocus = transform->transform3D(viewFocus);
         windowmin = transform->transform3D(windowmin);
         windowtl = transform->transform3D(windowtl);
         windowbr = transform->transform3D(windowbr);
@@ -127,6 +129,7 @@ public:
         transform->concatenate_matrix_3D(transform->set_3Dy_rotation_matrix(degrees));
         transform->concatenate_matrix_3D(transform->set_3D_move_matrix(winCenter()->getX(), winCenter()->getY(), winCenter()->getZ()));
         zVect = transform->transform3D(zVect);
+        viewFocus = transform->transform3D(viewFocus);
         windowmin = transform->transform3D(windowmin);
         windowtl = transform->transform3D(windowtl);
         windowbr = transform->transform3D(windowbr);
@@ -164,7 +167,7 @@ public:
     }
 
     Ponto* clickTransform(Ponto* p) {
-        return transform->cT(p, zoom, rotZ);
+        return transform->cT(p, zVect, rotX,rotY,rotZ);
     }
 
     double getZoom() {
