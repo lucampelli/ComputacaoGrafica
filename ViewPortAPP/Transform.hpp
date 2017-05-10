@@ -146,6 +146,16 @@ public:
         return m;
     }
     
+    Matriz* set_3D_Perspective_Matrix(double focus){
+        Matriz* m = new Matriz(4,4);
+        m->set(0,0,1);
+        m->set(1,1,1);
+        m->set(2,2,1);
+        m->set(3,2, 1.0/focus);
+        
+        return m;
+    }
+    
     Matriz* set_3D_scale_matrix(double scaleX,double scaleY, double scaleZ){
         Matriz* m = new Matriz(4,4);
         m->set(0,0,scaleX);

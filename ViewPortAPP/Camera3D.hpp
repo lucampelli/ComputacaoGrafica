@@ -35,8 +35,10 @@ private:
     Ponto* zVect = new Ponto(0, 0, 1);
 
     ListaEnc<Shape3D*> * shapes = new ListaEnc<Shape3D*>();
-    ListaEnc<Shape3D*> * shapes2D = new ListaEnc<Shape3D*>();
+    ListaEnc<Shape3D*> * shapesPersp = new ListaEnc<Shape3D*>();
     ListaEnc<Shape3D*> * normShapes = new ListaEnc<Shape3D*>();
+
+    bool bugBoolean = false;
 
     Ponto* pos;
     Viewport* viewport;
@@ -69,6 +71,10 @@ public:
 
     ListaEnc<Shape3D*>* getShapeList() {
         return shapes;
+    }
+
+    ListaEnc<Shape3D*>* getShapePerspList() {
+        return shapesPersp;
     }
 
     ListaEnc<Shape3D*>* getNormList() {
@@ -106,6 +112,7 @@ public:
         windowtl = transform->transform3D(windowtl);
         windowbr = transform->transform3D(windowbr);
         windowmax = transform->transform3D(windowmax);
+        bugBoolean = true;
     }
 
     void rotateCameraX(int degrees) {
@@ -119,7 +126,7 @@ public:
         windowtl = transform->transform3D(windowtl);
         windowbr = transform->transform3D(windowbr);
         windowmax = transform->transform3D(windowmax);
-
+        bugBoolean = true;
 
     }
 
@@ -134,6 +141,7 @@ public:
         windowtl = transform->transform3D(windowtl);
         windowbr = transform->transform3D(windowbr);
         windowmax = transform->transform3D(windowmax);
+        bugBoolean = true;
     }
 
     int getRot() {
@@ -141,15 +149,23 @@ public:
     }
 
     void moveCamera(double xAmount, double yAmount) {
+        transform->setT3D(transform->set_3Dx_rotation_matrix(-rotX));
+        transform->concatenate_matrix_3D(transform->set_3Dy_rotation_matrix(-rotY));
+        transform->concatenate_matrix_3D(transform->set_3Dz_rotation_matrix(-rotZ));
+        Ponto* p = transform->transform3D(new Ponto(-xAmount, yAmount, 0));
 
-        windowmin->move_by(-xAmount, yAmount);
-        windowmax->move_by(-xAmount, yAmount);
-        windowtl->move_by(-xAmount, yAmount);
-        windowbr->move_by(-xAmount, yAmount);
-        scnmin->move_by(-xAmount, yAmount);
-        scnmax->move_by(-xAmount, yAmount);
-        if (rotX == 0 && rotY == 0 && rotZ == 0) {
-            clip->move(-xAmount, yAmount);
+        windowmin->move_by(p->getX(), p->getY(), p->getZ());
+        windowmax->move_by(p->getX(), p->getY(), p->getZ());
+        windowtl->move_by(p->getX(), p->getY(), p->getZ());
+        windowbr->move_by(p->getX(), p->getY(), p->getZ());
+        scnmin->move_by(p->getX(), p->getY(), p->getZ());
+        scnmax->move_by(p->getX(), p->getY(), p->getZ());
+        viewFocus->move_by(p->getX(), p->getY(), p->getZ());
+        zVect->move_by(p->getX(), p->getY(), p->getZ());
+        if (rotX == 0 && rotY == 0 && rotZ == 0 && !bugBoolean) {
+            clip->move(p->getX(), p->getY());
+        } else if (!rotX == 0 && rotY == 0 && rotZ == 0 && !bugBoolean) {
+            bugBoolean = true;
         }
 
     }
@@ -167,7 +183,7 @@ public:
     }
 
     Ponto* clickTransform(Ponto* p) {
-        return transform->cT(p, zVect, rotX,rotY,rotZ);
+        return transform->cT(p, zVect, rotX, rotY, rotZ);
     }
 
     double getZoom() {
@@ -206,7 +222,20 @@ public:
 
 private:
 
-    void pointPersp(float focus) {
+    void pointPersp(double focus) {
+
+
+        transform->setT3D(transform->set_3D_move_matrix(-viewFocus->getX(), -viewFocus->getY(), -viewFocus->getZ()));
+        transform->concatenate_matrix_3D(transform->set_3Dx_rotation_matrix(-rotX));
+        transform->concatenate_matrix_3D(transform->set_3Dy_rotation_matrix(-rotY));
+
+        for (int i = 0; i < normShapes->getSize(); i++) {
+            shapesPersp->get(i)->applyT();
+            shapesPersp->get(i)->retirarW(focus);
+        }
+
+
+
 
     }
 
@@ -214,16 +243,43 @@ private:
         transform->setT3D(transform->set_3D_move_matrix(-winCenter()->getX(), -winCenter()->getY(), -winCenter()->getZ()));
         transform->concatenate_matrix_3D(transform->set_3Dx_rotation_matrix(-rotX));
         transform->concatenate_matrix_3D(transform->set_3Dy_rotation_matrix(-rotY));
-        //transform->setT3D(transform->set_3D_move_matrix(winCenter()->getX(), winCenter()->getY(), winCenter()->getZ()));
 
-        for (int i = 0; i < normShapes->getSize(); i++) {
-            normShapes->get(i)->applyT();
+
+        for (int i = 0; i < shapesPersp->getSize(); i++) {
+            shapesPersp->get(i)->applyT();
         }
+
+
     }
 
 public:
 
     void perspective(float focus) {
+
+        shapesPersp->clean();
+
+        for (int i = 0; i < shapes->getSize(); i++) {
+            Shape3D* s = shapes->get(i);
+            Shape3D* n = new Shape3D();
+
+            for (int j = 0; j < s->getTris()->getSize(); j++) {
+                Surface* surf = s->getTris()->get(j);
+                Surface* temp = new Surface();
+
+                for (int k = 0; k < surf->size(); k++) {
+                    Aresta* a = surf->get(k);
+                    temp->set(new Aresta(new Ponto((a->p1->getX()), (a->p1->getY())),
+                            new Ponto((a->p2->getX()), (a->p2->getY()))));
+                }
+
+                n->addTris(temp);
+            }
+            n->setFill(s->getFill());
+            n->setLine(s->getLine());
+            n->setType(s->getType());
+            shapesPersp->adiciona(n);
+        }
+
         if (focus == 0) {
             ortoPersp();
         } else {
@@ -240,8 +296,8 @@ public:
 
         normShapes->clean();
 
-        for (int i = 0; i < shapes->getSize(); i++) {
-            Shape3D* s = shapes->get(i);
+        for (int i = 0; i < shapesPersp->getSize(); i++) {
+            Shape3D* s = shapesPersp->get(i);
             Shape3D* n = new Shape3D();
 
             for (int j = 0; j < s->getTris()->getSize(); j++) {

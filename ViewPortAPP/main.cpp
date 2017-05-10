@@ -37,7 +37,9 @@ static GtkWidget *entryX, *entryY, *entryZ, *entryS, *entryAx, *entryAy, *entryA
 
 //Shape* clipShape;
 ListaEnc<Shape3D*> * lista;
+ListaEnc<Shape3D*> * listaPersp;
 ListaEnc<Shape3D*> * normLista;
+
 int shape_choice = 0;
 int delete_choice = 0;
 int transform_choice = 0;
@@ -91,8 +93,8 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
     cairo_paint(cr);
 
     string print = "";
-    cam->SCN();
     cam->perspective(gtk_range_get_value(GTK_RANGE(ortoSlider)));
+    cam->SCN();
     for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());
         print.append("\n");
@@ -225,7 +227,6 @@ static void rotate_shape(Shape3D* s, int degreesX, int degreesY, int degreesZ, P
     }
 
     s->applyT();
-
 
 }
 
@@ -785,6 +786,7 @@ int main(int argc, char** argv) {
 
     lista = cam->getShapeList();
     normLista = cam->getNormList();
+    listaPersp = cam->getShapePerspList();
     //lista->getHead()->printPontos();
 
     GtkWidget *buttonUp;

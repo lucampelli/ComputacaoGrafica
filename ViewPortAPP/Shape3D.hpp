@@ -242,6 +242,27 @@ public:
         }
     }
 
+    void retirarW(double focus) {
+        for (int i = 0; i < tris->getSize(); i++) {
+            Surface* s = tris->get(i);
+            for (int j = 0; j < s->size(); j++) {
+                Aresta* a = s->get(j);
+
+                for (int k = 0; k < a->size(); k++) {
+                    double W = a->get(k)->getZ() / focus;
+                    
+                    //cout<< W << " : " << a->get(k)->getZ() << " : " << focus << endl;
+
+                    double Xp = a->get(k)->getX() / W;
+                    double Yp = a->get(k)->getY() / W;
+                    double Zp = a->get(k)->getZ() / W;
+
+                    a->get(k)->move_to(Xp, Yp, Zp);
+                }
+            }
+        }
+    }
+
     bool pointClip(Ponto* p, Ponto* clipMin, Ponto* clipMax) {
         clipTris->clean();
         if (p->getX() < clipMin->getX()) {
