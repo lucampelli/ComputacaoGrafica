@@ -93,7 +93,7 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
     cairo_paint(cr);
 
     string print = "";
-    cam->perspective(gtk_range_get_value(GTK_RANGE(ortoSlider)));
+    cam->perspective(gtk_range_get_value(GTK_RANGE(ortoSlider))/10 );
     cam->SCN();
     for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());

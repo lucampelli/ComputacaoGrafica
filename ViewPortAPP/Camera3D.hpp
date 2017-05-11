@@ -268,8 +268,8 @@ public:
 
                 for (int k = 0; k < surf->size(); k++) {
                     Aresta* a = surf->get(k);
-                    temp->set(new Aresta(new Ponto((a->p1->getX()), (a->p1->getY())),
-                            new Ponto((a->p2->getX()), (a->p2->getY()))));
+                    temp->set(new Aresta(new Ponto((a->p1->getX()), (a->p1->getY()),(a->p1->getZ())),
+                            new Ponto((a->p2->getX()), (a->p2->getY()), (a->p2->getZ()))));
                 }
 
                 n->addTris(temp);
@@ -283,7 +283,7 @@ public:
         if (focus == 0) {
             ortoPersp();
         } else {
-            pointPersp(focus);
+            pointPersp(1.9f + focus);
         }
     }
 
@@ -306,8 +306,8 @@ public:
 
                 for (int k = 0; k < surf->size(); k++) {
                     Aresta* a = surf->get(k);
-                    temp->set(new Aresta(transform->transform(new Ponto((a->p1->getX()), (a->p1->getY()))),
-                            transform->transform(new Ponto((a->p2->getX()), (a->p2->getY())))));
+                    temp->set(new Aresta(transform->transform(new Ponto((a->p1->getX()), (a->p1->getY()),(a->p1->getZ()))),
+                            transform->transform(new Ponto((a->p2->getX()), (a->p2->getY()), (a->p2->getZ())))));
                 }
 
                 n->addTris(temp);
