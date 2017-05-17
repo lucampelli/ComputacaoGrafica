@@ -861,7 +861,7 @@ private:
 
 };
 
-class SurfaceBezier3D : public Shape3D {
+class SurfaceBezier : public Shape3D {
     Matriz* S = new Matriz(1, 4);
     Matriz* T = new Matriz(4, 1);
     Matriz* Mb = new Matriz(4, 4);
@@ -869,7 +869,7 @@ class SurfaceBezier3D : public Shape3D {
 
 public:
 
-    SuperficieBezier(float passo, ListaEnc<Ponto*>* pontos) {
+    SurfaceBezier(float passo, ListaEnc<Ponto*>* pontos) {
         this->passo = passo;
 
         Mb->set(0, 0, -1);
@@ -883,9 +883,8 @@ public:
         Mb->set(2, 1, 3);
         Mb->set(3, 3, 1);
 
-        if (pontos->getSize() != 16) {
-            return;
-        }
+        if (pontos->getSize() == 16) {
+           
 
         Matriz* Gbx = new Matriz(4, 4);
         Matriz* Gby = new Matriz(4, 4);
@@ -903,7 +902,9 @@ public:
         }
 
         ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
-        Matriz* m;
+        Matriz* mx;
+        Matriz* my;
+        Matriz* mz;
 
         float s = 0;
         for (int i = 0; i < 1 / passo; i++) {
@@ -922,12 +923,22 @@ public:
                 T->set(2, 0, t);
                 T->set(3, 0, 1);
 
-                m = S->multiply(Mb);
-                m = m->multiply(Gbx);
-                m = m->multiply(Mb);
-                m = m->multiply(T);
+                mx = S->multiply(Mb);
+                mx = mx->multiply(Gbx);
+                mx = mx->multiply(Mb);
+                mx = mx->multiply(T);
                 
-                temp->adiciona(m->get(0,0));
+                my = S->multiply(Mb);
+                my = my->multiply(Gby);
+                my = my->multiply(Mb);
+                my = my->multiply(T);
+                
+                mz = S->multiply(Mb);
+                mz = mz->multiply(Gby);
+                mz = mz->multiply(Mb);
+                mz = mz->multiply(T);
+                
+                temp->adiciona(new Ponto(mx->get(0,0), my->get(0,0), mz->get(0,0)));
 
                 t += passo;
             }
@@ -942,7 +953,7 @@ public:
         this->setType(7);
         this->setLine(true);
 
-
+        }
     }
 };
 
