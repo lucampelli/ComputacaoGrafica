@@ -250,7 +250,7 @@ public:
 
                 for (int k = 0; k < a->size(); k++) {
                     double W = a->get(k)->getZ() / focus;
-                    
+
                     //cout<< W << " : " << a->get(k)->getZ() << " : " << focus << endl;
 
                     double Xp = a->get(k)->getX() / W;
@@ -859,6 +859,91 @@ private:
 
 
 
+};
+
+class SurfaceBezier3D : public Shape3D {
+    Matriz* S = new Matriz(1, 4);
+    Matriz* T = new Matriz(4, 1);
+    Matriz* Mb = new Matriz(4, 4);
+    float passo;
+
+public:
+
+    SuperficieBezier(float passo, ListaEnc<Ponto*>* pontos) {
+        this->passo = passo;
+
+        Mb->set(0, 0, -1);
+        Mb->set(0, 1, 3);
+        Mb->set(0, 2, -3);
+        Mb->set(0, 3, 1);
+        Mb->set(1, 0, 3);
+        Mb->set(1, 1, -6);
+        Mb->set(1, 2, 3);
+        Mb->set(2, 0, -3);
+        Mb->set(2, 1, 3);
+        Mb->set(3, 3, 1);
+
+        if (pontos->getSize() != 16) {
+            return;
+        }
+
+        Matriz* Gbx = new Matriz(4, 4);
+        Matriz* Gby = new Matriz(4, 4);
+        Matriz* Gbz = new Matriz(4, 4);
+
+
+        int k = 0;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                Gbx->set(i, j, pontos->get(k)->getX());
+                Gby->set(i, j, pontos->get(k)->getY());
+                Gbz->set(i, j, pontos->get(k)->getZ());
+                k++;
+            }
+        }
+
+        ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
+        Matriz* m;
+
+        float s = 0;
+        for (int i = 0; i < 1 / passo; i++) {
+            
+            float t = 0;
+
+            S->set(0, 0, s * s * s);
+            S->set(0, 1, s * s);
+            S->set(0, 2, s);
+            S->set(0, 3, 1);
+
+            for (int j = 0; j < 1 / passo; j++) {
+
+                T->set(0, 0, t * t * t);
+                T->set(1, 0, t * t);
+                T->set(2, 0, t);
+                T->set(3, 0, 1);
+
+                m = S->multiply(Mb);
+                m = m->multiply(Gbx);
+                m = m->multiply(Mb);
+                m = m->multiply(T);
+                
+                temp->adiciona(m->get(0,0));
+
+                t += passo;
+            }
+            s += passo;
+        }
+        
+        for (int i = 0; i < temp->getSize() - 1; i++) {
+            Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
+            this->addTris(s);
+        }
+
+        this->setType(7);
+        this->setLine(true);
+
+
+    }
 };
 
 #endif /* SHAPE_HPP */

@@ -24,6 +24,7 @@ using namespace std;
 static cairo_surface_t * surface = NULL;
 static GtkWidget *main_window;
 static GtkWidget *trans_window;
+static GtkWidget *surface_window;
 static GtkWidget *da;
 static GtkWidget *shapeField;
 static GtkWidget *combo_box_shape;
@@ -34,6 +35,12 @@ static GtkWidget *fillBox, *ortoSlider;
 
 static GtkWidget *CXE1, *CXE2, *CYE1, *CYE2, *CZE1, *CZE2;
 static GtkWidget *entryX, *entryY, *entryZ, *entryS, *entryAx, *entryAy, *entryAz;
+
+static GtkWidget *label1, *label2, *label3, *label4, *label5, *label6, *label7, *label8, *label9, *label10, *label11, *label12, *label13, *label14, *label15, *label16;
+static GtkWidget *entry1x, *entry2x, *entry3x, *entry4x, *entry5x, *entry6x, *entry7x, *entry8x, *entry9x, *entry10x, *entry11x, *entry12x, *entry13x, *entry14x, *entry15x, *entry16x;
+static GtkWidget *entry1y, *entry2y, *entry3y, *entry4y, *entry5y, *entry6y, *entry7y, *entry8y, *entry9y, *entry10y, *entry11y, *entry12y, *entry13y, *entry14y, *entry15y, *entry16y;
+static GtkWidget *entry1z, *entry2z, *entry3z, *entry4z, *entry5z, *entry6z, *entry7z, *entry8z, *entry9z, *entry10z, *entry11z, *entry12z, *entry13z, *entry14z, *entry15z, *entry16z;
+static GtkWidget *ButtonOk, *ButtonCancel;
 
 //Shape* clipShape;
 ListaEnc<Shape3D*> * lista;
@@ -51,6 +58,7 @@ int polygons_created = 0;
 int bezier_created = 0;
 int spline_created = 0;
 int lines_created = 0;
+int bezier_surf_created = 0;
 double TX = 0;
 double TY = 0;
 double TZ = 0;
@@ -93,7 +101,7 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
     cairo_paint(cr);
 
     string print = "";
-    cam->perspective(gtk_range_get_value(GTK_RANGE(ortoSlider))/10 );
+    cam->perspective(gtk_range_get_value(GTK_RANGE(ortoSlider)) / 10);
     cam->SCN();
     for (int i = 0; i < normLista->getSize(); i++) {
         print.append(lista->get(i)->getName());
@@ -138,6 +146,7 @@ static void delete_shape() {
     delete_choice = 0;
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(window, "Delete Shape");
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window), 200, 100);
 
@@ -453,6 +462,7 @@ static void transform_shape() {
 
 
     trans_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(trans_window, "Transform Shape");
     entryX = gtk_entry_new();
     entryY = gtk_entry_new();
     entryZ = gtk_entry_new();
@@ -592,6 +602,209 @@ static void transform_shape() {
 
 }
 
+static void buildBezier3D(){
+    
+    ListaEnc<Ponto*>* pontos = new ListaEnc<Ponto*>();
+    
+    
+    
+    string new_name = "BezierSurface " + std::to_string(bezier_surf_created);
+    c->setName(new_name);
+    c->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
+    lista->adiciona(c);
+}
+
+static void TelaBezier3D() {
+    
+    GtkWidget *vbox, *hbox1, *hbox2, *hbox3, *hbox4,*hbox5, *hbox6, *hbox7, *hbox8,*hbox9, *hbox10, *hbox11, *hbox12,*hbox13, *hbox14, *hbox15, *hbox16;
+    
+    surface_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(surface_window, "Create Surface");
+    
+    label1 = gtk_label_new("Ponto 1 x 1");
+    label2 = gtk_label_new("Ponto 1 x 2");
+    label3 = gtk_label_new("Ponto 1 x 3");
+    label4 = gtk_label_new("Ponto 1 x 4");
+    label5 = gtk_label_new("Ponto 2 x 1");
+    label6 = gtk_label_new("Ponto 2 x 2");
+    label7 = gtk_label_new("Ponto 2 x 3");
+    label8 = gtk_label_new("Ponto 2 x 4");
+    label9 = gtk_label_new("Ponto 3 x 1");
+    label10 = gtk_label_new("Ponto 3 x 2");
+    label11 = gtk_label_new("Ponto 3 x 3");
+    label12 = gtk_label_new("Ponto 3 x 4");
+    label13 = gtk_label_new("Ponto 4 x 1");
+    label14 = gtk_label_new("Ponto 4 x 2");
+    label15 = gtk_label_new("Ponto 4 x 3");
+    label16 = gtk_label_new("Ponto 4 x 4");
+    
+    entry1x = gtk_entry_new();
+    entry2x = gtk_entry_new();
+    entry3x = gtk_entry_new();
+    entry4x = gtk_entry_new();
+    entry5x = gtk_entry_new();
+    entry6x = gtk_entry_new();
+    entry7x = gtk_entry_new();
+    entry8x = gtk_entry_new();
+    entry9x = gtk_entry_new();
+    entry10x = gtk_entry_new();
+    entry11x = gtk_entry_new();
+    entry12x = gtk_entry_new();
+    entry13x = gtk_entry_new();
+    entry14x = gtk_entry_new();
+    entry15x = gtk_entry_new();
+    entry16x = gtk_entry_new();
+    
+    entry1y = gtk_entry_new();
+    entry2y = gtk_entry_new();
+    entry3y = gtk_entry_new();
+    entry4y = gtk_entry_new();
+    entry5y = gtk_entry_new();
+    entry6y = gtk_entry_new();
+    entry7y = gtk_entry_new();
+    entry8y = gtk_entry_new();
+    entry9y = gtk_entry_new();
+    entry10y = gtk_entry_new();
+    entry11y = gtk_entry_new();
+    entry12y = gtk_entry_new();
+    entry13y = gtk_entry_new();
+    entry14y = gtk_entry_new();
+    entry15y = gtk_entry_new();
+    entry16y = gtk_entry_new();
+    
+    entry1z = gtk_entry_new();
+    entry2z = gtk_entry_new();
+    entry3z = gtk_entry_new();
+    entry4z = gtk_entry_new();
+    entry5z = gtk_entry_new();
+    entry6z = gtk_entry_new();
+    entry7z = gtk_entry_new();
+    entry8z = gtk_entry_new();
+    entry9z = gtk_entry_new();
+    entry10z = gtk_entry_new();
+    entry11z = gtk_entry_new();
+    entry12z = gtk_entry_new();
+    entry13z = gtk_entry_new();
+    entry14z = gtk_entry_new();
+    entry15z = gtk_entry_new();
+    entry16z = gtk_entry_new();
+    
+    ButtonOk = gtk_button_new("OK");
+    ButtonCancel = gtk_button_new("Cancel");
+    
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+    hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox4 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox5 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox6 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox7 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox8 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox9 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox10 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox11 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox12 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox13 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox14 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox15 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    hbox16 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    
+    gtk_container_add(GTK_CONTAINER(surf_window),vbox);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox1);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox2);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox3);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox4);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox5);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox6);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox7);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox8);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox9);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox10);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox11);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox12);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox13);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox14);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox15);
+    gtk_container_add(GTK_CONTAINER(vbox),hbox16);
+    
+    gtk_container_add(GTK_CONTAINER(hbox1),label1);
+    gtk_container_add(GTK_CONTAINER(hbox2),label2);
+    gtk_container_add(GTK_CONTAINER(hbox3),label3);
+    gtk_container_add(GTK_CONTAINER(hbox4),label4);
+    gtk_container_add(GTK_CONTAINER(hbox5),label5);
+    gtk_container_add(GTK_CONTAINER(hbox6),label6);
+    gtk_container_add(GTK_CONTAINER(hbox7),label7);
+    gtk_container_add(GTK_CONTAINER(hbox8),label8);
+    gtk_container_add(GTK_CONTAINER(hbox9),label9);
+    gtk_container_add(GTK_CONTAINER(hbox10),label10);
+    gtk_container_add(GTK_CONTAINER(hbox11),label11);
+    gtk_container_add(GTK_CONTAINER(hbox12),label12);
+    gtk_container_add(GTK_CONTAINER(hbox13),label13);
+    gtk_container_add(GTK_CONTAINER(hbox14),label14);
+    gtk_container_add(GTK_CONTAINER(hbox15),label15);
+    gtk_container_add(GTK_CONTAINER(hbox16),label16);
+    
+    gtk_container_add(GTK_CONTAINER(hbox1),entry1x);
+    gtk_container_add(GTK_CONTAINER(hbox2),entry2x);
+    gtk_container_add(GTK_CONTAINER(hbox3),entry3x);
+    gtk_container_add(GTK_CONTAINER(hbox4),entry4x);
+    gtk_container_add(GTK_CONTAINER(hbox5),entry5x);
+    gtk_container_add(GTK_CONTAINER(hbox6),entry6x);
+    gtk_container_add(GTK_CONTAINER(hbox7),entry7x);
+    gtk_container_add(GTK_CONTAINER(hbox8),entry8x);
+    gtk_container_add(GTK_CONTAINER(hbox9),entry9x);
+    gtk_container_add(GTK_CONTAINER(hbox10),entry10x);
+    gtk_container_add(GTK_CONTAINER(hbox11),entry11x);
+    gtk_container_add(GTK_CONTAINER(hbox12),entry12x);
+    gtk_container_add(GTK_CONTAINER(hbox13),entry13x);
+    gtk_container_add(GTK_CONTAINER(hbox14),entry14x);
+    gtk_container_add(GTK_CONTAINER(hbox15),entry15x);
+    gtk_container_add(GTK_CONTAINER(hbox16),entry16x);
+    
+    gtk_container_add(GTK_CONTAINER(hbox1),entry1y);
+    gtk_container_add(GTK_CONTAINER(hbox2),entry2y);
+    gtk_container_add(GTK_CONTAINER(hbox3),entry3y);
+    gtk_container_add(GTK_CONTAINER(hbox4),entry4y);
+    gtk_container_add(GTK_CONTAINER(hbox5),entry5y);
+    gtk_container_add(GTK_CONTAINER(hbox6),entry6y);
+    gtk_container_add(GTK_CONTAINER(hbox7),entry7y);
+    gtk_container_add(GTK_CONTAINER(hbox8),entry8y);
+    gtk_container_add(GTK_CONTAINER(hbox9),entry9y);
+    gtk_container_add(GTK_CONTAINER(hbox10),entry10y);
+    gtk_container_add(GTK_CONTAINER(hbox11),entry11y);
+    gtk_container_add(GTK_CONTAINER(hbox12),entry12y);
+    gtk_container_add(GTK_CONTAINER(hbox13),entry13y);
+    gtk_container_add(GTK_CONTAINER(hbox14),entry14y);
+    gtk_container_add(GTK_CONTAINER(hbox15),entry15y);
+    gtk_container_add(GTK_CONTAINER(hbox16),entry16y);
+    
+    gtk_container_add(GTK_CONTAINER(hbox1),entry1z);
+    gtk_container_add(GTK_CONTAINER(hbox2),entry2z);
+    gtk_container_add(GTK_CONTAINER(hbox3),entry3z);
+    gtk_container_add(GTK_CONTAINER(hbox4),entry4z);
+    gtk_container_add(GTK_CONTAINER(hbox5),entry5z);
+    gtk_container_add(GTK_CONTAINER(hbox6),entry6z);
+    gtk_container_add(GTK_CONTAINER(hbox7),entry7z);
+    gtk_container_add(GTK_CONTAINER(hbox8),entry8z);
+    gtk_container_add(GTK_CONTAINER(hbox9),entry9z);
+    gtk_container_add(GTK_CONTAINER(hbox10),entry10z);
+    gtk_container_add(GTK_CONTAINER(hbox11),entry11z);
+    gtk_container_add(GTK_CONTAINER(hbox12),entry12z);
+    gtk_container_add(GTK_CONTAINER(hbox13),entry13z);
+    gtk_container_add(GTK_CONTAINER(hbox14),entry14z);
+    gtk_container_add(GTK_CONTAINER(hbox15),entry15z);
+    gtk_container_add(GTK_CONTAINER(hbox16),entry16z);
+    
+    gtk_container_add(GTK_CONTAINER(vbox), ButtonOk);
+    gtk_container_add(GTK_CONTAINER(vbox), ButtonCancel);
+    
+    g_signal_connect(ButtonOK, "clicked", G_CALLBACK(buildBezier), NULL);
+    g_signal_connect(ButtonOK, "clicked", G_CALLBACK(gtk_window_close), NULL);
+    g_signal_connect(ButtonCancel, "clicked", G_CALLBACK(gtk_window_close), NULL);
+    
+}
+
 static void build_shape() {
 
     if (!clicking) {
@@ -691,7 +904,7 @@ static void build_shape() {
     }
 
     if (shape_choice == 5) {
-        //Polígono
+        //CurvaBezier
         if (clicking) {
 
             clicking = false;
@@ -706,17 +919,29 @@ static void build_shape() {
     }
 
     if (shape_choice == 6) {
-        //Polígono
+        //BSpline
         if (clicking) {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
             B_Spline3D* c = new B_Spline3D(-camPos->getX(), camPos->getY(), -camPos->getZ(), polP);
-            bezier_created++;
+            spline_created++;
             string new_name = "B_Spline " + std::to_string(spline_created);
             c->setName(new_name);
             c->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
             lista->adiciona(c);
+        }
+    }
+
+    if (shape_choice == 7) {
+        //Surface
+        if (clicking) {
+
+            clicking = false;
+            gtk_widget_set_sensitive(combo_box_shape, TRUE);
+            //B_Spline3D* c = new B_Spline3D(-camPos->getX(), camPos->getY(), -camPos->getZ(), polP);
+            bezier_surf_created++;
+
         }
     }
     gtk_widget_queue_draw(main_window);
@@ -775,7 +1000,7 @@ void cameraMoveL() {
     gtk_widget_queue_draw(main_window);
 }
 
-void update_draw(){
+void update_draw() {
     gtk_widget_queue_draw(main_window);
 }
 
@@ -814,6 +1039,7 @@ int main(int argc, char** argv) {
 
     //Main Window
     main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(main_window, "Bethesda Software Game Engine");
 
     gtk_window_set_title(GTK_WINDOW(main_window), "Computação Grafica");
     gtk_window_set_position(GTK_WINDOW(main_window), GtkWindowPosition(GTK_WIN_POS_CENTER));
@@ -824,7 +1050,7 @@ int main(int argc, char** argv) {
 
     //ComboBox
     combo_box_shape = gtk_combo_box_text_new();
-    const char* shapes[] = {"Ponto", "Reta", "Retangulo", "Quadrado", "Poligono", "Bezier", "B-Spline"};
+    const char* shapes[] = {"Ponto", "Reta", "Retangulo", "Quadrado", "Poligono", "Bezier", "B-Spline", "SurfaceBezier3D"};
 
     for (int i = 0; i < G_N_ELEMENTS(shapes); i++) {
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box_shape), shapes[i]);
@@ -847,7 +1073,7 @@ int main(int argc, char** argv) {
     //Buttons
     buttonAdd = gtk_button_new_with_label("Adicionar Forma");
     fillBox = gtk_check_button_new_with_label("Preencher");
-    ortoSlider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL,0, 10, 1);
+    ortoSlider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 10, 1);
     buttonUp = gtk_button_new_with_label("▲");
     buttonDown = gtk_button_new_with_label("▼");
     buttonRight = gtk_button_new_with_label("►");
@@ -939,7 +1165,7 @@ int main(int argc, char** argv) {
     g_signal_connect(buttonRotLf, "clicked", G_CALLBACK(cam_lf), NULL);
     g_signal_connect(buttonRotUp, "clicked", G_CALLBACK(cam_up), NULL);
     g_signal_connect(buttonRotDn, "clicked", G_CALLBACK(cam_dn), NULL);
-    g_signal_connect(GTK_RANGE(ortoSlider), "value-changed" , G_CALLBACK(update_draw), NULL);
+    g_signal_connect(GTK_RANGE(ortoSlider), "value-changed", G_CALLBACK(update_draw), NULL);
 
     g_signal_connect(buttonTrans, "clicked", G_CALLBACK(transform_shape), NULL);
 
