@@ -934,11 +934,12 @@ public:
                 my = my->multiply(T);
                 
                 mz = S->multiply(Mb);
-                mz = mz->multiply(Gby);
+                mz = mz->multiply(Gbz);
                 mz = mz->multiply(Mb);
                 mz = mz->multiply(T);
                 
                 temp->adiciona(new Ponto(mx->get(0,0), my->get(0,0), mz->get(0,0)));
+                //cout << mx->get(0,0)<< " : " << my->get(0,0) << " : " <<  mz->get(0,0) << endl;
 
                 t += passo;
             }

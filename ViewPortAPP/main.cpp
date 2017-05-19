@@ -602,22 +602,39 @@ static void transform_shape() {
 
 }
 
+static void reenable() {
+    gtk_widget_set_sensitive(combo_box_shape, TRUE);
+    gtk_widget_set_sensitive(buttonAdd, TRUE);
+    clicking = false;
+}
+
 static void buildBezier3D() {
 
     ListaEnc<Ponto*>* pontos = new ListaEnc<Ponto*>();
-    
 
-    for (int i = 0; i < 16; i++) {
-        pontos->adiciona(new Ponto(atof(gtk_entry_get_text(GTK_ENTRY(entrysX[i]))), atof(gtk_entry_get_text(GTK_ENTRY(entrysY[i]))), atof(gtk_entry_get_text(GTK_ENTRY(entrysZ[i])))));
+
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox))) {
+        for (int i = 0; i < 16; i++) {
+            pontos->adiciona(new Ponto(atof(gtk_entry_get_text(GTK_ENTRY(entrysX[i]))), atof(gtk_entry_get_text(GTK_ENTRY(entrysY[i]))), atof(gtk_entry_get_text(GTK_ENTRY(entrysZ[i])))));
+            //cout<<pontos->get(i)->getX() << " : " << pontos->get(i)->getY() << " : " << pontos->get(i)->getZ() << endl;
+        }
+    } else {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                pontos->adiciona(new Ponto(-(i/20.0), -(j/20.0), (i+j)/20.0));
+            }
+        }
     }
 
+
     SurfaceBezier* c = new SurfaceBezier(0.1f, pontos);
-    
+
     string new_name = "BezierSurface " + std::to_string(bezier_surf_created);
-    
+
     c->setName(new_name);
     c->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
     lista->adiciona(c);
+    reenable();
 }
 
 static void TelaBezier3D() {
@@ -631,7 +648,7 @@ static void TelaBezier3D() {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
 
-            labels[k] = gtk_label_new(g_strdup_printf("Ponto %i x %i",i,j));
+            labels[k] = gtk_label_new(g_strdup_printf("Ponto %i x %i", i, j));
             k++;
         }
     }
@@ -667,6 +684,7 @@ static void TelaBezier3D() {
 
     g_signal_connect(ButtonOk, "clicked", G_CALLBACK(buildBezier3D), NULL);
     g_signal_connect(ButtonOk, "clicked", G_CALLBACK(gtk_window_close), NULL);
+    g_signal_connect(ButtonCancel, "clicked", G_CALLBACK(reenable), NULL);
     g_signal_connect(ButtonCancel, "clicked", G_CALLBACK(gtk_window_close), NULL);
 
     gtk_window_set_position(GTK_WINDOW(surface_window), GTK_WIN_POS_CENTER);
@@ -809,7 +827,12 @@ static void build_shape() {
         clicking = false;
         gtk_widget_set_sensitive(combo_box_shape, TRUE);
 
-        TelaBezier3D();
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox))) {
+            TelaBezier3D();
+        } else {
+            buildBezier3D();
+        }
+
         bezier_surf_created++;
     }
     gtk_widget_queue_draw(main_window);
@@ -836,6 +859,7 @@ static gboolean click(GtkWidget *event_box, GdkEventButton *event, gpointer data
     }
 
     if (shape_choice == 0) {
+
         build_shape();
     }
 
@@ -869,6 +893,7 @@ void cameraMoveL() {
 }
 
 void update_draw() {
+
     gtk_widget_queue_draw(main_window);
 }
 
