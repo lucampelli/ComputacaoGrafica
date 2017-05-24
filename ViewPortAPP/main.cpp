@@ -104,8 +104,10 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
     cam->perspective(gtk_range_get_value(GTK_RANGE(ortoSlider)) / 10);
     cam->SCN();
     for (int i = 0; i < normLista->getSize(); i++) {
-        print.append(lista->get(i)->getName());
-        print.append("\n");
+        if (!lista->get(i)->getName().empty()) {
+            print.append(lista->get(i)->getName());
+            print.append("\n");
+        }
         normLista->get(i)->clip(cam->getClipMin(), cam->getClipMax());
         normLista->get(i)->draw(cr, camPos);
 
@@ -203,7 +205,7 @@ static void move_shape(Shape3D* s, double Dx, double Dy, double Dz) {
     Transform* t = Transform::getInstance();
     t->setT3D(t->set_3D_move_matrix(Dx, Dy, Dz));
 
-    s->applyT();
+    s->applyT(true);
 }
 
 static void scale_shape(Shape3D* s, double scaleX, double scaleY, double scaleZ, Ponto* scale_center = new Ponto(0, 0, 0)) {
@@ -214,7 +216,7 @@ static void scale_shape(Shape3D* s, double scaleX, double scaleY, double scaleZ,
     if (scale_center->getX() == s->findCenter()->getX() && scale_center->getY() == s->findCenter()->getY() && scale_center->getZ() == s->findCenter()->getZ()) {
         s->setScale(scaleX, scaleY, scaleZ);
     } else {
-        s->applyT();
+        s->applyT(true);
     }
 
 }
@@ -235,7 +237,7 @@ static void rotate_shape(Shape3D* s, int degreesX, int degreesY, int degreesZ, P
 
     }
 
-    s->applyT();
+    s->applyT(true);
 
 }
 
@@ -621,13 +623,13 @@ static void buildBezier3D() {
     } else {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                pontos->adiciona(new Ponto(-(i/20.0), -(j/20.0), (i+j)/20.0));
+                pontos->adiciona(new Ponto((i / 5.0) - 1, -(j / 10.0), ((i == 1 || i == 2) && (j == 1 || j == 2)) ? 2 : 1));
             }
         }
     }
 
 
-    SurfaceBezier* c = new SurfaceBezier(0.1f, pontos);
+    SurfaceBezier* c = new SurfaceBezier(camPos->getX(), camPos->getY(), camPos->getZ(), 0.1f, pontos, lista);
 
     string new_name = "BezierSurface " + std::to_string(bezier_surf_created);
 
@@ -798,7 +800,7 @@ static void build_shape() {
 
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
-            CurvaBezier3D* c = new CurvaBezier3D(-camPos->getX(), camPos->getY(), polP);
+            CurvaBezier3D* c = new CurvaBezier3D(-camPos->getX(), camPos->getY(), camPos->getZ(), polP);
             bezier_created++;
             string new_name = "Bezier " + std::to_string(bezier_created);
             c->setName(new_name);

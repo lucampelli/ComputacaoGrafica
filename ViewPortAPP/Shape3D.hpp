@@ -141,6 +141,8 @@ private:
     double scaleZ = 1;
     string name;
 
+    ListaEnc<Shape3D*>* children = new ListaEnc<Shape3D*>();
+
 protected:
     Transform* transform = Transform::getInstance();
     bool fillShape = false;
@@ -197,8 +199,11 @@ public:
         for (int i = 0; i < tris->getSize(); i++) {
             c = c->sum(tris->get(i)->getCenter());
         }
+        for (int i = 0; i < children->getSize(); i++) {
+            c = c->sum(children->get(i)->findCenter());
+        }
 
-        c = c->div(tris->getSize());
+        c = c->div(tris->getSize() + children->getSize());
         return c;
     }
 
@@ -218,14 +223,26 @@ public:
         scaleX = X;
         scaleY = Y;
         scaleZ = Z;
-        applyT();
+        applyT(true);
     }
 
     void move(double Dx, double Dy, double Dz) {
         pos->move_by(Dx, Dy, Dz);
     }
 
-    void applyT() { //aplica a transformada na shape
+    void addChild(Shape3D* child) {
+        children->adiciona(child);
+    }
+
+    ListaEnc<Shape3D*>* getChildren() {
+        return children;
+    }
+
+    void setChildren(ListaEnc<Shape3D*>* child) {
+        children = child;
+    }
+
+    void applyT(bool trans) { //aplica a transformada na shape
 
         ListaEnc<Ponto*>* passados = new ListaEnc<Ponto*>();
 
@@ -238,6 +255,11 @@ public:
                         tris->get(i)->get(j)->set(k, transform->transform3D(tris->get(i)->get(j)->get(k)));
                     }
                 }
+            }
+        }
+        if (trans) {
+            for (int i = 0; i < children->getSize(); i++) {
+                children->get(i)->applyT(trans);
             }
         }
     }
@@ -555,6 +577,10 @@ public:
 
         }
 
+        for (int i = 0; i < children->getSize(); i++) {
+            children->get(i)->draw(cr, camPos);
+        }
+
 
     }
 
@@ -697,7 +723,7 @@ public:
 
     }
 
-    CurvaBezier3D(float x, float y, ListaEnc<Ponto*>* p) {
+    CurvaBezier3D(float x, float y, float z, ListaEnc<Ponto*>* p) {
         ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
         MB->set(0, 0, -1);
         MB->set(0, 1, 3);
@@ -713,7 +739,7 @@ public:
         //temp->adiciona(p->getHead());
 
         for (int i = 0; i < p->getSize(); i++) {
-            p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y);
+            p->get(i)->move_to(p->get(i)->getX() + x, p->get(i)->getY() + y, p->get(i)->getZ() + z);
         }
 
         if (p->getSize() < 4) {
@@ -869,7 +895,7 @@ class SurfaceBezier : public Shape3D {
 
 public:
 
-    SurfaceBezier(float passo, ListaEnc<Ponto*>* pontos) {
+    SurfaceBezier(float x, float y, float z, float passo, ListaEnc<Ponto*>* pontos, ListaEnc<Shape3D*>* gambiPoints) {
         this->passo = passo;
 
         Mb->set(0, 0, -1);
@@ -884,75 +910,133 @@ public:
         Mb->set(3, 3, 1);
 
         if (pontos->getSize() == 16) {
-           
 
-        Matriz* Gbx = new Matriz(4, 4);
-        Matriz* Gby = new Matriz(4, 4);
-        Matriz* Gbz = new Matriz(4, 4);
+            Matriz* Gbx = new Matriz(4, 4);
+            Matriz* Gby = new Matriz(4, 4);
+            Matriz* Gbz = new Matriz(4, 4);
 
 
-        int k = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                Gbx->set(i, j, pontos->get(k)->getX());
-                Gby->set(i, j, pontos->get(k)->getY());
-                Gbz->set(i, j, pontos->get(k)->getZ());
-                k++;
+            int k = 0;
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    Gbx->set(i, j, pontos->get(k)->getX());
+                    Gby->set(i, j, pontos->get(k)->getY());
+                    Gbz->set(i, j, pontos->get(k)->getZ());
+                    k++;
+                }
             }
-        }
 
-        ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
-        Matriz* mx;
-        Matriz* my;
-        Matriz* mz;
+            ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
+            Matriz* mx;
+            Matriz* my;
+            Matriz* mz;
 
-        float s = 0;
-        for (int i = 0; i < 1 / passo; i++) {
+            float s = 0;
+            for (int i = 0; i < 1 / passo; i++) {
+
+                float t = 0;
+
+                S->set(0, 0, s * s * s);
+                S->set(0, 1, s * s);
+                S->set(0, 2, s);
+                S->set(0, 3, 1);
+
+                for (int j = 0; j < 1 / passo; j++) {
+
+                    T->set(0, 0, t * t * t);
+                    T->set(1, 0, t * t);
+                    T->set(2, 0, t);
+                    T->set(3, 0, 1);
+
+                    mx = S->multiply(Mb);
+                    mx = mx->multiply(Gbx);
+                    mx = mx->multiply(Mb);
+                    mx = mx->multiply(T);
+
+                    my = S->multiply(Mb);
+                    my = my->multiply(Gby);
+                    my = my->multiply(Mb);
+                    my = my->multiply(T);
+
+                    mz = S->multiply(Mb);
+                    mz = mz->multiply(Gbz);
+                    mz = mz->multiply(Mb);
+                    mz = mz->multiply(T);
+
+                    temp->adiciona(new Ponto(mx->get(0, 0), my->get(0, 0), mz->get(0, 0)));
+
+                    t += passo;
+                }
+                s += passo;
+            }
+
+            ListaEnc<Ponto*>* l;
+
+            /*
+            for (int i = 0; i < 1 / passo; i++) {
+                l = new ListaEnc<Ponto*>();
+
+                int mod = (1 / passo) / 3;
+                mod *= 10;
+
+                l->adiciona(temp->get(i));
+                l->adiciona(temp->get(i + mod));
+                l->adiciona(temp->get(i + 2 * mod));
+                l->adiciona(temp->get(i + 3 * mod));
+
+                CurvaBezier3D* curva = new CurvaBezier3D(x, y, z, l);
+                curva->setName("SurfaceCurve");
+                curva->setLine(true);
+                curva->setType(5);
+                this->addChild(curva);
+                gambiPoints->adiciona(curva);
+                /*
+                Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
+                this->addTris(s);
+             *
+            }
+
+
+            for (int i = 0; i < (1 / (passo * passo)); i += (1 / passo)) {
+                l = new ListaEnc<Ponto*>();
+
+
+                int mod = (1 / passo) / 3;
+
+                l->adiciona(temp->get(i));
+                l->adiciona(temp->get(i + mod));
+                l->adiciona(temp->get(i + 2 * mod));
+                l->adiciona(temp->get(i + 3 * mod));
+
+                CurvaBezier3D* curva = new CurvaBezier3D(x, y, z, l);
+                curva->setName("SurfaceCurve");
+                curva->setLine(true);
+                curva->setType(5);
+                this->addChild(curva);
+                gambiPoints->adiciona(curva);
+                /*
+                Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
+                this->addTris(s);
+             *
+            }
+             */
+
+            for (int i = 0; i < 1 / (passo * passo); i+= 1/passo) {
+                for (int j = 0; j < (1 / passo) -1; j++) {
+                    Surface* s = new Surface(new Aresta(temp->get(i + j), temp->get(i+j+1)));
+                    this->addTris(s);
+                }
+            }
+
+            for  (int j = 0; j < (1 / passo); j++){
+                for (int i = 0; i < 1 / (passo * passo) - (1/passo); i+= 1/passo) {
+                    Surface* s = new Surface(new Aresta(temp->get(i + j), temp->get(i+j+(1/passo))));
+                    this->addTris(s);
+                }
+            }
             
-            float t = 0;
-
-            S->set(0, 0, s * s * s);
-            S->set(0, 1, s * s);
-            S->set(0, 2, s);
-            S->set(0, 3, 1);
-
-            for (int j = 0; j < 1 / passo; j++) {
-
-                T->set(0, 0, t * t * t);
-                T->set(1, 0, t * t);
-                T->set(2, 0, t);
-                T->set(3, 0, 1);
-
-                mx = S->multiply(Mb);
-                mx = mx->multiply(Gbx);
-                mx = mx->multiply(Mb);
-                mx = mx->multiply(T);
-                
-                my = S->multiply(Mb);
-                my = my->multiply(Gby);
-                my = my->multiply(Mb);
-                my = my->multiply(T);
-                
-                mz = S->multiply(Mb);
-                mz = mz->multiply(Gbz);
-                mz = mz->multiply(Mb);
-                mz = mz->multiply(T);
-                
-                temp->adiciona(new Ponto(mx->get(0,0), my->get(0,0), mz->get(0,0)));
-                //cout << mx->get(0,0)<< " : " << my->get(0,0) << " : " <<  mz->get(0,0) << endl;
-
-                t += passo;
-            }
-            s += passo;
-        }
-        
-        for (int i = 0; i < temp->getSize() - 1; i++) {
-            Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
-            this->addTris(s);
-        }
-
-        this->setType(7);
-        this->setLine(true);
+            this->setType(7);
+            this->setLine(true);
 
         }
     }

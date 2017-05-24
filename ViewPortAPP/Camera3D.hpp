@@ -229,8 +229,8 @@ private:
         transform->concatenate_matrix_3D(transform->set_3Dx_rotation_matrix(-rotX));
         transform->concatenate_matrix_3D(transform->set_3Dy_rotation_matrix(-rotY));
 
-        for (int i = 0; i < normShapes->getSize(); i++) {
-            shapesPersp->get(i)->applyT();
+        for (int i = 0; i < shapesPersp->getSize(); i++) {
+            shapesPersp->get(i)->applyT(false);
             shapesPersp->get(i)->retirarW(focus);
         }
 
@@ -246,7 +246,7 @@ private:
 
 
         for (int i = 0; i < shapesPersp->getSize(); i++) {
-            shapesPersp->get(i)->applyT();
+            shapesPersp->get(i)->applyT(false);
         }
 
 
@@ -277,6 +277,7 @@ public:
             n->setFill(s->getFill());
             n->setLine(s->getLine());
             n->setType(s->getType());
+            n->setChildren(s->getChildren());
             shapesPersp->adiciona(n);
         }
 
@@ -315,6 +316,7 @@ public:
             n->setFill(s->getFill());
             n->setLine(s->getLine());
             n->setType(s->getType());
+            n->setChildren(s->getChildren());
             normShapes->adiciona(n);
         }
 
