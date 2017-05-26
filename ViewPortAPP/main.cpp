@@ -618,7 +618,6 @@ static void buildBezier3D() {
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox))) {
         for (int i = 0; i < 16; i++) {
             pontos->adiciona(new Ponto(atof(gtk_entry_get_text(GTK_ENTRY(entrysX[i]))), atof(gtk_entry_get_text(GTK_ENTRY(entrysY[i]))), atof(gtk_entry_get_text(GTK_ENTRY(entrysZ[i])))));
-            //cout<<pontos->get(i)->getX() << " : " << pontos->get(i)->getY() << " : " << pontos->get(i)->getZ() << endl;
         }
     } else {
         for (int i = 0; i < 4; i++) {
