@@ -561,10 +561,9 @@ public:
                         cairo_line_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY()); //good
                         cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
 
+
                     }
-
                 }
-
             }
 
             if (fillShape && !line) {
@@ -585,10 +584,10 @@ public:
     }
 
     void printPontos() {
-        cout << clipTris->getSize() << endl;
+        //cout << clipTris->getSize() << endl;
         for (int i = 0; i < clipTris->getSize(); i++) {
             for (int j = 0; j < clipTris->get(i)->size(); j++) {
-                for (int k = 0; k < clipTris->get(i)->get(j)->size() - 1; k++) {
+                for (int k = 0; k < clipTris->get(i)->get(j)->size(); k++) {
                     cout << clipTris->get(i)->get(j)->get(k)->getX() << " : ";
                     cout << clipTris->get(i)->get(j)->get(k)->getY() << " : ";
                     cout << clipTris->get(i)->get(j)->get(k)->getZ() << endl;
@@ -907,7 +906,8 @@ public:
         Mb->set(1, 2, 3);
         Mb->set(2, 0, -3);
         Mb->set(2, 1, 3);
-        Mb->set(3, 3, 1);
+        Mb->set(3, 0, 1);
+
 
         if (pontos->getSize() == 16) {
 
@@ -972,74 +972,272 @@ public:
 
             ListaEnc<Ponto*>* l;
 
-            /*
-            for (int i = 0; i < 1 / passo; i++) {
-                l = new ListaEnc<Ponto*>();
 
-                int mod = (1 / passo) / 3;
-                mod *= 10;
-
-                l->adiciona(temp->get(i));
-                l->adiciona(temp->get(i + mod));
-                l->adiciona(temp->get(i + 2 * mod));
-                l->adiciona(temp->get(i + 3 * mod));
-
-                CurvaBezier3D* curva = new CurvaBezier3D(x, y, z, l);
-                curva->setName("SurfaceCurve");
-                curva->setLine(true);
-                curva->setType(5);
-                this->addChild(curva);
-                gambiPoints->adiciona(curva);
-                /*
-                Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
-                this->addTris(s);
-             *
-            }
-
-
-            for (int i = 0; i < (1 / (passo * passo)); i += (1 / passo)) {
-                l = new ListaEnc<Ponto*>();
-
-
-                int mod = (1 / passo) / 3;
-
-                l->adiciona(temp->get(i));
-                l->adiciona(temp->get(i + mod));
-                l->adiciona(temp->get(i + 2 * mod));
-                l->adiciona(temp->get(i + 3 * mod));
-
-                CurvaBezier3D* curva = new CurvaBezier3D(x, y, z, l);
-                curva->setName("SurfaceCurve");
-                curva->setLine(true);
-                curva->setType(5);
-                this->addChild(curva);
-                gambiPoints->adiciona(curva);
-                /*
-                Surface* s = new Surface(new Aresta(temp->get(i), temp->get(i + 1)));
-                this->addTris(s);
-             *
-            }
-             */
-
-            for (int i = 0; i < 1 / (passo * passo); i+= 1/passo) {
-                for (int j = 0; j < (1 / passo) -1; j++) {
-                    Surface* s = new Surface(new Aresta(temp->get(i + j), temp->get(i+j+1)));
+            for (int i = 0; i < 1 / (passo * passo); i += 1 / passo) {
+                for (int j = 0; j < (1 / passo) - 1; j++) {
+                    Surface* s = new Surface(new Aresta(temp->get(i + j), temp->get(i + j + 1)));
                     this->addTris(s);
                 }
             }
 
-            for  (int j = 0; j < (1 / passo); j++){
-                for (int i = 0; i < 1 / (passo * passo) - (1/passo); i+= 1/passo) {
-                    Surface* s = new Surface(new Aresta(temp->get(i + j), temp->get(i+j+(1/passo))));
+            for (int j = 0; j < (1 / passo); j++) {
+                for (int i = 0; i < 1 / (passo * passo) - (1 / passo); i += 1 / passo) {
+                    Surface* s = new Surface(new Aresta(temp->get(i + j), temp->get(i + j + (1 / passo))));
                     this->addTris(s);
                 }
             }
-            
+
             this->setType(7);
             this->setLine(true);
 
         }
     }
+};
+
+class BSplineSurface : public Shape3D {
+    Matriz* Mb = new Matriz(4, 4);
+    Matriz* Mt = new Matriz(4, 4);
+    Matriz* Es = new Matriz(4, 4);
+    Matriz* Et = new Matriz(4, 4);
+
+    Matriz* DDX1;
+    Matriz* DDY1;
+    Matriz* DDZ1;
+    Matriz* DDX2;
+    Matriz* DDY2;
+    Matriz* DDZ2;
+
+private:
+
+    void BSpline(int n, double x1, double x2, double x3, double x4, double y1, double y2, double y3, double y4, double z1, double z2, double z3, double z4, ListaEnc<Ponto*>* outPontos) {
+
+        outPontos->adiciona(new Ponto(x1, y1, z1));
+
+        for (int i = 0; i < n; i++) {
+            x1 += x2;
+            x2 += x3;
+            x3 += x4;
+            y1 += y2;
+            y2 += y3;
+            y3 += y4;
+            z1 += z2;
+            z2 += z3;
+            z3 += z4;
+
+            outPontos->adiciona(new Ponto(x1, y1, z1));
+
+        }
+    }
+
+public:
+
+    BSplineSurface(ListaEnc<Ponto*>* pontos, int lin, int col, float passo) {
+        Es->set(0, 3, 1);
+        Es->set(1, 0, passo * passo * passo);
+        Es->set(1, 1, passo * passo);
+        Es->set(1, 2, passo);
+        Es->set(2, 0, 6 * passo * passo * passo);
+        Es->set(2, 1, 2 * passo * passo);
+        Es->set(3, 0, 6 * passo * passo * passo);
+
+        Et->set(3, 0, 1);
+        Et->set(0, 1, passo * passo * passo);
+        Et->set(1, 1, passo * passo);
+        Et->set(2, 1, passo);
+        Et->set(0, 2, 6 * passo * passo * passo);
+        Et->set(1, 2, 2 * passo * passo);
+        Et->set(0, 3, 6 * passo * passo * passo);
+
+        Mb->set(0, 0, -1);
+        Mb->set(0, 1, 3);
+        Mb->set(0, 2, -3);
+        Mb->set(0, 3, 1);
+        Mb->set(1, 0, 3);
+        Mb->set(1, 1, -6);
+        Mb->set(1, 2, 3);
+        Mb->set(2, 0, -3);
+        Mb->set(2, 2, 3);
+        Mb->set(3, 2, 1);
+        Mb->set(3, 1, 4);
+        Mb->set(3, 0, 1);
+
+        Mt->set(0, 0, -1);
+        Mt->set(1, 0, 3);
+        Mt->set(2, 0, -3);
+        Mt->set(3, 0, 1);
+        Mt->set(0, 1, 3);
+        Mt->set(1, 1, -6);
+        Mt->set(2, 1, 3);
+        Mt->set(0, 2, -3);
+        Mt->set(2, 2, 3);
+        Mt->set(2, 3, 1);
+        Mt->set(1, 3, 4);
+        Mt->set(0, 3, 1);
+
+        Mb = Mb->multiply(1.0 / 6.0);
+        Mt = Mt->multiply(1.0 / 6.0);
+        
+        Matriz* Gx = new Matriz(4, 4);
+        Matriz* Gy = new Matriz(4, 4);
+        Matriz* Gz = new Matriz(4, 4);
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                Ponto* p = pontos->get(i * lin + j);
+                Gx->set(i, j, p->getX());
+                Gy->set(i, j, p->getY());
+                Gz->set(i, j, p->getZ());
+            }
+        }
+        BSplineSurface3D(Gx, Gy, Gz, passo);
+
+
+
+    }
+
+private:
+
+    void BSplineSurface3D(Matriz* Gx, Matriz* Gy, Matriz* Gz, float passo) {
+
+        Matriz* Cx = Mb->multiply(Gx);
+        Cx = Cx->multiply(Mt);
+        Matriz* Cy = Mb->multiply(Gy);
+        Cy = Cy->multiply(Mt);
+        Matriz* Cz = Mb->multiply(Gz);        
+        Cz = Cz->multiply(Mt);
+        
+        DDX1 = Es->multiply(Cx);
+        DDX1 = DDX1->multiply(Et);
+        DDY1 = Es->multiply(Cy);
+        DDY1 = DDY1->multiply(Et);
+        DDZ1 = Es->multiply(Cz);
+        DDZ1 = DDZ1->multiply(Et);
+
+        DDX2 = DDX1->copy();
+        DDY2 = DDY1->copy();
+        DDZ2 = DDZ1->copy();
+
+        ListaEnc<Ponto*>* temp = new ListaEnc<Ponto*>();
+        ListaEnc<Ponto*>* temp1 = new ListaEnc<Ponto*>();
+
+        for (int i = 0; i < 1 / passo; i++) {
+            BSpline(1 / passo, DDX1->get(0, 0), DDX1->get(0, 1), DDX1->get(0, 2), DDX1->get(0, 3), DDY1->get(0, 0), DDY1->get(0, 1), DDY1->get(0, 2), DDY1->get(0, 3),
+                    DDZ1->get(0, 0), DDZ1->get(0, 1), DDZ1->get(0, 2), DDZ1->get(0, 3), temp);
+
+            DDX1->set(0, 0, DDX1->get(1, 0) + DDX1->get(0, 0));
+            DDX1->set(0, 1, DDX1->get(1, 1) + DDX1->get(0, 1));
+            DDX1->set(0, 2, DDX1->get(1, 2) + DDX1->get(0, 2));
+            DDX1->set(0, 3, DDX1->get(1, 3) + DDX1->get(0, 3));
+            DDX1->set(1, 0, DDX1->get(2, 0) + DDX1->get(1, 0));
+            DDX1->set(1, 1, DDX1->get(2, 1) + DDX1->get(1, 1));
+            DDX1->set(1, 2, DDX1->get(2, 2) + DDX1->get(1, 2));
+            DDX1->set(1, 3, DDX1->get(2, 3) + DDX1->get(1, 3));
+            DDX1->set(2, 0, DDX1->get(3, 0) + DDX1->get(2, 0));
+            DDX1->set(2, 1, DDX1->get(3, 1) + DDX1->get(2, 1));
+            DDX1->set(2, 2, DDX1->get(3, 2) + DDX1->get(2, 2));
+            DDX1->set(2, 3, DDX1->get(3, 3) + DDX1->get(2, 3));
+
+            DDY1->set(0, 0, DDY1->get(1, 0) + DDY1->get(0, 0));
+            DDY1->set(0, 1, DDY1->get(1, 1) + DDY1->get(0, 1));
+            DDY1->set(0, 2, DDY1->get(1, 2) + DDY1->get(0, 2));
+            DDY1->set(0, 3, DDY1->get(1, 3) + DDY1->get(0, 3));
+            DDY1->set(1, 0, DDY1->get(2, 0) + DDY1->get(1, 0));
+            DDY1->set(1, 1, DDY1->get(2, 1) + DDY1->get(1, 1));
+            DDY1->set(1, 2, DDY1->get(2, 2) + DDY1->get(1, 2));
+            DDY1->set(1, 3, DDY1->get(2, 3) + DDY1->get(1, 3));
+            DDY1->set(2, 0, DDY1->get(3, 0) + DDY1->get(2, 0));
+            DDY1->set(2, 1, DDY1->get(3, 1) + DDY1->get(2, 1));
+            DDY1->set(2, 2, DDY1->get(3, 2) + DDY1->get(2, 2));
+            DDY1->set(2, 3, DDY1->get(3, 3) + DDY1->get(2, 3));
+
+            DDZ1->set(0, 0, DDZ1->get(1, 0) + DDZ1->get(0, 0));
+            DDZ1->set(0, 1, DDZ1->get(1, 1) + DDZ1->get(0, 1));
+            DDZ1->set(0, 2, DDZ1->get(1, 2) + DDZ1->get(0, 2));
+            DDZ1->set(0, 3, DDZ1->get(1, 3) + DDZ1->get(0, 3));
+            DDZ1->set(1, 0, DDZ1->get(2, 0) + DDZ1->get(1, 0));
+            DDZ1->set(1, 1, DDZ1->get(2, 1) + DDZ1->get(1, 1));
+            DDZ1->set(1, 2, DDZ1->get(2, 2) + DDZ1->get(1, 2));
+            DDZ1->set(1, 3, DDZ1->get(2, 3) + DDZ1->get(1, 3));
+            DDZ1->set(2, 0, DDZ1->get(3, 0) + DDZ1->get(2, 0));
+            DDZ1->set(2, 1, DDZ1->get(3, 1) + DDZ1->get(2, 1));
+            DDZ1->set(2, 2, DDZ1->get(3, 2) + DDZ1->get(2, 2));
+            DDZ1->set(2, 3, DDZ1->get(3, 3) + DDZ1->get(2, 3));
+
+        }
+
+        DDX1 = DDX2->transpose();
+        DDY1 = DDY2->transpose();
+        DDZ1 = DDZ2->transpose();
+
+
+        for (int i = 0; i < 1 / passo; i++) {
+            BSpline(1 / passo, DDX1->get(0, 0), DDX1->get(0, 1), DDX1->get(0, 2), DDX1->get(0, 3), DDY1->get(0, 0), DDY1->get(0, 1), DDY1->get(0, 2), DDY1->get(0, 3),
+                    DDZ1->get(0, 0), DDZ1->get(0, 1), DDZ1->get(0, 2), DDZ1->get(0, 3), temp1);
+
+
+            DDX1->set(0, 0, DDX1->get(1, 0) + DDX1->get(0, 0));
+            DDX1->set(0, 1, DDX1->get(1, 1) + DDX1->get(0, 1));
+            DDX1->set(0, 2, DDX1->get(1, 2) + DDX1->get(0, 2));
+            DDX1->set(0, 3, DDX1->get(1, 3) + DDX1->get(0, 3));
+            DDX1->set(1, 0, DDX1->get(2, 0) + DDX1->get(1, 0));
+            DDX1->set(1, 1, DDX1->get(2, 1) + DDX1->get(1, 1));
+            DDX1->set(1, 2, DDX1->get(2, 2) + DDX1->get(1, 2));
+            DDX1->set(1, 3, DDX1->get(2, 3) + DDX1->get(1, 3));
+            DDX1->set(2, 0, DDX1->get(3, 0) + DDX1->get(2, 0));
+            DDX1->set(2, 1, DDX1->get(3, 1) + DDX1->get(2, 1));
+            DDX1->set(2, 2, DDX1->get(3, 2) + DDX1->get(2, 2));
+            DDX1->set(2, 3, DDX1->get(3, 3) + DDX1->get(2, 3));
+
+            DDY1->set(0, 0, DDY1->get(1, 0) + DDY1->get(0, 0));
+            DDY1->set(0, 1, DDY1->get(1, 1) + DDY1->get(0, 1));
+            DDY1->set(0, 2, DDY1->get(1, 2) + DDY1->get(0, 2));
+            DDY1->set(0, 3, DDY1->get(1, 3) + DDY1->get(0, 3));
+            DDY1->set(1, 0, DDY1->get(2, 0) + DDY1->get(1, 0));
+            DDY1->set(1, 1, DDY1->get(2, 1) + DDY1->get(1, 1));
+            DDY1->set(1, 2, DDY1->get(2, 2) + DDY1->get(1, 2));
+            DDY1->set(1, 3, DDY1->get(2, 3) + DDY1->get(1, 3));
+            DDY1->set(2, 0, DDY1->get(3, 0) + DDY1->get(2, 0));
+            DDY1->set(2, 1, DDY1->get(3, 1) + DDY1->get(2, 1));
+            DDY1->set(2, 2, DDY1->get(3, 2) + DDY1->get(2, 2));
+            DDY1->set(2, 3, DDY1->get(3, 3) + DDY1->get(2, 3));
+
+            DDZ1->set(0, 0, DDZ1->get(1, 0) + DDZ1->get(0, 0));
+            DDZ1->set(0, 1, DDZ1->get(1, 1) + DDZ1->get(0, 1));
+            DDZ1->set(0, 2, DDZ1->get(1, 2) + DDZ1->get(0, 2));
+            DDZ1->set(0, 3, DDZ1->get(1, 3) + DDZ1->get(0, 3));
+            DDZ1->set(1, 0, DDZ1->get(2, 0) + DDZ1->get(1, 0));
+            DDZ1->set(1, 1, DDZ1->get(2, 1) + DDZ1->get(1, 1));
+            DDZ1->set(1, 2, DDZ1->get(2, 2) + DDZ1->get(1, 2));
+            DDZ1->set(1, 3, DDZ1->get(2, 3) + DDZ1->get(1, 3));
+            DDZ1->set(2, 0, DDZ1->get(3, 0) + DDZ1->get(2, 0));
+            DDZ1->set(2, 1, DDZ1->get(3, 1) + DDZ1->get(2, 1));
+            DDZ1->set(2, 2, DDZ1->get(3, 2) + DDZ1->get(2, 2));
+            DDZ1->set(2, 3, DDZ1->get(3, 3) + DDZ1->get(2, 3));
+        }
+
+
+
+        for (int i = 0; i < (1 / (passo * passo)); i += (1 / passo) + 1) {
+            for (int j = 0; j < (1 / passo) - 1; j++) {
+                Surface* s = new Surface(new Aresta(temp->get(i + j), temp->get(i + j + 1)));
+                this->addTris(s);
+            }
+        }
+
+        for (int i = 0; i < (1 / (passo * passo)); i += (1 / passo) + 1) {
+            for (int j = 0; j < (1 / passo) - 1; j++) {
+                Surface* s = new Surface(new Aresta(temp1->get(i + j), temp1->get(i + j + 1)));
+                this->addTris(s);
+            }
+        }
+        
+        this->setType(8);
+        this->setLine(true);
+
+    }
+
+
+
 };
 
 #endif /* SHAPE_HPP */

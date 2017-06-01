@@ -88,6 +88,28 @@ public:
         }
     }
 
+    Matriz* copy() {
+        Matriz* r = new Matriz(num_lin, num_col);
+        for (int i = 0; i < num_lin; i++) {
+            for (int j = 0; j < num_col; j++) {
+                r->set(i,j, get(i, j));
+            }
+        }
+        
+        return r;
+    }
+    
+    Matriz* transpose(){
+        Matriz* r = new Matriz(num_lin, num_col);
+        for (int i = 0; i < num_lin; i++) {
+            for (int j = 0; j < num_col; j++) {
+                r->set(j,i, get(i, j));
+            }
+        }
+        
+        return r;
+    }
+
 };
 
 #endif /* MATRIZ_HPP */

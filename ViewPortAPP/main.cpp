@@ -59,6 +59,7 @@ int bezier_created = 0;
 int spline_created = 0;
 int lines_created = 0;
 int bezier_surf_created = 0;
+int spline_surf_created = 0;
 double TX = 0;
 double TY = 0;
 double TZ = 0;
@@ -622,7 +623,7 @@ static void buildBezier3D() {
     } else {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                pontos->adiciona(new Ponto((i / 5.0) - 1, -(j / 10.0), ((i == 1 || i == 2) && (j == 1 || j == 2)) ? 2 : 1));
+                pontos->adiciona(new Ponto(- 0.2f + i/10.0, -(j / 20.0), ((i == 1 || i == 2) && (j == 1 || j == 2)) ? 2 : 1));
             }
         }
     }
@@ -702,12 +703,12 @@ static void build_shape() {
             gtk_widget_set_sensitive(buttonAdd, FALSE);
         }
         polP = new ListaEnc<Ponto*>();
-        if (shape_choice != 7) {
+        if (shape_choice != 7 && shape_choice != 8) {
             return;
         }
     }
 
-    if (polP->getSize() == 0 && shape_choice != 7) {
+    if (polP->getSize() == 0 && shape_choice != 7 && shape_choice != 8) {
         return;
     }
 
@@ -730,7 +731,12 @@ static void build_shape() {
             clicking = false;
             gtk_widget_set_sensitive(combo_box_shape, TRUE);
             gtk_widget_set_sensitive(buttonAdd, TRUE);
-            Reta3D* p = new Reta3D(polP->get(0), polP->get(1));
+            Reta3D* p;
+            if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox))) {
+                p = new Reta3D(new Ponto(-0.5f, -0.5f), new Ponto(0.5f, 0.5));
+            } else {
+                p = new Reta3D(polP->get(0), polP->get(1));
+            }
             lines_created++;
             string new_name = "Reta " + std::to_string(lines_created);
             p->setName(new_name);
@@ -835,6 +841,32 @@ static void build_shape() {
         }
 
         bezier_surf_created++;
+    }
+
+    if (shape_choice == 8) {
+        //Surface
+        clicking = false;
+        gtk_widget_set_sensitive(combo_box_shape, TRUE);
+
+        ListaEnc<Ponto*>* pontos = new ListaEnc<Ponto*>();
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                pontos->adiciona(new Ponto((i / 2.0) -1, -(j / 5.0), ((i == 1 || i == 2) && (j == 1 || j == 2)) ? 2 : 1));
+                
+            }
+        }
+        
+        BSplineSurface* c = new BSplineSurface(pontos, 4, 4, 0.1f);
+
+        string new_name = "SplineSurface " + std::to_string(spline_surf_created);
+
+        c->setName(new_name);
+        c->setFill(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(fillBox)));
+        lista->adiciona(c);
+        reenable();
+
+        spline_surf_created++;
     }
     gtk_widget_queue_draw(main_window);
 }
@@ -944,7 +976,7 @@ int main(int argc, char** argv) {
 
     //ComboBox
     combo_box_shape = gtk_combo_box_text_new();
-    const char* shapes[] = {"Ponto", "Reta", "Retangulo", "Quadrado", "Poligono", "Bezier", "B-Spline", "SurfaceBezier3D"};
+    const char* shapes[] = {"Ponto", "Reta", "Retangulo", "Quadrado", "Poligono", "Bezier", "B-Spline", "SurfaceBezier3D", "SurfaceSpline3D"};
 
     for (int i = 0; i < G_N_ELEMENTS(shapes); i++) {
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box_shape), shapes[i]);
