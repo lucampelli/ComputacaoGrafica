@@ -128,7 +128,6 @@ struct Surface {
 
 class Shape3D {
 private:
-
     Ponto* pos;
     ListaEnc<Surface*>* tris = new ListaEnc<Surface*>();
     ListaEnc<Surface*>* clipTris = new ListaEnc<Surface*>();
@@ -148,7 +147,7 @@ protected:
     bool fillShape = false;
     bool line = false;
     int type = 0;
-
+    float rgb[3] = {0,0,0};
 
 public:
 
@@ -540,8 +539,8 @@ public:
     void draw(cairo_t* cr, Ponto* camPos) {
 
         Ponto* center = findCenter();
-        cairo_set_source_rgb(cr, 0, 0, 0);
-        cairo_set_line_width(cr, 0.5);
+        cairo_set_source_rgb(cr, rgb[0], rgb[1], rgb[2]);
+        cairo_set_line_width(cr, 1);
         //do_transform;
 
         Ponto* atual;
@@ -560,12 +559,13 @@ public:
                         atual = transform->dT(atual);
                         cairo_line_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY()); //good
                         cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
-
+                        cout << "X: " << -300 + atual->getX() + pos->getX() + camPos->getX() << " Y: " << -300 + atual->getY() + pos->getY() + camPos->getY() << endl;
 
                     }
                 }
-            }
 
+            }
+            cout << endl;
             if (fillShape && !line) {
                 cairo_stroke_preserve(cr);
                 cairo_fill(cr);
@@ -594,6 +594,16 @@ public:
                 }
             }
         }
+    }
+    
+    void setRGB(float r, float g, float b){
+        this->rgb[0] = r;
+        this->rgb[1] = g;
+        this->rgb[2] = b;
+    }
+    
+    float* getRGB(){
+        return rgb;
     }
 
     void setFill(bool f = true) {
@@ -632,6 +642,14 @@ public:
         this->setType(1);
         this->setLine();
     }
+    
+    Reta3D(Ponto* p1, Ponto* p2, float r, float g, float b) {
+        Surface* s = new Surface(new Aresta(p1, p2), NULL, NULL);
+        this->addTris(s);
+        this->setType(1);
+        this->setLine();
+        this->setRGB(r,g,b);
+    }
 };
 
 class Retangulo3D : public Shape3D {
@@ -655,14 +673,31 @@ public:
     }
 };
 
-class Triangulo3D : public Shape3D {
+class Cubo3D : public Shape3D {
 public:
 
-    Triangulo3D() {
-        Ponto* p1 = new Ponto(0.15, 0.15, 1);
-        Ponto* p2 = new Ponto(0.15, 0.3, 1);
-        Ponto* p3 = new Ponto(0.3, 0.15, 1);
-        this->addTris(new Surface(p1, p2, p3));
+    Cubo3D() {
+        Ponto* p1 = new Ponto(0, 0, 0);
+        Ponto* p2 = new Ponto(0, -0.3, 0);
+        Ponto* p3 = new Ponto(0.3, -0.3, 0);
+        this->addTris(new Surface(new Aresta(p1, p2), NULL, NULL));
+        Ponto* p4 = new Ponto(0.3, 0, 0);
+        this->addTris(new Surface(new Aresta(p2, p3), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p3, p4), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p4, p1), NULL, NULL));
+        
+        Ponto* p5 = new Ponto(0, 0, 0.3);
+        Ponto* p6 = new Ponto(0, -0.3, 0.3);
+        Ponto* p7 = new Ponto(0.3, -0.3, 0.3);
+        this->addTris(new Surface(new Aresta(p5, p6), NULL, NULL));
+        Ponto* p8 = new Ponto(0.3, 0, 0.3);
+        this->addTris(new Surface(new Aresta(p6, p7), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p7, p8), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p8, p5), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p1, p5), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p6, p2), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p7, p3), NULL, NULL));
+        this->addTris(new Surface(new Aresta(p4, p8), NULL, NULL));
         this->setType(3);
     }
 };
@@ -670,7 +705,7 @@ public:
 class Quadrado3D : public Retangulo3D {
 public:
 
-    Quadrado3D(double x, double y, double z, double size) : Retangulo3D(x, y, z, size, -size) {
+    Quadrado3D(double x, double y, double z, double size) : Retangulo3D(0, 0, 0, 0.3, -0.3) {
         this->setType(3);
     }
 };
@@ -1076,7 +1111,7 @@ public:
 
         Mb = Mb->multiply(1.0 / 6.0);
         Mt = Mt->multiply(1.0 / 6.0);
-        
+
         Matriz* Gx = new Matriz(4, 4);
         Matriz* Gy = new Matriz(4, 4);
         Matriz* Gz = new Matriz(4, 4);
@@ -1103,9 +1138,9 @@ private:
         Cx = Cx->multiply(Mt);
         Matriz* Cy = Mb->multiply(Gy);
         Cy = Cy->multiply(Mt);
-        Matriz* Cz = Mb->multiply(Gz);        
+        Matriz* Cz = Mb->multiply(Gz);
         Cz = Cz->multiply(Mt);
-        
+
         DDX1 = Es->multiply(Cx);
         DDX1 = DDX1->multiply(Et);
         DDY1 = Es->multiply(Cy);
@@ -1230,7 +1265,7 @@ private:
                 this->addTris(s);
             }
         }
-        
+
         this->setType(8);
         this->setLine(true);
 

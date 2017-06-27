@@ -268,7 +268,7 @@ public:
 
                 for (int k = 0; k < surf->size(); k++) {
                     Aresta* a = surf->get(k);
-                    temp->set(new Aresta(new Ponto((a->p1->getX()), (a->p1->getY()),(a->p1->getZ())),
+                    temp->set(new Aresta(new Ponto((a->p1->getX()), (a->p1->getY()), (a->p1->getZ())),
                             new Ponto((a->p2->getX()), (a->p2->getY()), (a->p2->getZ()))));
                 }
 
@@ -278,6 +278,7 @@ public:
             n->setLine(s->getLine());
             n->setType(s->getType());
             n->setChildren(s->getChildren());
+            n->setRGB(s->getRGB()[0], s->getRGB()[1], s->getRGB()[2]);
             shapesPersp->adiciona(n);
         }
 
@@ -307,7 +308,7 @@ public:
 
                 for (int k = 0; k < surf->size(); k++) {
                     Aresta* a = surf->get(k);
-                    temp->set(new Aresta(transform->transform(new Ponto((a->p1->getX()), (a->p1->getY()),(a->p1->getZ()))),
+                    temp->set(new Aresta(transform->transform(new Ponto((a->p1->getX()), (a->p1->getY()), (a->p1->getZ()))),
                             transform->transform(new Ponto((a->p2->getX()), (a->p2->getY()), (a->p2->getZ())))));
                 }
 
@@ -317,6 +318,7 @@ public:
             n->setLine(s->getLine());
             n->setType(s->getType());
             n->setChildren(s->getChildren());
+            n->setRGB(s->getRGB()[0], s->getRGB()[1], s->getRGB()[2]);
             normShapes->adiciona(n);
         }
 
