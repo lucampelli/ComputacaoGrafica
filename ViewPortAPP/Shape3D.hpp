@@ -147,7 +147,7 @@ protected:
     bool fillShape = false;
     bool line = false;
     int type = 0;
-    float rgb[3] = {0,0,0};
+    float rgb[3] = {0, 0, 0};
 
 public:
 
@@ -554,13 +554,13 @@ public:
                     atual = transform->dT(atual);
                     cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
 
+
                     for (int k = 1; k < aAtual->size(); k++) {
                         atual = aAtual->get(k);
                         atual = transform->dT(atual);
                         cairo_line_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY()); //good
                         cairo_move_to(cr, atual->getX() + pos->getX() + camPos->getX(), atual->getY() + pos->getY() + camPos->getY());
                         cout << "X: " << -300 + atual->getX() + pos->getX() + camPos->getX() << " Y: " << -300 + atual->getY() + pos->getY() + camPos->getY() << endl;
-
                     }
                 }
 
@@ -595,14 +595,14 @@ public:
             }
         }
     }
-    
-    void setRGB(float r, float g, float b){
+
+    void setRGB(float r, float g, float b) {
         this->rgb[0] = r;
         this->rgb[1] = g;
         this->rgb[2] = b;
     }
-    
-    float* getRGB(){
+
+    float* getRGB() {
         return rgb;
     }
 
@@ -642,13 +642,13 @@ public:
         this->setType(1);
         this->setLine();
     }
-    
+
     Reta3D(Ponto* p1, Ponto* p2, float r, float g, float b) {
         Surface* s = new Surface(new Aresta(p1, p2), NULL, NULL);
         this->addTris(s);
         this->setType(1);
         this->setLine();
-        this->setRGB(r,g,b);
+        this->setRGB(r, g, b);
     }
 };
 
@@ -656,7 +656,7 @@ class Retangulo3D : public Shape3D {
 public:
 
     Retangulo3D(double x, double y, double z, double width, double height) {
-        Ponto * p[] = {new Ponto(x, y, z), new Ponto(x + width, y, z), new Ponto(x + width, y + height, z), new Ponto(x, y + height, z)};
+        Ponto * p[] = {new Ponto(x, y, z), new Ponto(x, y + height, z), new Ponto(x + width, y + height, z), new Ponto(x + width, y, z)};
         this->addTris(new Surface(new Aresta(p[0], p[1]), NULL, NULL));
         this->addTris(new Surface(new Aresta(p[1], p[2]), NULL, NULL));
         this->addTris(new Surface(new Aresta(p[2], p[3]), NULL, NULL));
@@ -685,7 +685,7 @@ public:
         this->addTris(new Surface(new Aresta(p2, p3), NULL, NULL));
         this->addTris(new Surface(new Aresta(p3, p4), NULL, NULL));
         this->addTris(new Surface(new Aresta(p4, p1), NULL, NULL));
-        
+
         Ponto* p5 = new Ponto(0, 0, 0.3);
         Ponto* p6 = new Ponto(0, -0.3, 0.3);
         Ponto* p7 = new Ponto(0.3, -0.3, 0.3);
